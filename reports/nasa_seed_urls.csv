@@ -1,0 +1,9 @@
+seed_id,subtopic,url,status,checked_at,notes
+NASA_SEED_01,solar_system,https://science.nasa.gov/solar-system/solar-system-facts/,url_dogrulandi,2026-10-22,Güneş Sistemi için temel öğretici içerik
+NASA_SEED_02,stars_stellar_evolution,https://science.nasa.gov/universe/stars/,url_dogrulandi,2026-10-22,Yıldızların doğumu yaşamı ve ölümü hakkında temel içerik
+NASA_SEED_03,galaxies,https://science.nasa.gov/universe/galaxies/,url_dogrulandi,2026-10-22,Galaksiler ve Samanyolu hakkında temel içerik
+NASA_SEED_04,cosmology,https://science.nasa.gov/universe/overview/,url_dogrulandi,2026-10-22,Evrenin tarihi ve temel kozmoloji içeriği
+NASA_SEED_05,exoplanets,https://science.nasa.gov/exoplanets/planet-types/,url_dogrulandi,2026-10-22,Ötegezegen türleri hakkında açıklayıcı içerik
+NASA_SEED_06,observatories_telescopes,https://science.nasa.gov/universe/observatories/,url_dogrulandi,2026-10-22,Gözlemevleri ve teleskop görevleri hakkında içerik
+NASA_SEED_07,planets_moons,https://science.nasa.gov/solar-system/planets/,url_dogrulandi,2026-10-22,Gezegenler ve cüce gezegenler hakkında temel içerik (Tasarım kapsamı: gezegenler ve uydular)
+NASA_SEED_08,missions_spacecraft,https://science.nasa.gov/mission/hubble/overview/,url_dogrulandi,2026-10-22,Hubble görevinin genel tanıtımı (Tasarım kapsamı: uzay araçları ve keşif görevleri)

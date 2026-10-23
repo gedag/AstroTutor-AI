@@ -1,0 +1,5 @@
+source_name,url,type,language,document_count,access_date,license,notes
+NASA Science,https://science.nasa.gov/,HTML,en,,2026-10-20,NASA_AI_and_media_usage_guidelines,Domain Corpus için astronomi metin kaynağı; NASA kaynak materyali kullanıldığı kayıt altına alınacak; üçüncü taraf telifli içerikler ayrıca kontrol edilecek; model çıktıları NASA tarafından üretilmiş veya onaylanmış gibi gösterilmeyecek
+NASA Exoplanet Archive,https://exoplanetarchive.ipac.caltech.edu/,structured_data,en,,2026-10-20,acknowledgement_and_source_citation_required,Güncel ötegezegen bilgileri için ileride RAG kaynağı; Archive ve ilgili bilimsel kaynaklar atıfla belirtilecek
+StackExchange Space QA,https://huggingface.co/datasets/juliensimon/stackexchange-space-qa,dataset,en,,2026-10-20,Dataset_card_CC-BY-SA-4.0,Instruction Dataset aday kaynağı; orijinal Stack Exchange gönderilerinin tarih bazlı lisansları bulunduğundan kaynak URL ve attribution bilgisi korunacak
+Wikipedia Astronomy,https://en.wikipedia.org/wiki/Portal:Astronomy,HTML,en,,2026-10-20,CC-BY-SA-4.0_and_GFDL,Yardımcı astronomi metin kaynağı; kullanılan makalelerin URL ve attribution bilgileri korunacak

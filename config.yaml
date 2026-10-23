@@ -1,0 +1,223 @@
+# AstroTutor AI — veri hazırlama pipeline yapılandırması
+# Tüm yollar proje köküne göredir. Eşik ve seed değerleri burada tutulur, kodda gömülü değildir.
+
+project:
+  name: AstroTutor-AI
+  corpus_version: "1.0"
+  instruction_version: "1.0"
+  random_seed: 42
+
+paths:
+  raw: data/raw
+  extracted: data/extracted
+  cleaned: data/cleaned
+  interim: data/interim
+  final: data/final
+  eval_reference: data/eval_reference
+  samples: data/samples
+  reports: reports
+  qc: reports/qc
+  logs: logs
+  prompts: prompts
+
+http:
+  user_agent: "AstroTutorAI-dataset/1.0 (SDU Bilgisayar Muhendisligi bitirme projesi; academic, non-commercial)"
+  delay_seconds: 1.2        # science.nasa.gov robots.txt Crawl-delay: 1 -> biraz daha yavas
+  wikipedia_delay_seconds: 0.25
+  arxiv_delay_seconds: 4.0  # arXiv OAI-PMH: istekler arasi en az 3 sn
+  timeout: 60
+  max_retries: 4
+
+sources:
+  nasa_science:
+    sitemap_index: https://science.nasa.gov/wp-sitemap.xml
+    sitemap_types: [topic, post, mission]
+    max_documents: 3800
+    max_per_group: 150        # tek bir gorev/bolumun (or. Hubble) corpus'u domine etmesini onler
+    seed_urls_file: reports/nasa_seed_urls.csv
+    include_prefixes:         # URL yolunun ilk bolumleri (kapsam ici)
+      - solar-system/
+      - universe/
+      - exoplanets/
+      - sun/
+      - moon/
+      - jupiter/
+      - saturn/
+      - uranus/
+      - neptune/
+      - mars/
+      - dwarf-planets/
+      - learn/
+      - glossary/
+      - skywatching/
+      - eclipses/
+      - lunar-science/
+      - planetary-science/
+      - astrophysics/focus-areas/
+      - astrophysics/science-questions/
+      - kids/
+      - science-research/astrophysics/
+      - science-research/planetary-science/
+      - missions/
+      - mission/
+    exclude_substrings:       # kapsam disi / duyuru / arastirmaci ilanlari
+      - /researchers/
+      - /for-researchers/
+      - solicitation
+      - /earth/
+      - earth-science
+      - /biological-physical/
+      - /people/
+      - /about-us/
+      - /photojournal/
+      - /resource/
+      - /3d-resources/
+      - /multimedia/
+      - /citizen-science
+      - /get-involved/
+      - /centers-and-facilities/
+      - /directorates/
+      - /community/
+      - /internships
+      - /events/
+      - /gallery/
+      - /podcasts
+      - /videos/
+    astro_missions:           # missions/ ve mission/ altinda yalnizca bu astronomi/gezegen gorevleri alinir
+      [hubble, webb, roman-space-telescope, chandra, spitzer, tess, kepler, fermi, swift, xrism, ixpe,
+       nustar, galex, wise, neowise, sofia, cobe, wmap, euclid, spherex, pandora, cosi, compton,
+       cassini, voyager, voyager-program, juno, europa-clipper, dawn, new-horizons, lro, psyche, lucy,
+       osiris-rex, dragonfly, mars-2020-perseverance, msl-curiosity, mars-science-laboratory,
+       mars-reconnaissance-orbiter, insight, odyssey, mars-global-surveyor,
+       mars-exploration-rovers-spirit-and-opportunity, mars-sample-return, maven, ladee,
+       lunar-trailblazer, viper, veritas, davinci, messenger, magellan, galileo, pioneer, pioneer-10,
+       pioneer-11, parker-solar-probe, soho, sdo, stereo, solar-orbiter, artemis, dart, neo-surveyor,
+       rosetta, deep-impact, stardust, mariner, viking, ulysses, ibex, imap, explorer-1, juice,
+       hera, gaia, planck, herschel, kepler-and-k2, k2]
+  nasa_apod:
+    sitemap_type: image-article
+    url_pattern: "/image-article/apod-"
+    per_year: 85              # 1995-2026 arasi her yildan sabit sayida ornek (seed 42)
+    license: "NASA APOD (science.nasa.gov); aciklama metni kullanildi, gorseller alinmadi; gorsel telifleri ilgili sahiplerinde"
+  openstax:
+    title: "OpenStax Astronomy 2e"
+    pdf_url: https://assets.openstax.org/oscms-prodcms/media/documents/astronomy-2e_-_WEB.pdf
+    landing_url: https://openstax.org/details/books/astronomy-2e
+    license: CC BY-NC-SA 4.0
+    publication_year: 2022
+  arxiv:
+    oai_base: https://oaipmh.arxiv.org/oai
+    set: "physics:astro-ph"
+    from_date: "2025-10-01"
+    max_records: 6000
+    primary_category_prefix: astro-ph
+    license: "arXiv metadata (baslik ve ozet) CC0 1.0"
+  wikipedia_en:
+    api: https://en.wikipedia.org/w/api.php
+    lang: en
+    per_category: 140
+    max_documents: 2600
+    min_bytes: 6000           # cok kisa taslak (stub) maddeleri baslangicta disarida birakir
+    categories:
+      [Solar System, Planets of the Solar System, Natural satellites, Dwarf planets, Comets,
+       Asteroids, Stars, Stellar evolution, Stellar astronomy, Variable stars, Neutron stars,
+       Black holes, Nebulae, Galaxies, Milky Way, Galaxy clusters, Physical cosmology,
+       Exoplanetology, Exoplanets, Space telescopes, Space probes, Astronomical observatories,
+       Telescopes, Astrophysics, Observational astronomy, Astronomical coordinate systems,
+       Celestial mechanics, Eclipses, Meteoroids, Planetary science]
+  wikipedia_tr:
+    api: https://tr.wikipedia.org/w/api.php
+    lang: tr
+    per_category: 120
+    max_documents: 1600
+    min_bytes: 2500
+    categories:
+      [Astronomi, Güneş Sistemi, Gezegenler, Güneş Sistemi gezegenleri, Doğal uydular, Cüce gezegenler,
+       Kuyruklu yıldızlar, Asteroitler, Yıldızlar, Yıldız evrimi, Değişen yıldızlar, Nötron yıldızları,
+       Kara delikler, Bulutsular, Gökadalar, Samanyolu, Fiziksel kozmoloji, Kozmoloji, Ötegezegenler,
+       Uzay teleskopları, Uzay sondaları, Gözlemevleri, Teleskoplar, Astrofizik, Gök mekaniği,
+       Tutulmalar, Göktaşları, Gezegen bilimi]
+  stackexchange:
+    hf_repo: juliensimon/stackexchange-space-qa
+    license: CC BY-SA 4.0
+  eval_reference:             # SADECE sizinti kontrolu icin; egitime girmez
+    - patrickfleith/Astro-mcqa
+    - patrickfleith/astro-mcq
+    - patrickfleith/HubbleSpaceTelescope-MCQ
+    - AstroMLab/Astrobench_MCQ_v1_Public
+
+extraction:
+  min_chars_success: 200      # bunun altindaki cikti extraction_error sayilir
+  pdf_level_for_documents: 2  # OpenStax PDF icindekiler 2. seviye (bolum alt basliklari) = 1 dokuman
+
+cleaning:
+  repeated_line_min_pages: 5  # ayni PDF'te 5+ sayfada tekrar eden satir = header/footer
+  short_line_chars: 20        # bundan kisa YALNIZ satirlar silinir (baslik/rakamli bilgi korunur)
+  examples_to_save: 20
+
+filtering:
+  min_chars: 300
+  max_garbled_ratio: 0.15
+  allowed_languages: [en, tr]
+  min_domain_score: 2.0       # 1000 kelime basina astronomi terimi (bkz. scripts/domain_lexicon.py)
+
+dedup:
+  shingle_words: 5
+  num_perm: 128
+  jaccard_threshold: 0.85
+  review_pairs: 50
+
+split:
+  train: 0.90
+  validation: 0.05
+  test: 0.05
+
+chunking:
+  max_tokens: 1024
+  overlap_paragraphs: 0
+
+tokenizer:
+  name: Qwen/Qwen2.5-7B        # Tasarim raporundaki ana model ailesi (base ve instruct ayni tokenizer)
+
+instruction:
+  language: tr
+  target_total: 3400          # 1 haftalik takvim + ucretsiz katman: elemeler sonrasi >= 3000 hedefi
+  provider: gemini
+  # 22.10.2026 tespitleri: gemini-2.5-flash yeni kullanicilara kapali (404); ucretsiz katman MODEL BASINA
+  # GUNDE 20 istek (generate_content_free_tier_requests, limit 20). Bu yuzden dort Flash modeli havuz olarak
+  # kullanilir; bir modelin gunluk kotasi dolunca siradakine gecilir, hepsi dolunca script durur ve
+  # ertesi gun kaldigi yerden devam eder. Her ornekte gercekte kullanilan model kaydedilir.
+  # Yargic, ornegi ureten modelden FARKLI bir model secilir (kendi ciktisini kayirma egilimini azaltir).
+  generator_models: [gemini-3.6-flash, gemini-3.5-flash, gemini-3.7-flash, gemini-3.8-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite]  # lite: yalniz Flash kotalari bitince
+  judge_models: [gemini-3.7-flash, gemini-3.8-flash, gemini-3.6-flash, gemini-3.5-flash]
+  examples_per_doc_job: {long: 14, medium: 10, short: 6, arxiv: 5}  # long >= 6000, medium >= 3000 karakter
+  se_items_per_job: 10
+  refusal_per_job: 15
+  judge_sample_fraction: 0.10   # LLM yargic islerin %10'luk rastgele orneklemi uzerinde (hata orani tahmini)
+  evidence_min_overlap: 0.6     # destekleyen alintinin kelime 5-gram'larinin en az %60'i kaynakta olmali
+  temperature: 0.7
+  judge_temperature: 0.0
+  generator_thinking_budget: low    # Gemini 3+: thinking_level; uretimde dusuk -> hizli
+  judge_thinking_budget: medium     # yargic: olgu ve hesap kontrolu icin daha fazla dusunme
+  max_output_tokens: 16384     # 14 ornek/cagri icin
+  requests_per_minute: 8
+  prompt_version: v1
+  source_doc_max_chars: 9000   # 12 ornek icin yeterli kaynak metin (~2.300 token)
+  taxonomy:                   # hedef oranlar
+    tanim_aciklama: 0.16
+    seviyeli_anlatim: 0.15
+    coktan_secmeli_soru_uretimi: 0.14
+    soru_cevap: 0.12
+    karsilastirma: 0.10
+    neden_sonuc: 0.10
+    ozetleme: 0.08
+    adim_adim_problem_cozme: 0.07
+    siniflandirma: 0.04
+    bilgi_yetersizligi_kapsam_disi: 0.04
+  min_response_chars: 40
+  max_response_chars: 6000
+  decontam_ngram: 8
+
+qc:
+  corpus_sample: 100          # Rehber alt siniri (100-200)
+  instruction_sample: 150     # Rehber alt siniri (150-200)

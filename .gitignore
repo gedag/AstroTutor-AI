@@ -1,0 +1,25 @@
+# Ortam ve gizli anahtarlar
+.venv/
+.env
+__pycache__/
+*.pyc
+
+# Büyük veri: depoya girmez (README'de nerede saklandığı açıklanır)
+data/raw/**
+!data/raw/README.md
+data/extracted/
+data/cleaned/
+data/interim/
+data/final/
+data/eval_reference/
+
+# Küçük örnek veriler depoya girer
+!data/samples/
+
+# Loglar ve ara çıktılar
+logs/
+*.log
+
+# Office belgeleri (ders rehberi ve tasarım raporu depoya konmaz) ve geçici dosyaları
+*.docx
+~$*
