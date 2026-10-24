@@ -57,3 +57,31 @@ def job_mcq_leak_ratio(rows: list[dict]) -> float:
     if not m:
         return 0.0
     return sum(1 for r in m if mcq_in_instruction(r.get("instruction", ""), r.get("response", ""))) / len(m)
+
+
+if __name__ == "__main__":
+    # 24.10.2026 incelemesinde gerçek örneklerden alınan durumlar
+    cases = {
+        "Aşağıdaki metni kullanarak çoktan seçmeli bir soru oluşturunuz ve yalnızca JSON formatında yanıtlayınız. Metin: X": None,
+        "Standart model bazı soruları yanıtlayamaz. Şişme hipotezi...": None,
+        "Aşağıdaki metne dayanarak bir çoktan seçmeli soru hazırlayıp JSON formatında yanıtlayın: metin": None,
+        "Bu metinden iki soru üret. Soru sayısı: 2": None,
+        "Kepler (A) ve Brahe (B) gözlemleri... C) yok": None,
+        'metin "dogru_cevap": "A|B|C|D"': None,
+        "Aşağıdaki metni okuyarak ilgili soruyu yanıtlayınız: P/2013 R3...": "cevaplatan_talimat",
+        "Metin... 2 adet çoktan seçmeli soruyu JSON formatında yanıtla. Metin:": "cevaplatan_talimat",
+        "metin. Soru: Keşif tablolarındaki 'o' harfi neyi ifade eder?": "soru_talimatta",
+        "metin A) bir şey B) iki şey C) üç şey D) dört şey": "secenekler_talimatta",
+        "metin\nA) bir\nB) iki\nC) üç\nD) dört": "secenekler_talimatta",
+        'metin "dogru_cevap": "B"': "cevap_talimatta",
+    }
+    bad = 0
+    for ins, want in cases.items():
+        got = mcq_in_instruction(ins, '{"sorular": []}')
+        bad += got != want
+        print("tamam" if got == want else "HATA", want, got, "|", ins[:60].replace("\n", " "))
+    resp = '{"sorular": [{"soru": "Antennae Gökadaları ilk olarak kim tarafından keşfedilmiştir?"}]}'
+    got = mcq_in_instruction("Metin... Antennae Gökadaları ilk olarak kim tarafından keşfedilmiştir?", resp)
+    bad += got != "soru_talimatta"
+    print("tamam" if got == "soru_talimatta" else "HATA", "cevaptaki soru talimatta ->", got)
+    print("hata:", bad)

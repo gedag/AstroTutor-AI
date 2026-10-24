@@ -34,28 +34,40 @@ def describe(xs: list[int]) -> dict:
 
 
 def chunk_doc(d: dict, tok) -> list[dict]:
-    paras = [x for x in d["text"].split("\n") if x.strip()]
-    units = []
-    for para in paras:
-        n = len(tok.encode(para, add_special_tokens=False))
+    """Chunk metni dokümanın BİREBİR alt dizisidir (paragraf ayırıcıları korunur; RAG'de kaynak gösterilebilir).
+    24.10.2026 denetimi: ilk sürüm satırları tek '\\n' ile birleştiriyordu; paragraflar arasındaki boş satır
+    kayboluyor ve chunk metni dokümanda aranınca bulunamıyordu."""
+    text = d["text"]
+    units = []  # (başlangıç, bitiş, token)
+    for m in re.finditer(r"[^\n]+", text):
+        if not m.group(0).strip():
+            continue
+        n = len(tok.encode(m.group(0), add_special_tokens=False))
         if n <= MAX:
-            units.append((para, n))
+            units.append((m.start(), m.end(), n))
         else:  # çok uzun paragraf: cümle sınırında böl
-            for s in re.split(r"(?<=[.!?])\s+", para):
-                units.append((s, len(tok.encode(s, add_special_tokens=False))))
-    chunks, cur, cur_n = [], [], 0
-    for text, n in units:
-        new_section = text.startswith("## ") and cur_n > 0.25 * MAX
-        if cur and (cur_n + n > MAX or new_section):
-            chunks.append(("\n".join(cur), cur_n))
+            for s in re.finditer(r".+?(?:[.!?](?=\s)|$)", m.group(0)):
+                if s.group(0).strip():
+                    a = m.start() + s.start() + (len(s.group(0)) - len(s.group(0).lstrip()))
+                    units.append((a, m.start() + s.end(), len(tok.encode(s.group(0), add_special_tokens=False))))
+    spans, cur, cur_n = [], [], 0
+    for a, b, n in units:
+        new_section = text.startswith("## ", a) and cur_n > 0.25 * MAX
+        if cur and (cur_n + n + 1 > MAX or new_section):  # +1: birimler arası ayırıcı token payı
+            spans.append((cur[0][0], cur[-1][1]))
             cur, cur_n = [], 0
-        cur.append(text)
-        cur_n += n
+        cur.append((a, b))
+        cur_n += n + 1
     if cur:
-        chunks.append(("\n".join(cur), cur_n))
-    return [{"chunk_id": f"{d['document_id']}_C{i:03d}", "document_id": d["document_id"], "chunk_index": i,
-             "source": d["source"], "language": d["language"], "subtopic": d["subtopic"], "split": d["split"],
-             "token_count": n, "text": t} for i, (t, n) in enumerate(chunks)]
+        spans.append((cur[0][0], cur[-1][1]))
+    out = []
+    for i, (a, b) in enumerate(spans):
+        t = text[a:b]
+        out.append({"chunk_id": f"{d['document_id']}_C{i:03d}", "document_id": d["document_id"], "chunk_index": i,
+                    "char_start": a, "char_end": b, "source": d["source"], "language": d["language"],
+                    "subtopic": d["subtopic"], "split": d["split"],
+                    "token_count": len(tok.encode(t, add_special_tokens=False)), "text": t})
+    return out
 
 
 def main() -> None:

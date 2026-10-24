@@ -188,8 +188,9 @@ instruction:
   provider: gemini
   # 22.10.2026 tespitleri: gemini-2.5-flash yeni kullanicilara kapali (404); ucretsiz katman MODEL BASINA
   # GUNDE 20 istek (generate_content_free_tier_requests, limit 20). Bu yuzden dort Flash modeli havuz olarak
-  # kullanilir; bir modelin gunluk kotasi dolunca siradakine gecilir, hepsi dolunca script durur ve
-  # ertesi gun kaldigi yerden devam eder. Her ornekte gercekte kullanilan model kaydedilir.
+  # kullanilir; bir modelin gunluk kotasi dolunca siradakine gecilir. Tum Flash kotalari bitince lite modellere
+  # gecilir (23.10.2026 karari); hepsi doluysa run_instruction_loop.py 30-60 dk sonra yeniden dener (kota kayan
+  # 24 saat penceresi gibi davraniyor). Her ornekte gercekte kullanilan model ve prompt surumu kaydedilir.
   # Yargic, ornegi ureten modelden FARKLI bir model secilir (kendi ciktisini kayirma egilimini azaltir).
   generator_models: [gemini-3.6-flash, gemini-3.5-flash, gemini-3.7-flash, gemini-3.8-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite]  # lite: yalniz Flash kotalari bitince
   judge_models: [gemini-3.7-flash, gemini-3.8-flash, gemini-3.6-flash, gemini-3.5-flash]

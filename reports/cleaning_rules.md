@@ -4,6 +4,7 @@ Bu dosya `scripts/03_clean.py` tarafından üretilir. Kurallar bilgiyi koruyacak
 
 | Kural | Ne yapar | Neden | Uygulama sayısı |
 | --- | --- | --- | --- |
+| HTML kalıntısı | `<br>`, `<sub ...>...</sub>` etiketleri ve `&amp;` gibi entity'ler; `<sup>x</sup>` -> `^x` | Extraction araçlarının bıraktığı biçim kalıntısı; üst simge içeriği üs olarak korunur (24.10.2026 denetimi) | 45 |
 | Üs koruma (NFKC öncesi) | 10²³ -> 10^23, s⁻¹ -> s^-1 | NFKC üst simgeleri düz rakama çevirir (10²³ -> 1023) ve sayının anlamı bozulur | 261 |
 | Unicode NFKC | Karakter varyantlarını tek biçime çeker (ﬁ -> fi, tam genişlikli karakterler) | Aynı kelime farklı kodlamalarla yazılmış olabilir; PDF bağlaçları (ligature) çözülür | tüm metin |
 | Görünmez/kontrol karakterleri | Yumuşak tire, sıfır genişlikli boşluk, BOM, kontrol karakterleri silinir | Tokenizer'da gereksiz token üretir, görünmez olduğu için fark edilmez | tüm metin |
@@ -32,11 +33,11 @@ Bu dosya `scripts/03_clean.py` tarafından üretilir. Kurallar bilgiyi koruyacak
 
 | Kaynak | Doküman | Karakter (önce) | Karakter (sonra) | Silinen oran |
 | --- | --- | --- | --- | --- |
-| nasa_science | 3,068 | 13,834,165 | 12,350,811 | %10.7 |
+| nasa_science | 3,068 | 13,834,165 | 12,350,808 | %10.7 |
 | nasa_apod | 2,717 | 2,498,790 | 2,359,168 | %5.6 |
 | openstax | 242 | 2,505,866 | 2,346,107 | %6.4 |
 | arxiv_astro_ph | 6,000 | 9,176,505 | 9,176,505 | %0.0 |
 | wikipedia_en | 3,575 | 49,168,159 | 40,347,366 | %17.9 |
-| wikipedia_tr | 1,732 | 10,367,405 | 8,832,932 | %14.8 |
+| wikipedia_tr | 1,732 | 10,367,405 | 8,832,691 | %14.8 |
 
 Öncesi/sonrası örnekleri: [cleaning_examples.md](cleaning_examples.md)

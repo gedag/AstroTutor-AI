@@ -11,6 +11,11 @@ kodunda hata bulunduğunda veri seti sıfırdan yeniden üretilebilir.
 Her kaynak klasöründe bir `manifest.jsonl` bulunur: `raw_id`, `url`, `file`, `sha256`, `retrieved_at`,
 `http_status`, `license`. Dosyalar `scripts/01_download.py` ile indirilir; bu klasör Git'e yüklenmez.
 
+**Not (24.10.2026 denetimi):** `nasa_science/manifest.jsonl`'de 862 `raw_id` iki kez yer alır: 22.10'da iki indirme
+süreci aynı URL'leri aynı anda indirdi ve 265 satırda SHA-256, dosya henüz yazılmadan hesaplandı (boş dosya hash'i
+`e3b0c442…`). Her `raw_id`'nin **son başarılı (200) kaydı** diskteki dosyayla eşleşir; `02_extract.py` de bu kaydı
+kullanır. Ham kayıtlar değiştirilmedi.
+
 ## Kaynaklar
 
 | Klasör | İçerik | Biçim |

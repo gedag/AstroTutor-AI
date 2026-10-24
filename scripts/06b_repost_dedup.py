@@ -1,6 +1,8 @@
 """06b — İkinci geçiş: üs düzeltmesi, APOD duyuru satırları ve yeniden yayın tekrarları (kalite kontrolünde bulundu).
 
+Adımlar (çalışma sırasıyla):
 0) Kaybolmuş üsler geri yazılır ("1.5 × 108 km" -> "1.5 × 10^8 km"; kurallar ve testler: scripts/exponent_fix.py).
+1) APOD site duyurusu satırları ("Follow APOD on...", "Gallery: ...", "Open Science: Browse ...") silinir.
 1b) NASA basın bülteni künyesi (kredi, iletişim blokları, "For more information... visit", yalnız bağlantı satırları)
     ve kişisel iletişim bilgisi (e-posta, telefon) silinir (scripts/press_boilerplate.py).
 1c) 1000 karakterden kısa iletişim dizini sayfaları (contact_page) ve temizlikten sonra filtering.min_chars'ın
@@ -8,6 +10,14 @@
 1d) Tek astronomi kategorisi kendi adını taşıyan kurgu/eser Wikipedia maddeleri (fiction_work_06b) çıkarılır.
 1e) arXiv alt konusu birincil arXiv kategorisinden belirlenir (GA, CO, IM doğrudan; SR, EP, HE kategoriye uygun
     alt konular arasında anahtar kelimeyle).
+2) Yeniden yayın tekrarı: aynı kaynaktan iki doküman
+     nasa_apod    : kelime 5-gram Jaccard >= 0.50 VE karakter dizisi benzerliği (difflib) >= 0.85
+     nasa_science : kelime 5-gram Jaccard >= 0.75 VE karakter dizisi benzerliği >= 0.90
+   Wikipedia'ya uygulanmaz (farklı maddeler = farklı konular). Çiftten EN SON yayımlanan tutulur (yeniden
+   yayında bilgiler güncelleniyor); instruction kaynağı olan doküman hiçbir zaman çıkarılmaz (ikisi de kaynaksa
+   ikisi de tutulur ve loglanır).
+Veri zaten işaretliyse (postprocess="06b") yalnız idempotent HTML kalıntısı düzeltmesi uygulanır
+(scripts/html_residue.py; 03'te de var).
 
 Neden ayrı adım: 24.10.2026'da near-duplicate eşik incelemesi (reports/qc/near_dup_pairs_review.csv), 0.85
 eşiğinin hiç yanlış eleme yapmadığını ama APOD'un aynı açıklamayı yıllar sonra küçük düzeltmelerle yeniden
@@ -16,14 +26,6 @@ Genel eşiği düşürmek doğru değil: NASA'nın uydu sayfaları ortak şablon
 ve Jaccard 0.74'e kadar çıkıyor. Ayrıca 05'i değiştirmek DOC_ kimliklerini kaydırır ve instruction örneklerinin
 kaynak bağını koparırdı. Bu yüzden bu adım 06'dan SONRA çalışır, kimlikleri ve kümeleri DEĞİŞTİRMEZ, yalnız
 satır/doküman çıkarır (çıkan dokümanın kimliği boş kalır).
-
-1) APOD site duyurusu satırları ("Follow APOD on...", "Gallery: ...", "Open Science: Browse ...") silinir.
-2) Yeniden yayın tekrarı: aynı kaynaktan iki doküman
-     nasa_apod    : kelime 5-gram Jaccard >= 0.50 VE karakter dizisi benzerliği (difflib) >= 0.85
-     nasa_science : kelime 5-gram Jaccard >= 0.75 VE karakter dizisi benzerliği >= 0.90
-   Wikipedia'ya uygulanmaz (farklı maddeler = farklı konular). Çiftten EN SON yayımlanan tutulur (yeniden
-   yayında bilgiler güncelleniyor); instruction
-   kaynağı olan doküman hiçbir zaman çıkarılmaz (ikisi de kaynaksa ikisi de tutulur ve loglanır).
 
 Girdi/çıktı: data/final/{train,validation,test}.jsonl (yerinde güncellenir). Elenenler: reports/removed_documents.csv
 (stage=dedup2). Özet: reports/dedup2_summary.json.
@@ -42,6 +44,7 @@ from collections import Counter
 from common import CFG, RemovalLog, get_logger, p, read_jsonl, write_jsonl
 from domain_lexicon import _lower_tr, subtopic_scores, wiki_category_on_topic
 from exponent_fix import fix_exponents
+from html_residue import strip_html_residue
 from press_boilerplate import clean_press, scrub_inline_pii
 
 log = get_logger("06b_repost_dedup")
@@ -112,7 +115,29 @@ def main() -> None:
     # Her doküman "postprocess": "06b" işareti taşır. 06 final dosyalarını yeniden yazınca işaret kalkar ve adım
     # yeniden uygulanır; işaretli veriye ikinci kez çalıştırılırsa hiçbir şey yapılmaz (kayıtlar ezilmez).
     if all(d.get("postprocess") == "06b" for s in SPLITS for d in docs[s]):
-        log.info("Bu adım mevcut final veriye zaten uygulanmış; değişiklik yapılmadı")
+        # Yalnız idempotent metin düzeltmesi uygulanır: HTML kalıntısı (24.10.2026 denetimi; 03'e de eklendi, böylece
+        # sıfırdan çalıştırmada aynı sonuç çıkar). Doküman çıkarılmaz, kayıtlar ezilmez.
+        n_html, touched = 0, []
+        for s in SPLITS:
+            for d in docs[s]:
+                t, k = strip_html_residue(d["text"])
+                if k:
+                    n_html += k
+                    touched.append(d["document_id"])
+                    d["text"] = t
+                    d["char_count"], d["word_count"] = len(t), len(t.split())
+            if any(d["document_id"] in touched for d in docs[s]):
+                tmp = p("final") / f"{s}.jsonl.tmp"
+                write_jsonl(tmp, docs[s])
+                tmp.replace(p("final") / f"{s}.jsonl")
+        if touched:
+            f = p("reports") / "dedup2_summary.json"
+            sm = json.loads(f.read_text(encoding="utf-8"))
+            sm["html_residue_fixes"] = sm.get("html_residue_fixes", 0) + n_html
+            sm["html_residue_docs"] = sorted(set(sm.get("html_residue_docs", [])) | set(touched))
+            f.write_text(json.dumps(sm, indent=2, ensure_ascii=False), encoding="utf-8")
+        log.info(f"Bu adım mevcut final veriye zaten uygulanmış; yalnız HTML kalıntısı düzeltmesi: {n_html} kalıntı, "
+                 f"{len(touched)} doküman {touched}")
         return
     removed = RemovalLog(p("reports") / "removed_documents.csv", "dedup2", reset=False)
     # 0) kaybolmuş üsler (scripts/exponent_fix.py): "1.5 × 108 km" -> "1.5 × 10^8 km"

@@ -5,16 +5,17 @@ Sızıntı önleme:
     -> Aynı dokümandan gelen tüm örnekler tek kümede kalır VE corpus test dokümanından üretilen bir örnek
        instruction train'e giremez (CPT ile SFT arasında da sızıntı yok).
   - StackExchange örnekleri soru kimliğine (qid), kapsam dışı örnekler kendi kimliğine göre gruplanır ve
-    seed 42 ile %90/%5/%5 ayrılır.
+    grup kimliğinin seed 42'li hash'iyle %90/%5/%5 ayrılır (bir grubun elenmesi diğerlerini etkilemez).
 Çıktı: data/final/instruction_v1.0.jsonl (tamamı, split alanıyla)
        data/final/instruction/{train,validation,test}.jsonl
 """
 from __future__ import annotations
 
+import hashlib
 import json
 from collections import Counter, defaultdict
 
-from common import CFG, get_logger, p, read_jsonl, rng, write_jsonl
+from common import CFG, get_logger, p, read_jsonl, write_jsonl
 
 log = get_logger("12_split_instructions")
 S = CFG["split"]
@@ -30,13 +31,14 @@ def main() -> None:
     for s in ("train", "validation", "test"):
         for d in read_jsonl(p("final") / f"{s}.jsonl"):
             doc_license[d["document_id"]] = d["license"]
-    # SE ve kapsam dışı örnekler için grup bazlı rastgele ayrım
-    groups = sorted({r["source_document"] for r in rows if not r.get("split_hint")})
-    r = rng(12)
-    r.shuffle(groups)
-    n = len(groups)
-    n_test, n_val = round(n * S["test"]), round(n * S["validation"])
-    gsplit = {g: ("test" if i < n_test else "validation" if i < n_test + n_val else "train") for i, g in enumerate(groups)}
+    # SE ve kapsam dışı örnekler için grup bazlı ayrım: her grubun kümesi seed + grup kimliğinin hash'inden
+    # belirlenir. İlk sürüm grup listesini karıştırıp sıraya göre bölüyordu; yargıç veya kalite kontrol bir grubun
+    # tüm örneklerini elerse diğer grupların kümesi de değişiyordu (24.10.2026 denetimi).
+    def group_split(g: str) -> str:
+        u = int(hashlib.sha256(f"{CFG['project']['random_seed']}:{g}".encode("utf-8")).hexdigest()[:12], 16) / 16 ** 12
+        return "test" if u < S["test"] else "validation" if u < S["test"] + S["validation"] else "train"
+
+    gsplit = {g: group_split(g) for g in {r["source_document"] for r in rows if not r.get("split_hint")}}
     excl_f = p("interim") / "qc_excluded_raw_ids.json"
     excl = set(json.loads(excl_f.read_text(encoding="utf-8"))) if excl_f.exists() else set()
     if excl:  # kalite kontrolde (14) sorunlu bulunanlar

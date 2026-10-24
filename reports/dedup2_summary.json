@@ -50,5 +50,13 @@
     "fiction_work_06b": 4
   },
   "arxiv_subtopic_relabeled": 1307,
-  "final_docs": 16284
+  "final_docs": 16284,
+  "html_residue_fixes": 7,
+  "html_residue_docs": [
+    "DOC_008571",
+    "DOC_015474",
+    "DOC_015644",
+    "DOC_015744",
+    "DOC_015835"
+  ]
 }

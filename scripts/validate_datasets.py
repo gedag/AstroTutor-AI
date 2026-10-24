@@ -127,11 +127,21 @@ def main() -> int:
             from transformers import AutoTokenizer
 
             tok = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-7B-Instruct")
-            lens = [len(tok.apply_chat_template(x["messages"], tokenize=True)) for x in ins]
+            # Şablon metin olarak üretilir ve token'lanır. (transformers 5'te apply_chat_template(tokenize=True)
+            # liste değil sözlük döndürüyor; ilk sürüm sözlüğün uzunluğunu (2) ölçüyordu — 24.10.2026 denetimi.)
+            lens, bad_render = [], 0
+            for x in ins:
+                txt = tok.apply_chat_template(x["messages"], tokenize=False)
+                if (x["instruction"] not in txt or x["response"] not in txt
+                        or "<|im_start|>user" not in txt or "<|im_start|>assistant" not in txt):
+                    bad_render += 1
+                lens.append(len(tok(txt, add_special_tokens=False)["input_ids"]))
             lens.sort()
-            check("Qwen2.5-7B-Instruct chat template uygulanabiliyor", True,
-                  f"örnek token uzunluğu medyan={lens[len(lens) // 2]}, p95={lens[int(0.95 * (len(lens) - 1))]}, "
-                  f"maks={lens[-1]}; 2048 token üzeri={sum(1 for x in lens if x > 2048)}")
+            check("Qwen2.5-7B-Instruct chat template uygulanabiliyor (talimat ve cevap şablonda birebir)",
+                  bad_render == 0,
+                  f"hatalı={bad_render}; örnek token uzunluğu medyan={lens[len(lens) // 2]}, "
+                  f"p95={lens[int(0.95 * (len(lens) - 1))]}, maks={lens[-1]}; 2048 token üzeri="
+                  f"{sum(1 for v in lens if v > 2048)}")
         except Exception as e:
             check("Chat template", False, str(e)[:200])
 

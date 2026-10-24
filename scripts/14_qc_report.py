@@ -171,6 +171,13 @@ def main() -> None:
 
     # nihai kararı (yoksa ön incelemesi) 'sorunlu' olan instruction örneklerini çıkar
     if ins and irow:
+        # Eşleştirme raw_example_id ile yapılır: INS_ numaraları doğrulanmış küme değişince (yargıç, yeni örnek)
+        # kayabilir, raw_example_id kaymaz. Eski tablolarda bu sütun yoksa id -> raw_example_id eşlemesi kullanılır.
+        id2raw = {x["id"]: x["raw_example_id"] for x in ins}
+
+        def rkey(r):
+            return (r.get("raw_example_id") or "").strip() or id2raw.get(r["id"], r["id"])
+
         drop = {}
         for r in irow:
             dec = norm(r.get("son_karar"))
@@ -178,29 +185,29 @@ def main() -> None:
             if dec is None:
                 dec, src = norm(r.get("claude_karar")), "claude_on_inceleme"
             if dec == "bad":
-                drop[r["id"]] = (src, r.get("son_hata_turu") or r.get("claude_hata_turu") or "")
-        reviewed = {r["id"]: r for r in irow}
+                drop[rkey(r)] = (src, r.get("son_hata_turu") or r.get("claude_hata_turu") or "")
+        reviewed = {rkey(r): r for r in irow}
         rm = RemovalLog(R / "removed_instructions.csv", "qc", reset=False)
         kept = []
         for x in ins:
-            r = reviewed.get(x["id"])
+            r = reviewed.get(x["raw_example_id"])
             if r is not None:
                 h = norm(r.get("son_karar"))
                 x["human_verified"] = None if h is None else (h == "ok")
                 x["verified_by"] = "kural+kanit+claude_on_inceleme" + ("+insan_karari" if h else "")
-            if x["id"] in drop:
+            if x["raw_example_id"] in drop:
                 continue
             kept.append(x)
         # Çıkarılanların raw_example_id'leri kalıcı listeye eklenir: 12 yeniden çalışsa da geri gelmezler
         excl_f = p("interim") / "qc_excluded_raw_ids.json"
         excl = set(json.loads(excl_f.read_text(encoding="utf-8"))) if excl_f.exists() else set()
-        excl |= {x["raw_example_id"] for x in ins if x["id"] in drop}
+        excl |= set(drop)
         excl_f.write_text(json.dumps(sorted(excl), indent=0), encoding="utf-8")
         # 14 tekrar çalıştırılsa da (çıkarılan örnek artık sette olmasa da) kayıt eksiksiz kalır
         for i, (src, tag) in sorted(drop.items()):
             rm.add(i, f"qc_fail({src})", "", tag)
         rm.save()
-        if len(kept) != len(ins) or any(x["id"] in reviewed for x in ins):
+        if len(kept) != len(ins) or any(x["raw_example_id"] in reviewed for x in ins):
             write_jsonl(p("final") / "instruction_v1.0.jsonl", kept)
             for s in ("train", "validation", "test"):
                 write_jsonl(p("final") / "instruction" / f"{s}.jsonl", [x for x in kept if x["split"] == s])

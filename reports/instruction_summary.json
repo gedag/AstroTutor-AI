@@ -1,9 +1,9 @@
 {
   "total": 3340,
   "splits": {
-    "test": 155,
-    "train": 3031,
-    "validation": 154
+    "test": 154,
+    "train": 3027,
+    "validation": 159
   },
   "task_types": {
     "ozetleme": 260,
@@ -47,7 +47,7 @@
       "adim_adim_problem_cozme": 16,
       "karsilastirma": 12,
       "bilgi_yetersizligi_kapsam_disi": 6,
-      "soru_cevap": 22
+      "soru_cevap": 21
     },
     "train": {
       "tanim_aciklama": 483,
@@ -58,8 +58,8 @@
       "adim_adim_problem_cozme": 229,
       "karsilastirma": 297,
       "siniflandirma": 138,
-      "bilgi_yetersizligi_kapsam_disi": 131,
-      "soru_cevap": 367
+      "bilgi_yetersizligi_kapsam_disi": 128,
+      "soru_cevap": 366
     },
     "validation": {
       "neden_sonuc": 18,
@@ -70,8 +70,8 @@
       "karsilastirma": 15,
       "siniflandirma": 3,
       "adim_adim_problem_cozme": 2,
-      "bilgi_yetersizligi_kapsam_disi": 10,
-      "soru_cevap": 18
+      "bilgi_yetersizligi_kapsam_disi": 13,
+      "soru_cevap": 20
     }
   }
 }

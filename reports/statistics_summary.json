@@ -9,10 +9,10 @@
   "repost_dup": 140,
   "final_docs": 16284,
   "words": 10494610,
-  "tokens": 16231987,
+  "tokens": 16231969,
   "lang_token_share": {
-    "en": 13489535,
-    "tr": 2742452
+    "en": 13489534,
+    "tr": 2742435
   },
   "removed_by_reason": {
     "extraction_error": 51,

@@ -48,7 +48,7 @@ yeniden üretilebilir; teslim kopyası ayrıca paylaşılır (bkz. `data/samples
 ```bash
 python -m venv .venv
 .venv\Scripts\activate            # Linux/macOS: source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt   # birebir sürümler: requirements-lock.txt
 copy .env.example .env            # GEMINI_API_KEY yalnızca instruction üretimi için gerekir
 ```
 
@@ -71,12 +71,12 @@ log yazar ve sonunda kaç dokümanın işlendiğini özetler. Rastgelelik içere
 | --- | --- | --- |
 | `01_download.py` | Kaynakları indirir, her dosya için URL/SHA-256/tarih/lisans manifesti tutar | `data/raw/*/manifest.jsonl` |
 | `02_extract.py` | HTML: Trafilatura; PDF: PyMuPDF (blok sıralı); XML/JSON alanları | `data/extracted/`, `reports/extraction_failures.csv` |
-| `03_clean.py` | NFKC (üs korumalı), header/footer, menü, kesik tanıtım, kaynakça girdisi satırları, kısa satır temizliği | `data/cleaned/`, `reports/cleaning_examples.md`, `reports/cleaning_rules.md` |
+| `03_clean.py` | HTML kalıntısı, NFKC (üs korumalı), header/footer, menü, kesik tanıtım, kaynakça girdisi satırları, kısa satır temizliği | `data/cleaned/`, `reports/cleaning_examples.md`, `reports/cleaning_rules.md` |
 | `04_filter.py` | too_short, reference_list, garbled, wrong_language, out_of_domain, out_of_domain_category (Wikipedia kategorileri) | `data/interim/filtered.jsonl`, `reports/removed_documents.csv` |
 | `05_deduplicate.py` | SHA-256 exact + MinHash/Jaccard ≥ 0.85 near duplicate, metadata | `data/interim/corpus_v0.9.jsonl` |
 | `06_split.py` | Doküman (grup) düzeyinde %90/5/5, kaynak bazında tabakalı | `data/final/{train,validation,test}.jsonl` |
-| `06b_repost_dedup.py` | APOD duyuru satırları + yeniden yayın tekrarları (kimlik ve kümeler korunur; kalite kontrolünde bulundu) | `data/final/*.jsonl`, `reports/dedup2_summary.json` |
-| `07_token_count.py` | Qwen2.5 tokenizer ile token sayımı + split sonrası chunk | `reports/token_stats.json`, `data/final/chunks/` |
+| `06b_repost_dedup.py` | İkinci geçiş (kalite kontrolünde bulunanlar): kaybolmuş üsler, NASA künye/kişisel veri, APOD duyuru satırları, yeniden yayın tekrarları, arXiv alt konuları; kimlik ve kümeler korunur | `data/final/*.jsonl`, `reports/dedup2_summary.json` |
+| `07_token_count.py` | Qwen2.5 tokenizer ile token sayımı + split sonrası paragraf sınırında chunk (chunk metni dokümanın birebir alt dizisi, `char_start`/`char_end`) | `reports/token_stats.json`, `data/final/chunks/` |
 | `08_statistics.py` | Sayısal özet, veri erimesi, dağılımlar, grafikler | `reports/statistics.md` |
 | `09_build_instruction_sources.py` | StackExchange temizliği, kaynak doküman seçimi, görev kotaları (`--part se_ref / doc / doc_supplement`) | `data/interim/instruction_jobs.jsonl` |
 | `10_generate_instructions.py` | Gemini ile Türkçe örnek üretimi; Türkçe karakteri eksik iş çıktısı reddedilir | `data/interim/instructions_raw.jsonl` |
@@ -86,13 +86,14 @@ log yazar ve sonunda kaç dokümanın işlendiğini özetler. Rastgelelik içere
 | `14_qc_report.py` | Otomatik + manuel kalite raporu | `reports/quality_control_report.md` |
 | `15_write_cards.py` | Kartları gerçek sayılarla üretir | `DATASET_CARD.md`, `INSTRUCTION_CARD.md` |
 | `16_make_samples.py` | Depoya girecek küçük örnekler (seed 42; final dosyalardan değiştirilmeden) | `data/samples/*.jsonl` |
-| `validate_datasets.py` | Şema, sızıntı, HF yükleme, chat template testi | `reports/validation_report.md` |
+| `validate_datasets.py` | Şema, sızıntı, HF yükleme, chat template testi, değerlendirme setleriyle örtüşme | `reports/validation_report.md`, `reports/eval_contamination.csv` |
 | `requeue_jobs.py` | Türkçe karakteri eksik (`--reason turkce`) veya çoktan seçmeli sorusu talimatta verilmiş (`--reason mcq`) işleri arşivleyip yeniden kuyruğa alır (bakım; döngü dururken) | `data/interim/archive/` |
 
 Yardımcı modüller: `common.py` (config, log, JSONL, RemovalLog), `llm.py` (Gemini istemcisi: model kademeleri,
 kota/yoğunluk yönetimi), `domain_lexicon.py` (alan terimleri, Wikipedia kategori kuralı), `turkish_check.py`
-(Türkçe karakter kontrolü), `mcq_check.py` (çoktan seçmeli talimatta soru/şık/cevap sızıntısı), `exponent_fix.py` (kaybolmuş üsler; `python scripts/exponent_fix.py` testleri çalıştırır),
-`press_boilerplate.py` (NASA basın künyesi ve kişisel iletişim bilgisi temizliği; testli).
+(Türkçe karakter kontrolü), `mcq_check.py` (çoktan seçmeli talimatta soru/şık/cevap sızıntısı), `exponent_fix.py` (kaybolmuş üsler), `html_residue.py` (HTML etiket/entity kalıntıları),
+`press_boilerplate.py` (NASA basın künyesi ve kişisel iletişim bilgisi temizliği). Kural modüllerinin her biri
+doğrudan çalıştırıldığında kendi testlerini çalıştırır (ör. `python scripts/exponent_fix.py`).
 
 ### Instruction üretimini arka planda sürdürme (Windows)
 
@@ -116,6 +117,9 @@ Unregister-ScheduledTask -TaskName "AstroTutorInstructionLoop" -Confirm:$false
 - [reports/source_inventory.csv](reports/source_inventory.csv) — kaynak listesi (ad, URL, tür, dil, doküman sayısı, erişim tarihi, lisans, gerekçe)
 - [reports/statistics.md](reports/statistics.md) — istatistik raporu
 - [reports/quality_control_report.md](reports/quality_control_report.md) — kalite kontrol raporu
+- [reports/validation_report.md](reports/validation_report.md) — teslim öncesi doğrulama (şema, sızıntı, HF yükleme, chat template)
+- [reports/eval_contamination.csv](reports/eval_contamination.csv) — corpus ile örtüşen değerlendirme soruları
+- [reports/removed_documents.csv](reports/removed_documents.csv), [reports/removed_instructions.csv](reports/removed_instructions.csv) — elenen her kayıt ve nedeni
 - [reports/cleaning_rules.md](reports/cleaning_rules.md), [reports/cleaning_examples.md](reports/cleaning_examples.md) — temizleme kuralları ve öncesi/sonrası
 - [reports/extraction_tool_comparison.md](reports/extraction_tool_comparison.md) — PyMuPDF / pdfplumber karşılaştırması
 - [reports/instruction_taxonomy.md](reports/instruction_taxonomy.md) — görev türü taksonomisi
@@ -126,5 +130,7 @@ Unregister-ScheduledTask -TaskName "AstroTutorInstructionLoop" -Confirm:$false
 
 Her doküman ve örnek kendi kaynağının lisansını `license` alanında taşır (bkz. kartlar). Veri setleri akademik,
 ticari olmayan amaçla hazırlanmıştır; OpenStax Astronomy 2e (CC BY-NC-SA 4.0) ve Wikipedia/Stack Exchange
-(CC BY-SA 4.0) içeriklerinin türevleri aynı koşullarla paylaşılmalıdır. Kişisel veri toplanmamıştır (arXiv yazar
-adları ve Stack Exchange kullanıcı adları alınmamıştır).
+(CC BY-SA 4.0) içeriklerinin türevleri aynı koşullarla paylaşılmalıdır. Kişisel veri en aza indirilmiştir: arXiv yazar
+adları ve Stack Exchange kullanıcı adları alınmadı; NASA basın bültenlerindeki iletişim bilgileri (ad, e-posta,
+telefon) temizlendi (kalan e-posta/telefon: 0). Instruction örnekleri Google Gemini API ile üretildi; kalite kontrol
+ön incelemesinde yapay zekâ desteği kullanıldı, nihai kararları grup üyesi verdi (bkz. kartlar ve kalite raporu).

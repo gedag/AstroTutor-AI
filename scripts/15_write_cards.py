@@ -165,8 +165,10 @@ def dataset_card() -> None:
            f"{n(reasons.get('extraction_error', 0))} doküman boş/çok kısa çıktı verdiği için"
            + (f", {n(reasons['download_error'])} doküman indirme hatası nedeniyle" if reasons.get("download_error") else "")
            + " elendi; OpenStax'ta "
-           f"{n(reasons.get('non_content_section', 0))} bölüm (alıştırma, kaynakça, ekler) içerik dışı sayıldı.",
-           "- **Cleaning:** Unicode NFKC (üs ifadeleri önce `10^23` biçimine alınarak), whitespace normalizasyonu, PDF "
+           f"{n(reasons.get('non_content_section', 0))} bölüm (alıştırma, kaynakça, ekler) içerik dışı sayıldı. Toplam başarısız extraction: "
+           f"{n(st.get('extraction_failed', 0))} / {n(st.get('raw', 0))} ({pc(st.get('extraction_failed', 0), st.get('raw', 1))}).",
+           "- **Cleaning:** HTML etiket/entity kalıntıları (`<sup>x</sup>` → `^x`), Unicode NFKC (üs ifadeleri önce `10^23` "
+           "biçimine alınarak), whitespace normalizasyonu, PDF "
            "header/footer ve bölüm başlığı satırları, site menüleri ve tekrar eden şablon satırları, kesik tanıtım "
            "cümleleri, Wikipedia kaynakça/yayın listesi bölümleri, 'Soyadı, A. B. (yıl). Başlık. Dergi' biçimiyle başlayan "
            "kaynakça girdisi satırları (metin içi atıflar korunarak), görsel kredileri, 20 karakterden kısa yalnız satırlar. Sayılar ve "
@@ -205,7 +207,9 @@ def dataset_card() -> None:
            "`document_type`, `publication_year`, `subtopic`, `license`, `retrieved_at`, `raw_id`, `group_key`, `split`, "
            "`postprocess` (06b ikinci geçişinden geçtiğini gösterir), "
            "`char_count`, `word_count`, `token_count`, `text`. Dosyalar: `data/final/train.jsonl`, `validation.jsonl`, "
-           "`test.jsonl`; paragraf/başlık sınırında üretilmiş chunk'lar `data/final/chunks/`.", "",
+           "`test.jsonl`; paragraf/başlık sınırında üretilmiş chunk'lar `data/final/chunks/` (en fazla "
+           f"{CFG['chunking']['max_tokens']} token; alanlar `chunk_id`, `document_id`, `chunk_index`, `char_start`, "
+           "`char_end`, `token_count`, `text`; chunk metni dokümanın birebir alt dizisidir).", "",
            "## İstatistikler", "", "| Ölçüt | Değer |", "| --- | --- |",
            f"| Final doküman sayısı | {n(len(docs))} |",
            f"| Toplam kelime | {n(sum(d['word_count'] for d in docs))} |",
@@ -409,10 +413,31 @@ def instruction_card() -> None:
            "- Corpus dokümanından üretilen örnekler, kaynak dokümanın **corpus'taki kümesini** miras alır. Böylece aynı "
            "dokümandan gelen örnekler farklı kümelere dağılmaz ve corpus test dokümanından üretilen bir örnek SFT "
            "eğitimine girmez (CPT ile SFT arasında da sızıntı yok).",
-           f"- Stack Exchange örnekleri soru kimliğine, kapsam dışı örnekler kendi kimliğine göre gruplanıp seed "
-           f"{CFG['project']['random_seed']} ile ayrıldı.",
+           f"- Stack Exchange örnekleri soru kimliğine, kapsam dışı örnekler kendi kimliğine göre gruplanır; her grubun "
+           f"kümesi seed {CFG['project']['random_seed']} ve grup kimliğinin hash'inden belirlenir (bir grubun elenmesi "
+           "diğerlerinin kümesini değiştirmez).",
            "- Değerlendirme setleri (Astro-mcqa, astro-mcq, HubbleSpaceTelescope-MCQ, AstroMLab Astrobench) eğitime "
-           "alınmadı; bunlarla n-gram örtüşmesi olan örnekler elendi.", "",
+           f"alınmadı; bunlarla {I['decontam_ngram']}-gram örtüşmesi olan örnekler elendi. Örnekler Türkçe olduğu için "
+           "İngilizce kaynaklar (Stack Exchange soruları, kaynak doküman pasajları) da değerlendirme setleriyle "
+           "karşılaştırıldı; aynı soru bulunmadı, yalnız genel ifadeler örtüşüyor (bkz. experiments.md).", "",
+           "## Değerlendirme planı (final dönemi)",
+           "Vize kapsamında ayrı bir değerlendirme seti hazırlanmadı; başarı şu şekilde ölçülecek:",
+           "- **Dış değerlendirme setleri** (eğitime girmedi): AstroMLab Astrobench, Astro-mcqa, astro-mcq, "
+           "HubbleSpaceTelescope-MCQ — çoktan seçmeli doğruluk. Corpus ile örtüşen sorular "
+           "[reports/eval_contamination.csv](reports/eval_contamination.csv) dosyasında listelidir ve ayrıca raporlanacaktır.",
+           f"- **Bu setin test kümesi** ({n(sp['test'])} örnek; corpus kaynaklı olanlar yalnız corpus test dokümanlarından üretildi): Türkçe "
+           "talimat takibi, seviyeye uygunluk ve JSON soru üretiminin geçerliliği (şema, tek doğru cevap, kaynakla tutarlılık).",
+           "- Üç sistem karşılaştırılacak: hazır instruct model, alana uyarlanmış (CPT) model, CPT + SFT.", "",
+           "## Sınırlılıklar",
+           "Örnekler sentetiktir ve kaynak dokümanlardaki bilgiyle sınırlıdır; güncel astronomik veriler (ör. "
+           "ötegezegen sayısı) için birincil kaynakların yerine geçmez. Seviye etiketleri üretim sırasında atanmıştır; "
+           "seviyeye uygunluk yalnız yargıç ve örneklem incelemesiyle kontrol edilmiştir. Tüm örnekler tek turlu "
+           "(kullanıcı → asistan) diyaloglardır.", "",
+           "## Sürüm geçmişi",
+           "- v0.1 (22.10.2026): Pilot üretim (11 örnek, eski prompt; veri setine alınmadı).",
+           "- v0.9 (23.10.2026): Stack Exchange, kapsam dışı ve doküman işleri; Türkçe karakter kontrolü.",
+           "- v1.0 (24–25.10.2026): ek paketler (ek1–ek3), prompt v1.1/v1.2, çoktan seçmeli sızıntı ve görünmeyen metne "
+           "atıf kuralları, LLM yargıç örneklemi, 150 örneklik inceleme.", "",
            "## Lisans",
            "Her örnek kaynağının lisansını `license` alanında taşır. Stack Exchange türevleri CC BY-SA 4.0, OpenStax "
            "türevleri CC BY-NC-SA 4.0, Wikipedia türevleri CC BY-SA 4.0 koşullarına tabidir; veri seti akademik ve "

@@ -89,11 +89,11 @@ def main() -> None:
         sample = stratified(ins, "task_type", q["instruction_sample"], 14)
         with open(out, "w", encoding="utf-8-sig", newline="") as f:
             w = csv.writer(f)
-            w.writerow(["id", "task_type", "level", "source_document", "source_url", "kaynak_ilk_3000", "talimat",
+            w.writerow(["id", "raw_example_id", "task_type", "level", "source_document", "source_url", "kaynak_metin", "talimat",
                         "cevap", "destekleyen_alinti"] + [f"claude_{c}" for c in INS_CRIT] + CLAUDE_TAIL + HUMAN)
             for x in sample:
                 src = doc_text.get(x["source_document"]) or se_text.get(x["source_document"]) or "(kaynak yok)"
-                w.writerow([x["id"], x["task_type"], x["level"], x["source_document"], x["source_url"], src[:3000],
+                w.writerow([x["id"], x["raw_example_id"], x["task_type"], x["level"], x["source_document"], x["source_url"], src[: CFG["instruction"]["source_doc_max_chars"]],
                             x["instruction"], x["response"], x.get("supporting_evidence")]
                            + [""] * (len(INS_CRIT) + len(CLAUDE_TAIL) + len(HUMAN)))
         log.info(f"instruction_review.csv: {len(sample)} örnek")

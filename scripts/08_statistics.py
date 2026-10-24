@@ -93,25 +93,40 @@ def main() -> None:
           f"| Veri kaynağı sayısı (corpus) | {len(src_names)} |",
           f"| Ham doküman | {fmt(n_raw)} |",
           f"| Extraction başarılı | {fmt(n_ext_ok)} |",
-          f"| Extraction başarısız (indirme hatası + boş/kısa çıktı + içerik dışı PDF bölümü) | {fmt(n_ext_fail)} |",
+          f"| Extraction başarısız (indirme hatası + boş/kısa çıktı + içerik dışı PDF bölümü) | {fmt(n_ext_fail)} "
+          f"({pct(n_ext_fail, n_raw)}) |",
           f"| Filtering sonrası | {fmt(n_filtered)} |",
           f"| Exact duplicate | {fmt(ded.get('exact_duplicates', 0))} |",
           f"| Near duplicate (Jaccard ≥ {ded.get('threshold')}) | {fmt(ded.get('near_duplicates', 0))} |",
           f"| Yeniden yayın tekrarı (06b; APOD ve NASA Science, kimlik ve kümeler korunarak) | "
           f"{fmt(d2.get('repost_removed', 0))} |",
-          f"| İletişim dizini sayfası / temizlik sonrası çok kısa (06b) | "
+          f"| İletişim sayfası, kurgu/eser maddesi, temizlik sonrası çok kısa (06b) | "
           f"{fmt(sum(d2.get('other_removed', {}).values()))} |",
           f"| Final doküman | {fmt(len(docs))} |",
           f"| Toplam kelime | {fmt(words)} |",
           f"| Toplam token ({tok.get('tokenizer')}) | {fmt(tokens)} |",
           f"| İngilizce içerik (token) | {pct(lang_tok.get('en', 0), tokens)} |",
-          f"| Türkçe içerik (token) | {pct(lang_tok.get('tr', 0), tokens)} |", ""]
+          f"| Türkçe içerik (token) | {pct(lang_tok.get('tr', 0), tokens)} |"]
+    # Rehber §12 özet tablosunun kalite kontrol ve instruction satırları (14 ve 12 çıktılarından; yoksa "-")
+    qcf, insf = R / "qc_summary.json", p("final") / "instruction_v1.0.jsonl"
+    qc = json.loads(qcf.read_text(encoding="utf-8")) if qcf.exists() else {}
+    cr, ir = qc.get("corpus_review", {}), qc.get("instruction_review", {})
+
+    def rate(s: dict) -> str:
+        r = s.get("human_pass_rate", s.get("pre_pass_rate"))
+        return "-" if r is None else f"%{100 * r:.1f}".replace(".", ",")
+    n_ins = sum(1 for _ in read_jsonl(insf)) if insf.exists() else None
+    md += [f"| Manuel kontrol örneği (corpus) | {fmt(cr['sample']) if cr.get('sample') else '-'} |",
+           f"| Manuel kalite başarısı (corpus) | {rate(cr)} |",
+           f"| Instruction örneği | {fmt(n_ins) if n_ins else '-'} |",
+           f"| Instruction kontrol örneği | {fmt(ir['sample']) if ir.get('sample') else '-'} |",
+           f"| Instruction manuel kalite başarısı | {rate(ir)} |", ""]
 
     md += ["## 2. Verinin aşamalar boyunca erimesi", "",
            f"{fmt(n_raw)} ham doküman → extraction sonrası {fmt(n_ext_ok)} → temizleme ve filtreleme sonrası "
-           f"{fmt(n_filtered)} → tekrar ayıklama sonrası **{fmt(len(docs))}** doküman.", "",
+           f"{fmt(n_filtered)} → tekrar ayıklama ve ikinci geçiş (06b) sonrası **{fmt(len(docs))}** doküman.", "",
            "![Veri erimesi](figures/funnel.png)", ""]
-    hbar(["Ham", "Extraction sonrası", "Filtreleme sonrası", "Tekrar ayıklama sonrası (final)"],
+    hbar(["Ham", "Extraction sonrası", "Filtreleme sonrası", "Tekrar ayıklama + 06b (final)"],
          [n_raw, n_ext_ok, n_filtered, len(docs)], "Aşama başına doküman sayısı", "funnel.png", "doküman")
 
     md += ["## 3. Çıkarılma nedenleri", "", "| Çıkarma nedeni | Doküman | Aşama |", "| --- | --- | --- |"]

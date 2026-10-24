@@ -64,11 +64,25 @@ Toplam **3.831** örnek üretildi; doğrulamadan sonra **3.340** örnek kaldı. 
 | task_type_mismatch | 2 |
 
 ## Veri ayrımı ve sızıntı önleme
-train 3.031 · validation 154 · test 155.
+train 3.027 · validation 159 · test 154.
 
 - Corpus dokümanından üretilen örnekler, kaynak dokümanın **corpus'taki kümesini** miras alır. Böylece aynı dokümandan gelen örnekler farklı kümelere dağılmaz ve corpus test dokümanından üretilen bir örnek SFT eğitimine girmez (CPT ile SFT arasında da sızıntı yok).
-- Stack Exchange örnekleri soru kimliğine, kapsam dışı örnekler kendi kimliğine göre gruplanıp seed 42 ile ayrıldı.
-- Değerlendirme setleri (Astro-mcqa, astro-mcq, HubbleSpaceTelescope-MCQ, AstroMLab Astrobench) eğitime alınmadı; bunlarla n-gram örtüşmesi olan örnekler elendi.
+- Stack Exchange örnekleri soru kimliğine, kapsam dışı örnekler kendi kimliğine göre gruplanır; her grubun kümesi seed 42 ve grup kimliğinin hash'inden belirlenir (bir grubun elenmesi diğerlerinin kümesini değiştirmez).
+- Değerlendirme setleri (Astro-mcqa, astro-mcq, HubbleSpaceTelescope-MCQ, AstroMLab Astrobench) eğitime alınmadı; bunlarla 8-gram örtüşmesi olan örnekler elendi. Örnekler Türkçe olduğu için İngilizce kaynaklar (Stack Exchange soruları, kaynak doküman pasajları) da değerlendirme setleriyle karşılaştırıldı; aynı soru bulunmadı, yalnız genel ifadeler örtüşüyor (bkz. experiments.md).
+
+## Değerlendirme planı (final dönemi)
+Vize kapsamında ayrı bir değerlendirme seti hazırlanmadı; başarı şu şekilde ölçülecek:
+- **Dış değerlendirme setleri** (eğitime girmedi): AstroMLab Astrobench, Astro-mcqa, astro-mcq, HubbleSpaceTelescope-MCQ — çoktan seçmeli doğruluk. Corpus ile örtüşen sorular [reports/eval_contamination.csv](reports/eval_contamination.csv) dosyasında listelidir ve ayrıca raporlanacaktır.
+- **Bu setin test kümesi** (154 örnek; corpus kaynaklı olanlar yalnız corpus test dokümanlarından üretildi): Türkçe talimat takibi, seviyeye uygunluk ve JSON soru üretiminin geçerliliği (şema, tek doğru cevap, kaynakla tutarlılık).
+- Üç sistem karşılaştırılacak: hazır instruct model, alana uyarlanmış (CPT) model, CPT + SFT.
+
+## Sınırlılıklar
+Örnekler sentetiktir ve kaynak dokümanlardaki bilgiyle sınırlıdır; güncel astronomik veriler (ör. ötegezegen sayısı) için birincil kaynakların yerine geçmez. Seviye etiketleri üretim sırasında atanmıştır; seviyeye uygunluk yalnız yargıç ve örneklem incelemesiyle kontrol edilmiştir. Tüm örnekler tek turlu (kullanıcı → asistan) diyaloglardır.
+
+## Sürüm geçmişi
+- v0.1 (22.10.2026): Pilot üretim (11 örnek, eski prompt; veri setine alınmadı).
+- v0.9 (23.10.2026): Stack Exchange, kapsam dışı ve doküman işleri; Türkçe karakter kontrolü.
+- v1.0 (24–25.10.2026): ek paketler (ek1–ek3), prompt v1.1/v1.2, çoktan seçmeli sızıntı ve görünmeyen metne atıf kuralları, LLM yargıç örneklemi, 150 örneklik inceleme.
 
 ## Lisans
 Her örnek kaynağının lisansını `license` alanında taşır. Stack Exchange türevleri CC BY-SA 4.0, OpenStax türevleri CC BY-NC-SA 4.0, Wikipedia türevleri CC BY-SA 4.0 koşullarına tabidir; veri seti akademik ve ticari olmayan amaçla hazırlanmıştır. Örnekler Gemini API ile üretildiği için Google'ın Gemini API kullanım koşulları da geçerlidir (koşullar, Gemini ile rekabet eden model geliştirmeyi kısıtlar; bu çalışma küçük ölçekli, akademik bir alan modelidir).

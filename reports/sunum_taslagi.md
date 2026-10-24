@@ -89,7 +89,7 @@ Diğer örnekler: [reports/cleaning_examples.md](cleaning_examples.md) (20 önce
   çiftleri getiriyor. Kelime 5-gram, cümle düzeyinde yeniden yazımlara duyarlı.
 
 ## 8. Final corpus istatistikleri — veri erimesi
-**17.520 ham → 17.334 extraction sonrası → 16.572 temizleme ve filtre sonrası → 16.284 tekrar ayıklama sonrası**
+**17.520 ham → 17.334 extraction sonrası → 16.572 temizleme ve filtre sonrası → 16.284 tekrar ayıklama ve ikinci geçiş sonrası**
 
 | Özellik | Değer |
 | --- | --- |
@@ -98,8 +98,10 @@ Diğer örnekler: [reports/cleaning_examples.md](cleaning_examples.md) (20 önce
 | Extraction başarısız / içerik dışı | 186 |
 | Filtre ile elenen | 762 (alan dışı kategori 356, kısa 242, alan dışı 150, dil 6, kaynakça listesi 5, bozuk 3) |
 | Exact / near / yeniden yayın tekrarı | 46 / 90 / 140 |
+| İkinci geçişte çıkarılan diğer (iletişim sayfası 7, kurgu/eser maddesi 4, çok kısa 1) | 12 |
 | Final doküman | 16.284 |
 | Toplam kelime / token (Qwen2.5-7B) | 10,5 M / 16,2 M |
+| Chunk (en fazla 1.024 token, paragraf sınırında) | 33.997 |
 | İngilizce / Türkçe (token) | %83,1 / %16,9 |
 | Train / validation / test (doküman) | 14.660 / 819 / 805 |
 | Manuel kontrol (100 doküman) | %88 uygun |

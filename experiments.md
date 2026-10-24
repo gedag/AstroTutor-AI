@@ -315,7 +315,8 @@ CPT'de kaynak bazlı örnekleme yapılabilir (kartta not edildi).
     6 satır ve satır başına en fazla 8 kelime ile sınırlı; bu durum için test eklendi. 06b, bu adımda metninin
     %30'undan fazlasını kaybeden dokümanları uyarı olarak logluyor. Kalan tek doküman bir iletişim/bağlantı
     sayfası (DOC_011295, Lucy media resources).
-  - Sonuç: 478 dokümanda künye/iletişim satırları silindi. NASA kaynaklarında kalan e-posta/telefon: 0.
+  - Sonuç: 478 dokümanda künye/iletişim satırları silindi (aşağıdaki iki kural eklendikten sonraki son hâl: 531 doküman;
+    `reports/dedup2_summary.json`). NASA kaynaklarında kalan e-posta/telefon: 0.
     Instruction örneklerinde e-posta/telefon yoktu (tarandı); yine de `11_verify`'a `contains_pii` kuralı eklendi.
   - Künye satırları kalkınca bir APOD çifti daha yeniden yayın eşiğini geçti (toplam 140).
   - İnceleme sırasında iki kalıntı daha görüldü ve dar kurallarla eklendi: tek başına duran merkez künyesi satırı
@@ -460,3 +461,51 @@ eşik tablosu (50 çift). `son_karar` / `son_karar_tekrar_mi` = ön inceleme kar
     bunun yerine ters yönde, corpus ile ≥ 3 adet 8-gram paylaşan **60 değerlendirme sorusu** (~%1)
     `reports/eval_contamination.csv`'ye yazılıyor (`validate_datasets.py`). Final dönemi karşılaştırmasında
     bu sorular ayrıca raporlanacak.
+
+## 24.10.2026 — Baştan sona denetim (Rehber §5–§19'a göre)
+Corpus, instruction, kod ve belgeler gereksinim listesiyle karşılaştırıldı. Bulunan ve düzeltilenler:
+- **HTML kalıntısı (corpus):** 1 `<br>` (NASA Science), 2 `<sub id="...">⊕</sub>` ve 4 `&amp;` (Türkçe Wikipedia).
+  `scripts/html_residue.py` (testli; `<sup>x</sup>` silinmez, `^x` olur, üs kaybolmasın; "1.338<p<1.746" gibi
+  matematik etiket sayılmaz). Kök çözüm 03'e kural olarak eklendi (ham çıktıda 7 dokümanda 45 kalıntı; hiçbiri
+  300 karakter eşiğini geçmiyor, filtre kararları ve kimlikler değişmez). Mevcut final veride 06b'nin idempotent
+  düzeltmesi uygulandı: 5 train dokümanında 7 kalıntı; validation ve test birebir aynı kaldı.
+- **Chunk'larda paragraf sınırı kayboluyordu:** satırlar tek `\n` ile birleştiriliyordu, chunk metni dokümanda
+  aranınca bulunamıyordu (33.703 chunk'ın 19.613'ü). Chunk artık dokümanın birebir alt dizisi (`char_start`,
+  `char_end`), token sayısı birleştirilmiş metin üzerinden kesin hesaplanıyor. Test: 420 dokümanda alt dizi
+  hatası 0, metin kaybı 0, en uzun chunk 1.019 token (sınır 1.024). Yeni: 33.997 chunk.
+- **Instruction kimlik kararlılığı:** `INS_` numaraları doğrulanmış örneklerin sırasından veriliyordu; yargıç
+  veya kalite kontrol bir örneği elediğinde kayabilir ve 150 örneklik inceleme kararları yanlış örneklere
+  uygulanabilirdi. İnceleme tablosuna `raw_example_id` eklendi, 14 kararları bu sütunla eşleştiriyor.
+- **Stack Exchange / kapsam dışı grupların kümesi:** grup listesi karıştırılıp sıraya göre bölünüyordu; bir grubun
+  tüm örnekleri elenirse diğer grupların kümesi değişirdi. Artık her grubun kümesi seed + grup kimliği hash'inden
+  (sonuç: 494 / 33 / 27 grup ≈ %89 / %6 / %5).
+- **İnceleme tablosunda kaynak metin:** yalnız ilk 3.000 karakter yazılıyordu, üretici 9.000 karakter görüyordu;
+  inceleyen kişi doğru bir cevabı kaynakta bulamayabilirdi. Artık üreticinin gördüğü metnin tamamı.
+- **run_pipeline.py:** ek paketleri (ek1–ek3) oluşturan `09 --part doc_supplement` adımı eksikti; eklendi. 08,
+  kalite kontrolünden sonra yeniden çalışıyor: istatistik raporunun özet tablosuna Rehber §12'deki manuel kontrol
+  ve instruction satırları eklendi.
+- **requirements:** doğrudan import edilen `pyarrow` ve `pydantic` eklendi; birebir sürümler için
+  `requirements-lock.txt` (pip freeze, Python 3.13).
+- **Testler:** `mcq_check.py` ve `turkish_check.py` kendi testlerini çalıştırıyor (gerçek örneklerden 13 + 4 durum).
+- **README:** "kişisel veri toplanmamıştır" ifadesi gerçeği yansıtmıyordu (NASA künyelerinde vardı, silindi);
+  düzeltildi, yapay zekâ kullanımı belirtildi, eksik raporlar listeye eklendi.
+- **Yeniden üretilebilirlik testi:** corpus adımları (03 → 04 → 05 → 06 → 06b → 07, ardından 06b bir kez daha)
+  ayrı bir klasörde extraction çıktısından (`data/extracted/*.jsonl` + `openstax_pages_meta.json`, Wikipedia
+  `page_categories.json`, `instruction_jobs.jsonl`) sıfırdan çalıştırıldı. Sonuç final dosyalarla **birebir aynı**
+  (train/validation/test ve chunk dosyalarının md5'i eşit; 16.284 doküman, aynı eleme sayıları); ikinci 06b
+  çalıştırması 0 değişiklik yaptı. (İlk denemede `openstax_pages_meta.json` kopyalanmamıştı ve 166 OpenStax
+  dokümanında altbilgi kaldı; kurulum hatasıydı, pipeline değil.)
+- **Corpus v1.0 son hâli** (24.10.2026 15:24): 16.284 doküman, 16.231.969 token, 33.997 chunk; md5 (ilk 12):
+  train `b22ac7b4bc54`, validation `3f9a0eca2f20`, test `da9a92c050c8` (validation ve test 10:59'daki
+  dondurulmuş hâlle aynı; train'de yalnız 5 dokümanın HTML kalıntısı düzeltildi).
+- **SFT hazırlık testi ölçmüyordu:** `validate_datasets.py` chat template testinde her örnek "2 token" görünüyordu;
+  transformers 5'te `apply_chat_template(tokenize=True)` sözlük döndürüyor ve kod sözlüğün uzunluğunu ölçüyordu.
+  Şablon artık metin olarak üretilip token'lanıyor ve talimatın/cevabın şablonda birebir geçtiği, rol işaretlerinin
+  bulunduğu kontrol ediliyor: hatalı 0; örnek başına medyan 231, p95 484, en fazla 971 token (Qwen2.5-7B-Instruct).
+- **Kayıt mutabakatı:** corpus 16.284 final + 1.236 elenen = 17.520 ham (her elenen tek kez, final ile kesişim 0);
+  instruction 3.831 ham = 3.340 doğrulanmış + 491 elenen (kesişim 0).
+- **Ham veri bütünlüğü:** manifestlerdeki SHA-256 diskteki dosyalarla karşılaştırıldı: her dosyanın son kaydı
+  eşleşiyor (APOD 2.720, NASA Science 3.109, Wikipedia EN 3.576, TR 1.737, OpenStax, arXiv; boş dosya 0). NASA Science manifestinde 862 `raw_id` iki kez yazılmış (22.10'da iki indirme süreci aynı
+  URL'leri eşzamanlı indirdi); 265 satırda hash dosya yazılmadan alınmış (boş dosya hash'i). Her `raw_id`'nin son
+  başarılı kaydı dosyayla eşleşiyor ve 02 bu kaydı kullanıyor; veri akışı etkilenmedi. Ham kayıtlar değiştirilmedi,
+  durum `data/raw/README.md`'ye yazıldı.

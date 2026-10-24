@@ -15,6 +15,7 @@ from collections import Counter
 from pathlib import Path
 
 from common import CFG, get_logger, p, read_jsonl, rng, write_jsonl
+from html_residue import strip_html_residue
 
 log = get_logger("03_clean")
 EXT, OUT = p("extracted"), p("cleaned")
@@ -268,7 +269,9 @@ def drop_short_lone_lines(t: str) -> str:
 
 def clean_doc(d: dict, boiler: set[str]) -> tuple[str, float]:
     """(temiz metin, kaynakça satırı oranı) döndürür. Oran 04_filter'da 'reference_list' kararı için kullanılır."""
-    t = unicode_normalize(d["text"])
+    t, k = strip_html_residue(d["text"])  # <br>, <sub ...>, &amp; kalıntıları; <sup>x</sup> -> ^x
+    rule_hits["html_residue"] += k
+    t = unicode_normalize(t)
     src = d["source"]
     bib_ratio = 0.0
     if src == "openstax":
@@ -295,6 +298,8 @@ def clean_doc(d: dict, boiler: set[str]) -> tuple[str, float]:
 
 RULE_DOCS = [
     # (anahtar, kural, ne yapar, neden)
+    ("html_residue", "HTML kalıntısı", "`<br>`, `<sub ...>...</sub>` etiketleri ve `&amp;` gibi entity'ler; `<sup>x</sup>` -> `^x`",
+     "Extraction araçlarının bıraktığı biçim kalıntısı; üst simge içeriği üs olarak korunur (24.10.2026 denetimi)"),
     ("superscript_to_caret", "Üs koruma (NFKC öncesi)", "10²³ -> 10^23, s⁻¹ -> s^-1",
      "NFKC üst simgeleri düz rakama çevirir (10²³ -> 1023) ve sayının anlamı bozulur"),
     (None, "Unicode NFKC", "Karakter varyantlarını tek biçime çeker (ﬁ -> fi, tam genişlikli karakterler)",

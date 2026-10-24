@@ -9,21 +9,26 @@ Bu rapor `scripts/08_statistics.py` tarafından üretilir; elle düzenlenmez.
 | Veri kaynağı sayısı (corpus) | 6 |
 | Ham doküman | 17.520 |
 | Extraction başarılı | 17.334 |
-| Extraction başarısız (indirme hatası + boş/kısa çıktı + içerik dışı PDF bölümü) | 186 |
+| Extraction başarısız (indirme hatası + boş/kısa çıktı + içerik dışı PDF bölümü) | 186 (%1,1) |
 | Filtering sonrası | 16.572 |
 | Exact duplicate | 46 |
 | Near duplicate (Jaccard ≥ 0.85) | 90 |
 | Yeniden yayın tekrarı (06b; APOD ve NASA Science, kimlik ve kümeler korunarak) | 140 |
-| İletişim dizini sayfası / temizlik sonrası çok kısa (06b) | 12 |
+| İletişim sayfası, kurgu/eser maddesi, temizlik sonrası çok kısa (06b) | 12 |
 | Final doküman | 16.284 |
 | Toplam kelime | 10.494.610 |
-| Toplam token (Qwen/Qwen2.5-7B) | 16.231.987 |
+| Toplam token (Qwen/Qwen2.5-7B) | 16.231.969 |
 | İngilizce içerik (token) | %83,1 |
 | Türkçe içerik (token) | %16,9 |
+| Manuel kontrol örneği (corpus) | 100 |
+| Manuel kalite başarısı (corpus) | %88,0 |
+| Instruction örneği | 3.340 |
+| Instruction kontrol örneği | - |
+| Instruction manuel kalite başarısı | - |
 
 ## 2. Verinin aşamalar boyunca erimesi
 
-17.520 ham doküman → extraction sonrası 17.334 → temizleme ve filtreleme sonrası 16.572 → tekrar ayıklama sonrası **16.284** doküman.
+17.520 ham doküman → extraction sonrası 17.334 → temizleme ve filtreleme sonrası 16.572 → tekrar ayıklama ve ikinci geçiş (06b) sonrası **16.284** doküman.
 
 ![Veri erimesi](figures/funnel.png)
 
@@ -53,8 +58,8 @@ Ayrıntılı liste: `reports/extraction_failures.csv`, `reports/removed_document
 | Kaynak | Dil | Doküman | Kelime | Token | Token payı |
 | --- | --- | --- | --- | --- | --- |
 | wikipedia_en | en | 3.238 | 5.436.213 | 7.868.683 | %48,5 |
-| wikipedia_tr | tr | 1.561 | 1.024.726 | 2.742.452 | %16,9 |
-| nasa_science | en | 2.849 | 1.947.217 | 2.651.698 | %16,3 |
+| wikipedia_tr | tr | 1.561 | 1.024.725 | 2.742.435 | %16,9 |
+| nasa_science | en | 2.849 | 1.947.218 | 2.651.697 | %16,3 |
 | arxiv_astro_ph | en | 5.953 | 1.330.311 | 2.007.161 | %12,4 |
 | openstax_astronomy_2e | en | 238 | 394.967 | 498.952 | %3,1 |
 | nasa_apod | en | 2.445 | 361.176 | 463.041 | %2,9 |
@@ -104,8 +109,8 @@ En büyük kaynağın doküman payı: %36,6 (tek kaynak baskın değil).
 
 | Küme | Doküman | Toplam token | Min | Medyan | Ortalama | p95 | Maks |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Tümü | 16.284 | 16.231.987 | 53 | 391 | 996.8 | 3.978 | 57.979 |
-| train | 14.660 | 14.798.667 | 53 | 391 | 1009.5 | 4.039 | 57.979 |
+| Tümü | 16.284 | 16.231.969 | 53 | 391 | 996.8 | 3.978 | 57.979 |
+| train | 14.660 | 14.798.649 | 53 | 391 | 1009.5 | 4.039 | 57.979 |
 | validation | 819 | 737.348 | 65 | 393 | 900.3 | 3.342 | 11.538 |
 | test | 805 | 695.972 | 58 | 396 | 864.6 | 3.299 | 15.770 |
 
@@ -116,9 +121,9 @@ En büyük kaynağın doküman payı: %36,6 (tek kaynak baskın değil).
 | nasa_science | 55 | 700 | 930.7 | 2.280 | 57.979 |
 | openstax_astronomy_2e | 73 | 1.800 | 2096.4 | 5.219 | 6.747 |
 | wikipedia_en | 70 | 1.566 | 2430.1 | 7.640 | 27.769 |
-| wikipedia_tr | 91 | 722 | 1756.9 | 7.055 | 25.286 |
+| wikipedia_tr | 91 | 722 | 1756.8 | 7.055 | 25.286 |
 
-Chunk'lar (en fazla 1024 token, paragraf/başlık sınırında): 33.703 chunk, medyan 397, p95 994 token.
+Chunk'lar (en fazla 1024 token, paragraf/başlık sınırında): 33.997 chunk, medyan 396, p95 982 token.
 
 ![Token dağılımı](figures/token_length.png)
 

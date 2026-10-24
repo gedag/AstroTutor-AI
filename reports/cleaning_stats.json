@@ -3,7 +3,7 @@
     "nasa_science": {
       "docs": 3068,
       "chars_before": 13834165,
-      "chars_after": 12350811,
+      "chars_after": 12350808,
       "removed_ratio": 0.1072,
       "boilerplate_lines": 19
     },
@@ -38,12 +38,13 @@
     "wikipedia_tr": {
       "docs": 1732,
       "chars_before": 10367405,
-      "chars_after": 8832932,
+      "chars_after": 8832691,
       "removed_ratio": 0.148,
       "boilerplate_lines": 0
     }
   },
   "rule_hits": {
+    "html_residue": 45,
     "superscript_to_caret": 261,
     "html_heading_kept": 7421,
     "bibliography_entry_line": 5522,

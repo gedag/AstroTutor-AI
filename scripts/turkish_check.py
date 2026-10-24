@@ -50,3 +50,23 @@ def job_defect_ratio(rows: list[dict]) -> float:
     if not rows:
         return 0.0
     return sum(1 for r in rows if missing_turkish_chars(r.get("instruction", ""), r.get("response", ""))) / len(rows)
+
+
+if __name__ == "__main__":
+    cases = [  # (talimat, cevap, kusurlu mu)
+        ("Aşağıdaki metne göre başlangıç düzeyinde bir soru oluştur.", "Güneş Sistemi'nin en büyük gezegeni Jüpiter'dir; "
+         "kütlesi diğer tüm gezegenlerin toplamından fazladır ve çok sayıda uydusu vardır.", False),
+        ("Asagidaki metne gore baslangic duzeyinde bir soru olustur.", "Gunes Sistemi'nin en buyuk gezegeni Jupiter'dir; "
+         "kutlesi diger tum gezegenlerin toplamindan fazladir ve cok sayida uydusu vardir.", True),
+        ("Kara delik nedir?", "Kara delik, kütleçekimi o kadar güçlü bir bölgedir ki ışık bile kaçamaz. Sonucu olarak "
+         "olay ufku içindeki hiçbir sinyal dışarı çıkamaz; bu sonucunda gözlemler dolaylı yapılır.", False),
+        ("Summarize in Turkish: The Sun is a G-type main-sequence star at the centre of the Solar System.",
+         "Güneş, Güneş Sistemi'nin merkezinde bulunan G tipi bir anakol yıldızıdır ve sistemin kütlesinin çoğunu taşır.",
+         False),
+    ]
+    bad = 0
+    for ins, resp, want in cases:
+        got = bool(missing_turkish_chars(ins, resp))
+        bad += got != want
+        print("tamam" if got == want else "HATA", want, missing_turkish_chars(ins, resp), "|", ins[:50])
+    print("hata:", bad)
