@@ -1,0 +1,127 @@
+{
+  "tokenizer": "Qwen/Qwen2.5-7B",
+  "documents": {
+    "count": 16284,
+    "total": 16231987,
+    "min": 53,
+    "median": 391,
+    "mean": 996.8,
+    "p95": 3978,
+    "max": 57979
+  },
+  "per_source": {
+    "arxiv_astro_ph": {
+      "count": 5953,
+      "total": 2007161,
+      "min": 53,
+      "median": 343,
+      "mean": 337.2,
+      "p95": 493,
+      "max": 703
+    },
+    "nasa_apod": {
+      "count": 2445,
+      "total": 463041,
+      "min": 73,
+      "median": 187,
+      "mean": 189.4,
+      "p95": 257,
+      "max": 348
+    },
+    "nasa_science": {
+      "count": 2849,
+      "total": 2651698,
+      "min": 55,
+      "median": 700,
+      "mean": 930.7,
+      "p95": 2280,
+      "max": 57979
+    },
+    "openstax_astronomy_2e": {
+      "count": 238,
+      "total": 498952,
+      "min": 73,
+      "median": 1800,
+      "mean": 2096.4,
+      "p95": 5219,
+      "max": 6747
+    },
+    "wikipedia_en": {
+      "count": 3238,
+      "total": 7868683,
+      "min": 70,
+      "median": 1566,
+      "mean": 2430.1,
+      "p95": 7640,
+      "max": 27769
+    },
+    "wikipedia_tr": {
+      "count": 1561,
+      "total": 2742452,
+      "min": 91,
+      "median": 722,
+      "mean": 1756.9,
+      "p95": 7055,
+      "max": 25286
+    }
+  },
+  "per_split": {
+    "train": {
+      "count": 14660,
+      "total": 14798667,
+      "min": 53,
+      "median": 391,
+      "mean": 1009.5,
+      "p95": 4039,
+      "max": 57979
+    },
+    "validation": {
+      "count": 819,
+      "total": 737348,
+      "min": 65,
+      "median": 393,
+      "mean": 900.3,
+      "p95": 3342,
+      "max": 11538
+    },
+    "test": {
+      "count": 805,
+      "total": 695972,
+      "min": 58,
+      "median": 396,
+      "mean": 864.6,
+      "p95": 3299,
+      "max": 15770
+    }
+  },
+  "per_language": {
+    "en": {
+      "count": 14723,
+      "total": 13489535,
+      "min": 53,
+      "median": 380,
+      "mean": 916.2,
+      "p95": 3594,
+      "max": 57979
+    },
+    "tr": {
+      "count": 1561,
+      "total": 2742452,
+      "min": 91,
+      "median": 722,
+      "mean": 1756.9,
+      "p95": 7055,
+      "max": 25286
+    }
+  },
+  "chunks": {
+    "max_tokens": 1024,
+    "count": 33703,
+    "total": 16138925,
+    "min": 2,
+    "median": 397,
+    "mean": 478.9,
+    "p95": 994,
+    "max": 1430
+  }
+}

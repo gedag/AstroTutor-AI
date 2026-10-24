@@ -1,0 +1,49 @@
+{
+  "sources": 6,
+  "raw": 17520,
+  "extraction_ok": 17334,
+  "extraction_failed": 186,
+  "after_filter": 16572,
+  "exact_dup": 46,
+  "near_dup": 90,
+  "repost_dup": 140,
+  "final_docs": 16284,
+  "words": 10494610,
+  "tokens": 16231987,
+  "lang_token_share": {
+    "en": 13489535,
+    "tr": 2742452
+  },
+  "removed_by_reason": {
+    "extraction_error": 51,
+    "non_content_section": 135,
+    "too_short": 242,
+    "reference_list": 5,
+    "garbled": 3,
+    "out_of_domain": 150,
+    "wrong_language": 6,
+    "out_of_domain_category": 356,
+    "duplicate": 46,
+    "near_duplicate": 90,
+    "repost_duplicate": 140,
+    "contact_page": 7,
+    "too_short_after_06b": 1,
+    "fiction_work_06b": 4
+  },
+  "subtopics": {
+    "stars_stellar_evolution": 4062,
+    "galaxies": 2903,
+    "observatories_telescopes": 1488,
+    "cosmology": 1204,
+    "exoplanets": 803,
+    "general_astronomy": 254,
+    "planets_moons": 2287,
+    "solar_system": 1959,
+    "missions_spacecraft": 1324
+  },
+  "splits": {
+    "train": 14660,
+    "validation": 819,
+    "test": 805
+  }
+}

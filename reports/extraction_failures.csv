@@ -1,0 +1,187 @@
+id,stage,reason,source,detail
+NASA_cf38d56040f2,extraction,extraction_error,nasa_science,too_little_text(71 chars)
+NASA_d4669b1b06df,extraction,extraction_error,nasa_science,too_little_text(9 chars)
+NASA_9fde530a4b84,extraction,extraction_error,nasa_science,too_little_text(195 chars)
+NASA_0f861b5db520,extraction,extraction_error,nasa_science,too_little_text(9 chars)
+NASA_8fd754e96d74,extraction,extraction_error,nasa_science,too_little_text(195 chars)
+NASA_9e3d04329f81,extraction,extraction_error,nasa_science,too_little_text(180 chars)
+NASA_a433846d9e33,extraction,extraction_error,nasa_science,too_little_text(195 chars)
+NASA_2b34da1e9fee,extraction,extraction_error,nasa_science,too_little_text(196 chars)
+NASA_e51b4bc87c0a,extraction,extraction_error,nasa_science,too_little_text(195 chars)
+NASA_c5bd22c0f141,extraction,extraction_error,nasa_science,too_little_text(27 chars)
+NASA_802a12b489ef,extraction,extraction_error,nasa_science,too_little_text(195 chars)
+NASA_6c7cadd59b80,extraction,extraction_error,nasa_science,too_little_text(195 chars)
+NASA_aeb9e78f6f13,extraction,extraction_error,nasa_science,too_little_text(195 chars)
+NASA_a745d9821d6b,extraction,extraction_error,nasa_science,too_little_text(195 chars)
+NASA_2ff2b4cede5e,extraction,extraction_error,nasa_science,too_little_text(143 chars)
+NASA_5f90bd8f8a1c,extraction,extraction_error,nasa_science,too_little_text(9 chars)
+NASA_466cf536b896,extraction,extraction_error,nasa_science,too_little_text(16 chars)
+NASA_a9e8bff324d5,extraction,extraction_error,nasa_science,too_little_text(26 chars)
+NASA_f9701d56e3ab,extraction,extraction_error,nasa_science,too_little_text(80 chars)
+NASA_30c456c60352,extraction,extraction_error,nasa_science,too_little_text(44 chars)
+NASA_cfcd7f3c98f5,extraction,extraction_error,nasa_science,too_little_text(80 chars)
+NASA_8df0b924647a,extraction,extraction_error,nasa_science,too_little_text(161 chars)
+NASA_3b724970dfa8,extraction,extraction_error,nasa_science,too_little_text(47 chars)
+NASA_b1c204763bc7,extraction,extraction_error,nasa_science,too_little_text(43 chars)
+NASA_77724f56bb1a,extraction,extraction_error,nasa_science,too_little_text(17 chars)
+NASA_19ab6cb782d3,extraction,extraction_error,nasa_science,too_little_text(172 chars)
+NASA_d03a167a001e,extraction,extraction_error,nasa_science,too_little_text(189 chars)
+NASA_5917a9cef251,extraction,extraction_error,nasa_science,too_little_text(9 chars)
+NASA_94f9beb8e898,extraction,extraction_error,nasa_science,empty_output
+NASA_8d5cf0636968,extraction,extraction_error,nasa_science,empty_output
+NASA_335caf4e3d65,extraction,extraction_error,nasa_science,empty_output
+NASA_ea3b863d78ef,extraction,extraction_error,nasa_science,empty_output
+NASA_615f9c10daf8,extraction,extraction_error,nasa_science,empty_output
+NASA_23b413c8a813,extraction,extraction_error,nasa_science,empty_output
+NASA_564858399607,extraction,extraction_error,nasa_science,empty_output
+NASA_77df5e7e9a0b,extraction,extraction_error,nasa_science,too_little_text(9 chars)
+NASA_91f72eb67247,extraction,extraction_error,nasa_science,too_little_text(98 chars)
+NASA_49622d169c3a,extraction,extraction_error,nasa_science,too_little_text(9 chars)
+NASA_ba11d3c9de46,extraction,extraction_error,nasa_science,too_little_text(158 chars)
+NASA_a4a4bd1e0dce,extraction,extraction_error,nasa_science,too_little_text(9 chars)
+NASA_2b428b05332d,extraction,extraction_error,nasa_science,too_little_text(9 chars)
+APOD_5ea39cbe7ade,extraction,extraction_error,nasa_apod,too_little_text(70 chars)
+APOD_5ccc28d5c013,extraction,extraction_error,nasa_apod,too_little_text(73 chars)
+APOD_70a6d728cf3c,extraction,extraction_error,nasa_apod,too_little_text(84 chars)
+OPENSTAX_0000,extraction,non_content_section,openstax,Preface / About OpenStax
+OPENSTAX_0001,extraction,non_content_section,openstax,Chapter 1 Science and the Universe: A Brief Tour / Chapter Outline
+OPENSTAX_0012,extraction,non_content_section,openstax,Chapter 1 Science and the Universe: A Brief Tour / For Further Exploration
+OPENSTAX_0013,extraction,non_content_section,openstax,Chapter 2 Observing the Sky: The Birth of Astronomy / Chapter Outline
+OPENSTAX_0021,extraction,non_content_section,openstax,Chapter 2 Observing the Sky: The Birth of Astronomy / For Further Exploration
+OPENSTAX_0022,extraction,non_content_section,openstax,Chapter 2 Observing the Sky: The Birth of Astronomy / Collaborative Group Activities
+OPENSTAX_0023,extraction,non_content_section,openstax,Chapter 2 Observing the Sky: The Birth of Astronomy / Exercises
+OPENSTAX_0024,extraction,non_content_section,openstax,Chapter 3 Orbits and Gravity / Chapter Outline
+OPENSTAX_0034,extraction,non_content_section,openstax,Chapter 3 Orbits and Gravity / For Further Exploration
+OPENSTAX_0035,extraction,non_content_section,openstax,Chapter 3 Orbits and Gravity / Collaborative Group Activities
+OPENSTAX_0036,extraction,non_content_section,openstax,Chapter 3 Orbits and Gravity / Exercises
+OPENSTAX_0037,extraction,non_content_section,openstax,"Chapter 4 Earth, Moon, and Sky / Chapter Outline"
+OPENSTAX_0048,extraction,non_content_section,openstax,"Chapter 4 Earth, Moon, and Sky / For Further Exploration"
+OPENSTAX_0049,extraction,non_content_section,openstax,"Chapter 4 Earth, Moon, and Sky / Collaborative Group Activities"
+OPENSTAX_0050,extraction,non_content_section,openstax,"Chapter 4 Earth, Moon, and Sky / Exercises"
+OPENSTAX_0051,extraction,non_content_section,openstax,Chapter 5 Radiation and Spectra / Chapter Outline
+OPENSTAX_0061,extraction,non_content_section,openstax,Chapter 5 Radiation and Spectra / For Further Exploration
+OPENSTAX_0062,extraction,non_content_section,openstax,Chapter 5 Radiation and Spectra / Collaborative Group Activities
+OPENSTAX_0063,extraction,non_content_section,openstax,Chapter 5 Radiation and Spectra / Exercises
+OPENSTAX_0064,extraction,non_content_section,openstax,Chapter 6 Astronomical Instruments / Chapter Outline
+OPENSTAX_0074,extraction,non_content_section,openstax,Chapter 6 Astronomical Instruments / For Further Exploration
+OPENSTAX_0075,extraction,non_content_section,openstax,Chapter 6 Astronomical Instruments / Collaborative Group Activities
+OPENSTAX_0076,extraction,non_content_section,openstax,Chapter 6 Astronomical Instruments / Exercises
+OPENSTAX_0077,extraction,non_content_section,openstax,Chapter 7 Other Worlds: An Introduction to the Solar System / Chapter Outline
+OPENSTAX_0085,extraction,non_content_section,openstax,Chapter 7 Other Worlds: An Introduction to the Solar System / For Further Exploration
+OPENSTAX_0086,extraction,non_content_section,openstax,Chapter 7 Other Worlds: An Introduction to the Solar System / Collaborative Group Activities
+OPENSTAX_0087,extraction,non_content_section,openstax,Chapter 7 Other Worlds: An Introduction to the Solar System / Exercises
+OPENSTAX_0088,extraction,non_content_section,openstax,Chapter 8 Earth as a Planet / Chapter Outline
+OPENSTAX_0097,extraction,non_content_section,openstax,Chapter 8 Earth as a Planet / For Further Exploration
+OPENSTAX_0098,extraction,non_content_section,openstax,Chapter 8 Earth as a Planet / Collaborative Group Activities
+OPENSTAX_0099,extraction,non_content_section,openstax,Chapter 8 Earth as a Planet / Exercises
+OPENSTAX_0100,extraction,non_content_section,openstax,Chapter 9 Cratered Worlds / Chapter Outline
+OPENSTAX_0109,extraction,non_content_section,openstax,Chapter 9 Cratered Worlds / For Further Exploration
+OPENSTAX_0110,extraction,non_content_section,openstax,Chapter 9 Cratered Worlds / Collaborative Group Activities
+OPENSTAX_0111,extraction,non_content_section,openstax,Chapter 9 Cratered Worlds / Exercises
+OPENSTAX_0112,extraction,non_content_section,openstax,Chapter 10 Earthlike Planets: Venus and Mars / Chapter Outline
+OPENSTAX_0122,extraction,non_content_section,openstax,Chapter 10 Earthlike Planets: Venus and Mars / For Further Exploration
+OPENSTAX_0123,extraction,non_content_section,openstax,Chapter 10 Earthlike Planets: Venus and Mars / Collaborative Group Activities
+OPENSTAX_0124,extraction,non_content_section,openstax,Chapter 10 Earthlike Planets: Venus and Mars / Exercises
+OPENSTAX_0125,extraction,non_content_section,openstax,Chapter 11 The Giant Planets / Chapter Outline
+OPENSTAX_0132,extraction,non_content_section,openstax,Chapter 11 The Giant Planets / For Further Exploration
+OPENSTAX_0133,extraction,non_content_section,openstax,Chapter 11 The Giant Planets / Collaborative Group Activities
+OPENSTAX_0134,extraction,non_content_section,openstax,Chapter 11 The Giant Planets / Exercises
+OPENSTAX_0135,extraction,non_content_section,openstax,"Chapter 12 Rings, Moons, and Pluto / Chapter Outline"
+OPENSTAX_0144,extraction,non_content_section,openstax,"Chapter 12 Rings, Moons, and Pluto / For Further Exploration"
+OPENSTAX_0145,extraction,non_content_section,openstax,"Chapter 12 Rings, Moons, and Pluto / Collaborative Group Activities"
+OPENSTAX_0146,extraction,non_content_section,openstax,"Chapter 12 Rings, Moons, and Pluto / Exercises"
+OPENSTAX_0147,extraction,non_content_section,openstax,Chapter 13 Comets and Asteroids: Debris of the Solar System / Chapter Outline
+OPENSTAX_0155,extraction,non_content_section,openstax,Chapter 13 Comets and Asteroids: Debris of the Solar System / For Further Exploration
+OPENSTAX_0156,extraction,non_content_section,openstax,Chapter 13 Comets and Asteroids: Debris of the Solar System / Collaborative Group Activities
+OPENSTAX_0157,extraction,non_content_section,openstax,Chapter 13 Comets and Asteroids: Debris of the Solar System / Exercises
+OPENSTAX_0158,extraction,non_content_section,openstax,Chapter 14 Cosmic Samples and the Origin of the Solar System / Chapter Outline
+OPENSTAX_0167,extraction,non_content_section,openstax,Chapter 14 Cosmic Samples and the Origin of the Solar System / For Further Exploration
+OPENSTAX_0168,extraction,non_content_section,openstax,Chapter 14 Cosmic Samples and the Origin of the Solar System / Collaborative Group Activities
+OPENSTAX_0169,extraction,non_content_section,openstax,Chapter 14 Cosmic Samples and the Origin of the Solar System / Exercises
+OPENSTAX_0170,extraction,non_content_section,openstax,Chapter 15 The Sun: A Garden-Variety Star / Chapter Outline
+OPENSTAX_0178,extraction,non_content_section,openstax,Chapter 15 The Sun: A Garden-Variety Star / For Further Exploration
+OPENSTAX_0179,extraction,non_content_section,openstax,Chapter 15 The Sun: A Garden-Variety Star / Collaborative Group Activities
+OPENSTAX_0180,extraction,non_content_section,openstax,Chapter 15 The Sun: A Garden-Variety Star / Exercises
+OPENSTAX_0181,extraction,non_content_section,openstax,Chapter 16 The Sun: A Nuclear Powerhouse / Chapter Outline
+OPENSTAX_0189,extraction,non_content_section,openstax,Chapter 16 The Sun: A Nuclear Powerhouse / For Further Exploration
+OPENSTAX_0190,extraction,non_content_section,openstax,Chapter 16 The Sun: A Nuclear Powerhouse / Collaborative Group Activities
+OPENSTAX_0191,extraction,non_content_section,openstax,Chapter 16 The Sun: A Nuclear Powerhouse / Exercises
+OPENSTAX_0192,extraction,non_content_section,openstax,Chapter 17 Analyzing Starlight / Chapter Outline
+OPENSTAX_0200,extraction,non_content_section,openstax,Chapter 17 Analyzing Starlight / For Further Exploration
+OPENSTAX_0201,extraction,non_content_section,openstax,Chapter 17 Analyzing Starlight / Collaborative Group Activities
+OPENSTAX_0202,extraction,non_content_section,openstax,Chapter 17 Analyzing Starlight / Exercises
+OPENSTAX_0203,extraction,non_content_section,openstax,Chapter 18 The Stars: A Celestial Census / Chapter Outline
+OPENSTAX_0211,extraction,non_content_section,openstax,Chapter 18 The Stars: A Celestial Census / For Further Exploration
+OPENSTAX_0212,extraction,non_content_section,openstax,Chapter 18 The Stars: A Celestial Census / Collaborative Group Activities
+OPENSTAX_0213,extraction,non_content_section,openstax,Chapter 18 The Stars: A Celestial Census / Exercises
+OPENSTAX_0214,extraction,non_content_section,openstax,Chapter 19 Celestial Distances / Chapter Outline
+OPENSTAX_0222,extraction,non_content_section,openstax,Chapter 19 Celestial Distances / For Further Exploration
+OPENSTAX_0223,extraction,non_content_section,openstax,Chapter 19 Celestial Distances / Collaborative Group Activities
+OPENSTAX_0224,extraction,non_content_section,openstax,Chapter 19 Celestial Distances / Exercises
+OPENSTAX_0225,extraction,non_content_section,openstax,Chapter 20 Between the Stars: Gas and Dust in Space / Chapter Outline
+OPENSTAX_0235,extraction,non_content_section,openstax,Chapter 20 Between the Stars: Gas and Dust in Space / For Further Exploration
+OPENSTAX_0236,extraction,non_content_section,openstax,Chapter 20 Between the Stars: Gas and Dust in Space / Collaborative Group Activities
+OPENSTAX_0237,extraction,non_content_section,openstax,Chapter 20 Between the Stars: Gas and Dust in Space / Exercises
+OPENSTAX_0238,extraction,non_content_section,openstax,Chapter 21 The Birth of Stars and the Discovery of Planets outside the Solar System / Chapter Outline
+OPENSTAX_0248,extraction,non_content_section,openstax,Chapter 21 The Birth of Stars and the Discovery of Planets outside the Solar System / For Further Exploration
+OPENSTAX_0249,extraction,non_content_section,openstax,Chapter 21 The Birth of Stars and the Discovery of Planets outside the Solar System / Collaborative Group Activities
+OPENSTAX_0250,extraction,non_content_section,openstax,Chapter 21 The Birth of Stars and the Discovery of Planets outside the Solar System / Exercises
+OPENSTAX_0251,extraction,non_content_section,openstax,Chapter 22 Stars from Adolescence to Old Age / Chapter Outline
+OPENSTAX_0260,extraction,non_content_section,openstax,Chapter 22 Stars from Adolescence to Old Age / For Further Exploration
+OPENSTAX_0261,extraction,non_content_section,openstax,Chapter 22 Stars from Adolescence to Old Age / Collaborative Group Activities
+OPENSTAX_0262,extraction,non_content_section,openstax,Chapter 22 Stars from Adolescence to Old Age / Exercises
+OPENSTAX_0263,extraction,non_content_section,openstax,Chapter 23 The Death of Stars / Chapter Outline
+OPENSTAX_0273,extraction,non_content_section,openstax,Chapter 23 The Death of Stars / For Further Exploration
+OPENSTAX_0274,extraction,non_content_section,openstax,Chapter 23 The Death of Stars / Collaborative Group Activities
+OPENSTAX_0275,extraction,non_content_section,openstax,Chapter 23 The Death of Stars / Exercises
+OPENSTAX_0276,extraction,non_content_section,openstax,Chapter 24 Black Holes and Curved Spacetime / Chapter Outline
+OPENSTAX_0287,extraction,non_content_section,openstax,Chapter 24 Black Holes and Curved Spacetime / For Further Exploration
+OPENSTAX_0288,extraction,non_content_section,openstax,Chapter 24 Black Holes and Curved Spacetime / Collaborative Group Activities
+OPENSTAX_0289,extraction,non_content_section,openstax,Chapter 24 Black Holes and Curved Spacetime / Exercises
+OPENSTAX_0290,extraction,non_content_section,openstax,Chapter 25 The Milky Way Galaxy / Chapter Outline
+OPENSTAX_0300,extraction,non_content_section,openstax,Chapter 25 The Milky Way Galaxy / For Further Exploration
+OPENSTAX_0301,extraction,non_content_section,openstax,Chapter 25 The Milky Way Galaxy / Collaborative Group Activities
+OPENSTAX_0302,extraction,non_content_section,openstax,Chapter 25 The Milky Way Galaxy / Exercises
+OPENSTAX_0303,extraction,non_content_section,openstax,Chapter 26 Galaxies / Chapter Outline
+OPENSTAX_0312,extraction,non_content_section,openstax,Chapter 26 Galaxies / For Further Exploration
+OPENSTAX_0313,extraction,non_content_section,openstax,Chapter 26 Galaxies / Collaborative Group Activities
+OPENSTAX_0314,extraction,non_content_section,openstax,Chapter 26 Galaxies / Exercises
+OPENSTAX_0315,extraction,non_content_section,openstax,"Chapter 27 Active Galaxies, Quasars, and Supermassive Black Holes / Chapter Outline"
+OPENSTAX_0322,extraction,non_content_section,openstax,"Chapter 27 Active Galaxies, Quasars, and Supermassive Black Holes / For Further Exploration"
+OPENSTAX_0323,extraction,non_content_section,openstax,"Chapter 27 Active Galaxies, Quasars, and Supermassive Black Holes / Collaborative Group Activities"
+OPENSTAX_0324,extraction,non_content_section,openstax,"Chapter 27 Active Galaxies, Quasars, and Supermassive Black Holes / Exercises"
+OPENSTAX_0325,extraction,non_content_section,openstax,Chapter 28 The Evolution and Distribution of Galaxies / Chapter Outline
+OPENSTAX_0334,extraction,non_content_section,openstax,Chapter 28 The Evolution and Distribution of Galaxies / For Further Exploration
+OPENSTAX_0335,extraction,non_content_section,openstax,Chapter 28 The Evolution and Distribution of Galaxies / Collaborative Group Activities
+OPENSTAX_0336,extraction,non_content_section,openstax,Chapter 28 The Evolution and Distribution of Galaxies / Exercises
+OPENSTAX_0337,extraction,non_content_section,openstax,Chapter 29 The Big Bang / Chapter Outline
+OPENSTAX_0348,extraction,non_content_section,openstax,Chapter 29 The Big Bang / For Further Exploration
+OPENSTAX_0349,extraction,non_content_section,openstax,Chapter 29 The Big Bang / Collaborative Group Activities
+OPENSTAX_0350,extraction,non_content_section,openstax,Chapter 29 The Big Bang / Exercises
+OPENSTAX_0351,extraction,non_content_section,openstax,Chapter 30 Life in the Universe / Chapter Outline
+OPENSTAX_0359,extraction,non_content_section,openstax,Chapter 30 Life in the Universe / For Further Exploration
+OPENSTAX_0360,extraction,non_content_section,openstax,Chapter 30 Life in the Universe / Collaborative Group Activities
+OPENSTAX_0361,extraction,non_content_section,openstax,Chapter 30 Life in the Universe / Exercises
+OPENSTAX_0362,extraction,non_content_section,openstax,"Appendix B Astronomy Websites, Images, and Apps / Websites for Exploring Astronomy in General"
+OPENSTAX_0363,extraction,non_content_section,openstax,"Appendix B Astronomy Websites, Images, and Apps / Selected Websites for Viewing and Downloading Astronomical Images"
+OPENSTAX_0364,extraction,non_content_section,openstax,"Appendix B Astronomy Websites, Images, and Apps / Astronomy Apps for Smartphones and Tablets"
+OPENSTAX_0365,extraction,non_content_section,openstax,Appendix C Scientific Notation / Writing Large Numbers
+OPENSTAX_0366,extraction,non_content_section,openstax,Appendix C Scientific Notation / Writing Small Numbers
+OPENSTAX_0367,extraction,non_content_section,openstax,Appendix C Scientific Notation / Multiplication and Division
+OPENSTAX_0368,extraction,non_content_section,openstax,Appendix C Scientific Notation / Exercises
+OPENSTAX_0369,extraction,non_content_section,openstax,Appendix C Scientific Notation / Answers
+OPENSTAX_0370,extraction,non_content_section,openstax,Appendix D Units Used in Science / Length
+OPENSTAX_0371,extraction,non_content_section,openstax,Appendix D Units Used in Science / Mass
+OPENSTAX_0372,extraction,non_content_section,openstax,Appendix D Units Used in Science / Temperature
+OPENSTAX_0373,extraction,non_content_section,openstax,Appendix H Future Total Eclipses / Future Total Solar Eclipses
+OPENSTAX_0374,extraction,non_content_section,openstax,Appendix H Future Total Eclipses / Future Total Lunar Eclipses
+OPENSTAX_0375,extraction,non_content_section,openstax,Appendix H Future Total Eclipses / Additional Resources
+OPENSTAX_0376,extraction,non_content_section,openstax,Appendix M Star Chart and Sky Event Resources / Star Charts
+OPENSTAX_0377,extraction,non_content_section,openstax,Appendix M Star Chart and Sky Event Resources / Calendars of Night Sky Events
+OPENSTAX_0183,extraction,extraction_error,openstax,too_little_text(58 chars)
+WIKIEN_760745,extraction,extraction_error,wikipedia_en,too_little_text(195 chars)
+WIKITR_381737,extraction,extraction_error,wikipedia_tr,too_little_text(57 chars)
+WIKITR_1810504,extraction,extraction_error,wikipedia_tr,too_little_text(180 chars)
+WIKITR_848976,extraction,extraction_error,wikipedia_tr,too_little_text(106 chars)
+WIKITR_884571,extraction,extraction_error,wikipedia_tr,too_little_text(109 chars)
+WIKITR_1669274,extraction,extraction_error,wikipedia_tr,too_little_text(166 chars)

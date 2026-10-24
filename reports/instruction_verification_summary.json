@@ -1,0 +1,25 @@
+{
+  "verified": 3340,
+  "judged_examples": 0,
+  "judge_fail": 0,
+  "judge_fail_rate": null,
+  "judge_fail_by_criterion": {},
+  "removed_by_reason": {
+    "latex_artifact": 4,
+    "llm_skipped": 5,
+    "duplicate": 3,
+    "response_references_unseen_text": 80,
+    "eval_overlap": 4,
+    "exponent_loss": 2,
+    "length": 8,
+    "invalid_mcq_json": 64,
+    "mcq_answer_in_instruction": 154,
+    "references_unseen_text": 67,
+    "turkish_chars_missing": 55,
+    "wrong_language": 5,
+    "task_type_mismatch": 2,
+    "near_duplicate": 4,
+    "evidence_not_in_source": 34
+  },
+  "sample_jobs": 36
+}

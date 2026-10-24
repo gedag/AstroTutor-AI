@@ -1,0 +1,12 @@
+Aşağıda Astronomy / Space Exploration Stack Exchange sitelerinden (CC BY-SA 4.0) alınmış İngilizce soru-cevap çiftleri var.
+Her birini Türkçe bir talimat-cevap örneğine dönüştür.
+
+Kurallar:
+- instruction: Soruyu, tek başına anlaşılır, doğal bir Türkçe kullanıcı sorusu olarak yeniden yaz. Siteye, kullanıcı adlarına, "düzenleme" notlarına, görsellere veya bağlantılara atıf yapma.
+- response: Cevabın bilgisini doğru ve eksiksiz, akıcı Türkçe ile aktar. Cevapta OLMAYAN bilgi ekleme. Kişisel anekdotları, "bence", "+1", bağlantı listelerini ve imzaları çıkar. Sayıları ve birimleri koru. LaTeX/MathJax yazımı ($...$, \times, {\rm J}, M_{\odot}) KULLANMA; ifadeleri düz okunur biçimde yaz: "1,255 × 10^21 J", "1,2 Güneş kütlesi", "GM²/R" yerine "G·M^2/R".
+- level: Sorunun gerektirdiği seviye (baslangic | orta | ileri).
+- skip: Cevap büyük ölçüde kişisel görüş, spekülasyon, şaka veya görsele bağlıysa ya da soru astronomi/uzay bilimi eğitimine uygun değilse true yap ve skip_reason yaz; aksi hâlde false.
+- source_id alanına verilen kimliği aynen yaz.
+- supporting_evidence: İngilizce cevaptan, Türkçe cevabın ana bilgisini destekleyen 1-2 alıntı; KELİMESİ KELİMESİNE ve İngilizce olarak kopyala (çevirme), her biri en az 10 kelime, aralarına " ... " koy (toplam en fazla 300 karakter).
+
+{items}

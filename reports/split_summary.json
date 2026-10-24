@@ -1,0 +1,36 @@
+{
+  "train": {
+    "documents": 14660,
+    "by_source": {
+      "arxiv_astro_ph": 5357,
+      "nasa_apod": 2207,
+      "nasa_science": 2565,
+      "openstax_astronomy_2e": 214,
+      "wikipedia_en": 2914,
+      "wikipedia_tr": 1403
+    }
+  },
+  "validation": {
+    "documents": 819,
+    "by_source": {
+      "arxiv_astro_ph": 298,
+      "nasa_apod": 122,
+      "nasa_science": 141,
+      "openstax_astronomy_2e": 12,
+      "wikipedia_en": 162,
+      "wikipedia_tr": 84
+    }
+  },
+  "test": {
+    "documents": 805,
+    "by_source": {
+      "arxiv_astro_ph": 298,
+      "nasa_apod": 116,
+      "nasa_science": 143,
+      "openstax_astronomy_2e": 12,
+      "wikipedia_en": 162,
+      "wikipedia_tr": 74
+    }
+  },
+  "note": "final k\u00fcmeler (06b sonras\u0131, 08 taraf\u0131ndan)"
+}

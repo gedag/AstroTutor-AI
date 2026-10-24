@@ -21,9 +21,11 @@ paths:
   prompts: prompts
 
 http:
-  user_agent: "AstroTutorAI-dataset/1.0 (SDU Bilgisayar Muhendisligi bitirme projesi; academic, non-commercial)"
+  # Wikimedia 2026 kurali: iletisim bilgisi olmayan User-Agent "tanimsiz" sayilir ve 10 istek/dk ile sinirlanir;
+  # iletisim bilgisi olan bot User-Agent icin sinir 200 istek/dk (mediawiki.org/wiki/Wikimedia_APIs/Rate_limits)
+  user_agent: "AstroTutorAI-dataset/1.0 (SDU Bilgisayar Muhendisligi bitirme projesi, akademik; edagogebakan1453@gmail.com) python-requests"
   delay_seconds: 1.2        # science.nasa.gov robots.txt Crawl-delay: 1 -> biraz daha yavas
-  wikipedia_delay_seconds: 0.25
+  wikipedia_delay_seconds: 0.7  # EN+TR ayni anda: ~2 x 55 = ~110 istek/dk (< 200 siniri); en fazla 3 eszamanli istek
   arxiv_delay_seconds: 4.0  # arXiv OAI-PMH: istekler arasi en az 3 sn
   timeout: 60
   max_retries: 4
@@ -116,10 +118,10 @@ sources:
     api: https://en.wikipedia.org/w/api.php
     lang: en
     per_category: 140
-    max_documents: 2600
+    max_documents: 2600     # ilk secim siniri; 23.10'da sinir disinda kalan 8 kategori kapsam icin eklendi (toplam 3576, bkz. experiments.md)
     min_bytes: 6000           # cok kisa taslak (stub) maddeleri baslangicta disarida birakir
     categories:
-      [Solar System, Planets of the Solar System, Natural satellites, Dwarf planets, Comets,
+      [Solar System, Planets of the Solar System, Moons, Dwarf planets, Comets,
        Asteroids, Stars, Stellar evolution, Stellar astronomy, Variable stars, Neutron stars,
        Black holes, Nebulae, Galaxies, Milky Way, Galaxy clusters, Physical cosmology,
        Exoplanetology, Exoplanets, Space telescopes, Space probes, Astronomical observatories,
@@ -132,11 +134,11 @@ sources:
     max_documents: 1600
     min_bytes: 2500
     categories:
-      [Astronomi, Güneş Sistemi, Gezegenler, Güneş Sistemi gezegenleri, Doğal uydular, Cüce gezegenler,
+      [Astronomi, Güneş Sistemi, Gezegenler, Doğal uydular, Cüce gezegenler,
        Kuyruklu yıldızlar, Asteroitler, Yıldızlar, Yıldız evrimi, Değişen yıldızlar, Nötron yıldızları,
-       Kara delikler, Bulutsular, Gökadalar, Samanyolu, Fiziksel kozmoloji, Kozmoloji, Ötegezegenler,
+       Kara delikler, Bulutsular, Galaksiler, Samanyolu, Fiziksel kozmoloji, Kozmoloji, Ötegezegenler,
        Uzay teleskopları, Uzay sondaları, Gözlemevleri, Teleskoplar, Astrofizik, Gök mekaniği,
-       Tutulmalar, Göktaşları, Gezegen bilimi]
+       Tutulmalar, Meteoritler, Gezegen bilimi]
   stackexchange:
     hf_repo: juliensimon/stackexchange-space-qa
     license: CC BY-SA 4.0
@@ -160,6 +162,7 @@ filtering:
   max_garbled_ratio: 0.15
   allowed_languages: [en, tr]
   min_domain_score: 2.0       # 1000 kelime basina astronomi terimi (bkz. scripts/domain_lexicon.py)
+  max_bib_line_ratio: 0.5     # satirlarinin yarisindan fazlasi kaynakca girdisi olan sayfa = yayin listesi
 
 dedup:
   shingle_words: 5
@@ -201,7 +204,24 @@ instruction:
   judge_thinking_budget: medium     # yargic: olgu ve hesap kontrolu icin daha fazla dusunme
   max_output_tokens: 16384     # 14 ornek/cagri icin
   requests_per_minute: 8
-  prompt_version: v1
+  quota_recheck_minutes: 30   # kotasi dolan model bu sure sonra yeniden denenir (kayan 24 saat penceresi)
+  # 23.10.2026: kural+kanit dogrulamasindan sonra tahmini toplam ~3.190 (yargic ve insan kontrolunden once);
+  # coktan secmeli sorularda lite bozuk JSON uretiyor (verim %74). 3.000 alt sinirinin guvenle asilmasi ve
+  # tur dagiliminin hedefe yaklasmasi icin henuz kullanilmamis dokumanlardan ek paket (bkz. experiments.md).
+  supplement:                 # ek doküman paketleri (09 --part doc_supplement); var olan paket yeniden eklenmez
+    - name: ek1
+      per_type_cap: 4
+      quota: {coktan_secmeli_soru_uretimi: 150, tanim_aciklama: 30, seviyeli_anlatim: 25, karsilastirma: 25,
+              neden_sonuc: 15, ozetleme: 20, adim_adim_problem_cozme: 25, siniflandirma: 15}
+    # 24.10.2026: 107 cevabı talimatta verilmiş çoktan seçmeli örnek elendi (pay %13,5 -> %10,6); hedef %14
+    - name: ek2
+      per_type_cap: 5
+      quota: {coktan_secmeli_soru_uretimi: 170}
+    # 24.10.2026: görünmeyen metne atıf yapan sınıflandırma/problem çözme örnekleri elendi (%4 -> %2,2 ve %7 -> %5,4)
+    - name: ek3
+      per_type_cap: 4
+      quota: {siniflandirma: 90, adim_adim_problem_cozme: 75}
+  prompt_version: v1.2          # v1.1: çoktan seçmeli "talimatta soru/şık/cevap yer almaz" + Türkçe harf kuralı; v1.2: cevapta "metne göre" yok, sınıflandırmada öğeler açıkça sayılır (24.10.2026)
   source_doc_max_chars: 9000   # 12 ornek icin yeterli kaynak metin (~2.300 token)
   taxonomy:                   # hedef oranlar
     tanim_aciklama: 0.16

@@ -1,5 +1,9 @@
-source_name,url,type,language,document_count,access_date,license,notes
-NASA Science,https://science.nasa.gov/,HTML,en,,2026-10-20,NASA_AI_and_media_usage_guidelines,Domain Corpus için astronomi metin kaynağı; NASA kaynak materyali kullanıldığı kayıt altına alınacak; üçüncü taraf telifli içerikler ayrıca kontrol edilecek; model çıktıları NASA tarafından üretilmiş veya onaylanmış gibi gösterilmeyecek
-NASA Exoplanet Archive,https://exoplanetarchive.ipac.caltech.edu/,structured_data,en,,2026-10-20,acknowledgement_and_source_citation_required,Güncel ötegezegen bilgileri için ileride RAG kaynağı; Archive ve ilgili bilimsel kaynaklar atıfla belirtilecek
-StackExchange Space QA,https://huggingface.co/datasets/juliensimon/stackexchange-space-qa,dataset,en,,2026-10-20,Dataset_card_CC-BY-SA-4.0,Instruction Dataset aday kaynağı; orijinal Stack Exchange gönderilerinin tarih bazlı lisansları bulunduğundan kaynak URL ve attribution bilgisi korunacak
-Wikipedia Astronomy,https://en.wikipedia.org/wiki/Portal:Astronomy,HTML,en,,2026-10-20,CC-BY-SA-4.0_and_GFDL,Yardımcı astronomi metin kaynağı; kullanılan makalelerin URL ve attribution bilgileri korunacak
+source_name,url,type,language,raw_document_count,document_count,token_count,access_date,license,notes
+nasa_science,https://science.nasa.gov/,HTML,en,3109,2849,2651698,2026-10-22,"NASA medya/içerik yönergeleri (kamuya açık, atıf)",Domain Corpus: güvenilir birincil kaynak; görev başına en fazla 150 sayfa
+nasa_apod,https://science.nasa.gov/apod/archive/,HTML,en,2720,2445,463041,2026-10-22,"NASA hizmeti; yalnız açıklama metni, görseller alınmadı",Domain Corpus: popüler bilim düzeyinde kısa açıklamalar; yıl başına 85 örnek (API çalışmadığı için site sayfalarından)
+openstax_astronomy_2e,https://openstax.org/details/books/astronomy-2e,PDF,en,243,238,498952,2026-10-22,CC BY-NC-SA 4.0,Domain Corpus: hakemli açık ders kitabı; kavramsal bütünlük
+arxiv_astro_ph,https://arxiv.org/archive/astro-ph,XML,en,6000,5953,2007161,2026-10-23,CC0 1.0 (arXiv metadata),Domain Corpus: ileri seviye terminoloji; yalnız başlık+özet
+wikipedia_en,https://en.wikipedia.org/,HTML/API,en,3576,3238,7868683,2026-10-22,CC BY-SA 4.0,"Domain Corpus: ikincil, durağan ansiklopedik bilgi"
+wikipedia_tr,https://tr.wikipedia.org/,HTML/API,tr,1737,1561,2742452,2026-10-23,CC BY-SA 4.0,Domain Corpus: Türkçe astronomi terminolojisi
+stackexchange_space_qa,https://huggingface.co/datasets/juliensimon/stackexchange-space-qa,dataset,en,33519,407,,2026-10-22,CC BY-SA 4.0,"Yalnız Instruction Dataset (soru_cevap); raw = veri setindeki kayıt, document_count = final instruction örneği"
+nasa_exoplanet_archive,https://exoplanetarchive.ipac.caltech.edu/,structured_data,en,,0,,,Atıf gerekli,"Corpus'a alınmadı; final dönemde RAG kaynağı (güncel, değişken tablo verisi)"

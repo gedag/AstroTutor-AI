@@ -79,8 +79,8 @@ def main() -> None:
             chunks += chunk_doc(d, tok)
         # alan sırası Rehber §9 örneğiyle aynı
         order = ["document_id", "title", "source", "url", "language", "document_type", "publication_year",
-                 "subtopic", "license", "retrieved_at", "raw_id", "group_key", "split", "char_count", "word_count",
-                 "token_count", "text"]
+                 "subtopic", "license", "retrieved_at", "raw_id", "group_key", "split", "postprocess", "char_count",
+                 "word_count", "token_count", "text"]
         write_jsonl(p("final") / f"{split}.jsonl", [{k: d.get(k) for k in order} for d in docs])
         write_jsonl(p("final") / "chunks" / f"{split}.jsonl", chunks)
         chunk_tokens += [c["token_count"] for c in chunks]

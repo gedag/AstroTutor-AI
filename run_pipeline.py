@@ -10,11 +10,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 CORPUS = ["01_download.py", "02_extract.py", "03_clean.py", "04_filter.py", "05_deduplicate.py", "06_split.py",
-          "07_token_count.py", "08_statistics.py"]
+          "06b_repost_dedup.py", "07_token_count.py", "08_statistics.py"]
 # Ücretsiz Gemini katmanında günlerce süren üretim için run_instruction_loop.py kullanılır.
 INSTR = ["09_build_instruction_sources.py --part se_ref", "09_build_instruction_sources.py --part doc",
          "10_generate_instructions.py", "11_verify_instructions.py", "12_split_instructions.py"]
-QC = ["13_sample_for_review.py", "14_qc_report.py", "validate_datasets.py"]
+QC = ["13_sample_for_review.py", "14_qc_report.py", "15_write_cards.py", "16_make_samples.py", "validate_datasets.py"]
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()

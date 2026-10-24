@@ -5,9 +5,9 @@ Dosya: `astronomy-2e.pdf` — rastgele 40 sayfa (seed 42).
 | Araç | Süre (sn) | >200 karakter çıkan sayfa | Toplam karakter | Boşluk kaybı şüphesi (25+ harf) |
 | --- | --- | --- | --- | --- |
 | PyMuPDF | 0.06 | 40/40 | 115,080 | 0 |
-| pdfplumber | 5.05 | 40/40 | 113,452 | 0 |
+| pdfplumber | 8.89 | 40/40 | 113,452 | 0 |
 
-PyMuPDF pdfplumber'dan yaklaşık 86 kat hızlı.
+PyMuPDF pdfplumber'dan yaklaşık 161 kat hızlı.
 
 ## Örnek sayfa (ilk 600 karakter)
 

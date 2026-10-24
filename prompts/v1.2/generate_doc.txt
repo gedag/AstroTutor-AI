@@ -1,0 +1,17 @@
+KAYNAK DOKÜMAN
+Başlık: {title}
+Kaynak: {source_name}
+Dil: {language}
+---
+{text}
+---
+
+Bu dokümana dayanarak aşağıdaki {n} örneği SIRASIYLA üret. Her örnek listedeki görev türü ve seviyeye uymalı.
+
+{task_list}
+
+Görev türlerinin tanımları:
+{task_defs}
+
+Doküman bir örneğin görev türü için yeterli bilgi içermiyorsa o örneği yine de üret ama kapsamı dokümandaki bilgiyle sınırlı tut; asla bilgi uydurma.
+Her örnekte task_type ve level alanlarını listedeki değerlerle aynen doldur.

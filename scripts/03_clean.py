@@ -122,10 +122,45 @@ def clean_pdf(t: str) -> str:
 
 WIKI_DROP_SECTIONS = {
     "en": {"references", "external links", "see also", "further reading", "notes", "bibliography", "sources",
-           "footnotes", "citations", "notes and references", "explanatory notes", "gallery"},
+           "footnotes", "citations", "notes and references", "explanatory notes", "gallery", "publications",
+           "selected publications", "selected bibliography", "selected works", "works", "selected papers"},
     "tr": {"kaynakça", "dış bağlantılar", "ayrıca bakınız", "notlar", "kaynaklar", "ek okumalar", "dipnotlar",
-           "konuyla ilgili yayınlar", "galeri", "ileri okuma"},
+           "konuyla ilgili yayınlar", "galeri", "ileri okuma", "yayınlar", "yayınları", "seçilmiş yayınlar",
+           "eserleri", "eserler"},
 }
+
+# ---------------------------------------------------------------- Kaynakça girdisi satırları
+# "Campbell, B. A., Jawin, E. R. (2025). Refined ... Icarus 425, 116324. doi:..." biçimli satırlar.
+# Metin içi atıflar ("... (Bechtol et al., 2015)") düzyazının parçasıdır, SİLİNMEZ: kural yalnız satır
+# yazar adı + baş harf kalıbıyla BAŞLIYORSA ve yıl + yayın işareti (doi, dergi, cilt, sayfa) içeriyorsa uygulanır.
+_PARTICLE = r"(?:(?:van|von|de|der|den|del|della|di|du|da|la|le|al|el|dos|das|ten|ter)\s)*"
+_AUTHOR = _PARTICLE + r"[A-Z][\w'’\-]+(?:\s[A-Z][\w'’\-]+)?,\s?(?:[A-Z]\.\s?-?){1,3}"
+BIB_START = re.compile(r"^[*‡†\s]*" + _AUTHOR)
+BIB_AUTHOR = re.compile(_AUTHOR)
+BIB_YEAR = re.compile(r"\b(19|20)\d{2}[a-z]?\b")
+BIB_MARK = re.compile(r"doi|bibcode|arxiv:|\bvol\.|\bpp?\.\s?\d|geophys|astrophys|icarus|\bapj\b|\ba&a\b|journal|"
+                      r"proceedings|conference|abstract|letters|review|science,|nature,|in press|submitted|"
+                      r"circular|bulletin|monthly notices|mnras", re.I)
+AUTHORS_LIST = re.compile(r"Authors?:\s")
+INITIAL_NAME = re.compile(r"\b[A-Z]\.\s?(?:[A-Z]\.\s?)?[A-Z][a-z]")
+
+
+def is_bib_entry(s: str) -> bool:
+    if len(s) < 40:
+        return False
+    if BIB_START.match(s) and BIB_YEAR.search(s) and (BIB_MARK.search(s) or len(BIB_AUTHOR.findall(s)) >= 2):
+        return True
+    return bool(AUTHORS_LIST.search(s) and len(INITIAL_NAME.findall(s)) >= 5)
+
+
+def drop_bib_entries(t: str) -> tuple[str, float]:
+    """Kaynakça girdisi satırlarını siler; (metin, silinen satır oranı) döndürür."""
+    lines = t.splitlines()
+    nonempty = [x for x in lines if x.strip()]
+    out = [x for x in lines if not is_bib_entry(x.strip())]
+    n = len(lines) - len(out)
+    rule_hits["bibliography_entry_line"] += n
+    return "\n".join(out), n / max(len(nonempty), 1)
 
 
 def clean_wikipedia(t: str, lang: str) -> str:
@@ -175,6 +210,7 @@ def clean_apod(t: str) -> str:
 
 
 TEASER = re.compile(r"(…|\.\.\.)\s*$")
+ALPHA_INDEX = re.compile(r"(?m)^\s*(?:[A-Z]\s*\|\s*){5,}[A-Z]\s*$")
 
 
 def build_html_boilerplate(docs: list[dict]) -> set[str]:
@@ -230,21 +266,99 @@ def drop_short_lone_lines(t: str) -> str:
     return "\n".join(out)
 
 
-def clean_doc(d: dict, boiler: set[str]) -> str:
+def clean_doc(d: dict, boiler: set[str]) -> tuple[str, float]:
+    """(temiz metin, kaynakça satırı oranı) döndürür. Oran 04_filter'da 'reference_list' kararı için kullanılır."""
     t = unicode_normalize(d["text"])
     src = d["source"]
+    bib_ratio = 0.0
     if src == "openstax":
         t = clean_pdf(t)
     elif src.startswith("wikipedia"):
-        t = clean_wikipedia(t, src.split("_")[1])
+        t, bib_ratio = drop_bib_entries(clean_wikipedia(t, src.split("_")[1]))
     elif src == "nasa_apod":
         t = clean_apod(clean_html(t, boiler))
     elif src == "nasa_science":
-        t = clean_html(t, boiler)
+        t, bib_ratio = drop_bib_entries(clean_html(t, boiler))
+        n = len(ALPHA_INDEX.findall(t))
+        t = ALPHA_INDEX.sub("", t)  # sözlük sayfalarındaki "A | B | C | ..." harf dizini
+        rule_hits["glossary_alpha_index"] += n
     t = normalize_whitespace(t)
-    if src != "arxiv_astro_ph":  # arXiv özetinde başlık kısa olabilir, korunur
+    # Sözlük sayfalarında kısa satırlar TERİMDİR ("biomass", "bow shock"): kısa satır kuralı uygulanmaz.
+    # (24.10.2026 corpus incelemesi: kural 22 NASA sözlük sayfasında terimleri silip yalnız tanımları bırakıyordu.)
+    is_glossary = src == "nasa_science" and "glossary" in (d.get("url") or "").lower()
+    if src != "arxiv_astro_ph" and not is_glossary:  # arXiv özetinde başlık kısa olabilir, korunur
         t = drop_short_lone_lines(t)
-    return normalize_whitespace(t)
+    elif is_glossary:
+        rule_hits["glossary_terms_kept"] += 1
+    return normalize_whitespace(t), round(bib_ratio, 3)
+
+
+RULE_DOCS = [
+    # (anahtar, kural, ne yapar, neden)
+    ("superscript_to_caret", "Üs koruma (NFKC öncesi)", "10²³ -> 10^23, s⁻¹ -> s^-1",
+     "NFKC üst simgeleri düz rakama çevirir (10²³ -> 1023) ve sayının anlamı bozulur"),
+    (None, "Unicode NFKC", "Karakter varyantlarını tek biçime çeker (ﬁ -> fi, tam genişlikli karakterler)",
+     "Aynı kelime farklı kodlamalarla yazılmış olabilir; PDF bağlaçları (ligature) çözülür"),
+    (None, "Görünmez/kontrol karakterleri", "Yumuşak tire, sıfır genişlikli boşluk, BOM, kontrol karakterleri silinir",
+     "Tokenizer'da gereksiz token üretir, görünmez olduğu için fark edilmez"),
+    ("pdf_header_footer", "PDF tekrarlayan satır", "Rakamlar normalize edildiğinde 5+ sayfada tekrar eden ve "
+     "header/footer biçimindeki satırları siler", "Sayfa başlığı/altbilgi ('Access for free at openstax.org')"),
+    ("pdf_running_header", "PDF bölüm başlığı satırı", "'78 3 • Orbits and Gravity' biçimli satırlar",
+     "Tek sayfalardaki bölüm başlıkları 5 sayfa eşiğinin altında kalıyordu"),
+    ("pdf_box_label", "PDF kutu etiketleri", "'LINK TO LEARNING', 'Learning Objectives' gibi etiket satırları",
+     "Bilgi taşımayan düzen etiketi"),
+    ("pdf_link_to_learning_paragraph", "Link to Learning paragrafları", "openstax.org/l/ kısa bağlantısı içeren paragraflar",
+     "Dış video/animasyon yönlendirmesi; alan bilgisi değil"),
+    ("figure_credit_parenthetical", "Görsel kredisi", "'(credit: ...)' parantezleri",
+     "Görsel sahibi bilgisi; metin bilgisi değil (görseller zaten alınmadı)"),
+    ("pdf_dehyphenate", "Satır sonu tirelemesi", "'distri-\\nbution' -> 'distribution' (yalnız küçük harfle devam ederse)",
+     "PDF satır kaydırması kelimeyi böler; 'X-ray' gibi gerçek tireler korunur"),
+    ("pdf_page_break_join", "Sayfa sonu paragraf birleştirme", "Cümle sonu olmadan biten paragraf + küçük harfle "
+     "başlayan devamı birleştirilir", "Sayfa sınırı paragrafı ikiye bölüyordu"),
+    ("pdf_heading_detected", "Alt başlık işaretleme", "Kısa, noktalama ile bitmeyen satırlar '## ' başlığı olur",
+     "Başlık sonraki paragrafa yapışıyordu; başlıklar chunk sınırı olarak da kullanılır"),
+    ("wiki_drop_section", "Wikipedia kaynakça bölümleri", "References, See also, External links, Kaynakça, Dış "
+     "bağlantılar... bölümleri atılır", "Kaynak listesi ve bağlantılar alan metni değil"),
+    ("bibliography_entry_line", "Kaynakça girdisi satırı", "'Soyadı, A. B. (yıl). Başlık. Dergi, cilt, doi' "
+     "biçimiyle BAŞLAYAN satırlar (NASA Science ve Wikipedia)", "Yayın listesi alan metni değil; düzyazıdaki "
+     "metin içi atıflar ('(Bechtol et al., 2015)') korunur"),
+    ("wiki_empty_heading", "Boş başlık", "Altında içerik kalmayan başlıklar silinir", "Bölüm atımından sonra kalan artık"),
+    ("html_boilerplate_line", "Site menüsü / şablon satırı", "Kaynağın %2'sinden (en az 5) fazla dokümanında tekrar "
+     "eden 100 karakterden kısa satırlar", "'Share', 'Keep Exploring', 'Discover More Topics From NASA' gibi menüler"),
+    ("html_repeated_paragraph", "Tekrarlanan bilgi paragrafı", "Çok dokümanda geçen 100+ karakterlik paragraf yalnız "
+     "ilk geçtiği dokümanda tutulur", "Bilgi korunur ama aynı paragraf corpus'ta defalarca yer almaz"),
+    ("html_truncated_teaser", "Kesik tanıtım cümlesi", "'…' veya '...' ile biten satırlar",
+     "Hub sayfalarındaki yarım cümleler; bilgi taşımaz"),
+    ("html_heading_kept", "HTML alt başlık koruma", "Kısa başlık satırı, ardından uzun paragraf geliyorsa '## ' ile korunur",
+     "Kısa satır kuralının başlıkları silmesini önler"),
+    ("apod_credit_footer", "APOD kredi/altbilgi", "'Image Credit', 'Copyright', 'Tomorrow's picture' satırları",
+     "Kişi adı içeren kredi satırı ve site altbilgisi"),
+    ("short_lone_line", "Kısa yalnız satır", "20 karakterden kısa, rakam içermeyen, başlık olmayan satırlar "
+     "(NASA sözlük sayfaları hariç)", "Menü ve sayfa numarası kalıntıları; rakamlı bilgi satırları "
+     "(ör. '5,97 × 10^24 kg') korunur"),
+    ("glossary_terms_kept", "Sözlük terimleri korunur", "NASA sözlük sayfalarında kısa satır kuralı uygulanmaz "
+     "(sayfa sayısı)", "Sözlükte kısa satırlar terimdir ('biomass', 'bow shock'); ilk sürüm terimleri silip yalnız "
+     "tanımları bırakıyordu"),
+    ("glossary_alpha_index", "Sözlük harf dizini", "'A | B | C | ...' satırları", "Navigasyon; bilgi taşımaz"),
+    (None, "Whitespace normalizasyonu", "Ardışık boşluklar teke, 3+ boş satır ikiye indirilir",
+     "PDF sütun hizalaması bozuk boşluk üretir"),
+]
+
+
+def write_rules_md(per_src: dict) -> None:
+    md = ["# Temizleme Kuralları", "",
+          "Bu dosya `scripts/03_clean.py` tarafından üretilir. Kurallar bilgiyi koruyacak şekilde dar tutuldu: "
+          "**sayılar, birimler, formüller, LaTeX ve 'CO2', 'Alternaria solani' türü terimler silinmez** "
+          "(Vize Rehberi §7: `re.sub(r'\\d+', '', text)` gibi kaba kurallar kullanılmadı).", "",
+          "| Kural | Ne yapar | Neden | Uygulama sayısı |", "| --- | --- | --- | --- |"]
+    for key, name, what, why in RULE_DOCS:
+        md.append(f"| {name} | {what} | {why} | {rule_hits.get(key, 0):,} |" if key else f"| {name} | {what} | {why} | tüm metin |")
+    md += ["", "## Kaynak bazında etki", "", "| Kaynak | Doküman | Karakter (önce) | Karakter (sonra) | Silinen oran |",
+           "| --- | --- | --- | --- | --- |"]
+    for src, v in per_src.items():
+        md.append(f"| {src} | {v['docs']:,} | {v['chars_before']:,} | {v['chars_after']:,} | %{100 * v['removed_ratio']:.1f} |")
+    md += ["", "Öncesi/sonrası örnekleri: [cleaning_examples.md](cleaning_examples.md)"]
+    (p("reports") / "cleaning_rules.md").write_text("\n".join(md) + "\n", encoding="utf-8")
 
 
 def main() -> None:
@@ -262,7 +376,8 @@ def main() -> None:
         out = []
         for d in docs:
             raw = d["text"]
-            d = {**d, "text": clean_doc(d, boiler)}
+            text, bib_ratio = clean_doc(d, boiler)
+            d = {**d, "text": text, "bib_line_ratio": bib_ratio}
             before += len(raw)
             after += len(d["text"])
             out.append(d)
@@ -284,6 +399,7 @@ def main() -> None:
                b["text"][:1200], "```", "**SONRA**", "```text", a["text"][:1200], "```", ""]
     (p("reports") / "cleaning_examples.md").write_text("\n".join(md), encoding="utf-8")
     log.info(f"Kural isabetleri: {dict(rule_hits)}")
+    write_rules_md(per_src)
 
 
 if __name__ == "__main__":

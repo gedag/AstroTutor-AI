@@ -6,7 +6,9 @@ Near duplicate  : kelime 5-gram shingle'ları üzerinde MinHash LSH ile aday bul
 Hangisinin tutulacağı: önce birincil kaynak (OpenStax > NASA Science > APOD > Wikipedia EN > Wikipedia TR > arXiv),
 eşitse daha uzun doküman.
 
-Eşik doğrulaması için Jaccard 0.60-1.00 aralığından 50 aday çift reports/qc/near_dup_pairs_review.csv'ye yazılır.
+Eşik doğrulaması için LSH aday çiftlerinden 50'si (yarısı eşiğin üstünden, yarısı altından; seed 42+5)
+reports/qc/near_dup_pairs_review.csv'ye yazılır
+(claude_* = yapay zekâ destekli ön inceleme, son_karar_* = grup üyesinin kararı; dolu kararlar korunur).
 Çıktı: data/interim/corpus_v0.9.jsonl
 """
 from __future__ import annotations
@@ -153,17 +155,29 @@ def main() -> None:
 
     # ---- eşik inceleme tablosu
     r = rng(5)
-    hi = [x for x in pairs if x[0] >= thr]
-    lo = [x for x in pairs if x[0] < thr]
+    # sıralama şart: LSH sorgu sonuçları küme (set) olarak döner ve sırası çalıştırmadan çalıştırmaya değişir;
+    # sıralanmazsa aynı seed ile farklı inceleme örneklemi çıkıyordu (24.10.2026)
+    hi = sorted(x for x in pairs if x[0] >= thr)
+    lo = sorted(x for x in pairs if x[0] < thr)
     half = D["review_pairs"] // 2
     sample = r.sample(hi, min(half, len(hi))) + r.sample(lo, min(D["review_pairs"] - min(half, len(hi)), len(lo)))
-    with open(p("qc") / "near_dup_pairs_review.csv", "w", encoding="utf-8", newline="") as f:
+    # İnceleme iki aşamalı ve ayrı sütunlarda: claude_* = yapay zekâ destekli ön inceleme, son_karar_* = grup
+    # üyesinin nihai kararı. Script yeniden çalıştırılırsa doldurulmuş kararlar (id_a, id_b) eşleşmesiyle korunur.
+    review_f = p("qc") / "near_dup_pairs_review.csv"
+    review_cols = ["claude_tekrar_mi", "claude_gerekce", "son_karar_tekrar_mi", "insan_notu"]
+    prev = {}
+    if review_f.exists():
+        with open(review_f, encoding="utf-8-sig") as f:
+            prev = {(x["id_a"], x["id_b"]): x for x in csv.DictReader(f)}
+    with open(review_f, "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f)
         w.writerow(["jaccard", "above_threshold", "id_a", "id_b", "title_a", "title_b", "snippet_a", "snippet_b",
-                    "is_duplicate_human(evet/hayir)", "note"])
+                    *review_cols])
         for j, a, b in sorted(sample, reverse=True):
+            old = prev.get((a, b), {})
             w.writerow([f"{j:.3f}", j >= thr, a, b, by_id[a].get("title"), by_id[b].get("title"),
-                        by_id[a]["text"][:400].replace("\n", " "), by_id[b]["text"][:400].replace("\n", " "), "", ""])
+                        by_id[a]["text"][:400].replace("\n", " "), by_id[b]["text"][:400].replace("\n", " "),
+                        *[old.get(c, "") for c in review_cols]])
     hist = Counter(round(int(x[0] * 20) / 20, 2) for x in pairs)
 
     # ---- metadata (Rehber §9)

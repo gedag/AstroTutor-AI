@@ -1,0 +1,54 @@
+{
+  "exponent_fixes": 1934,
+  "exponent_fixed_docs_by_source": {
+    "arxiv_astro_ph": 2,
+    "nasa_science": 6,
+    "openstax_astronomy_2e": 20,
+    "wikipedia_en": 602,
+    "wikipedia_tr": 117
+  },
+  "apod_notice_lines": 84,
+  "apod_docs_touched": 84,
+  "press_boilerplate_lines": {
+    "contact_block": 467,
+    "pii_line": 268,
+    "credit": 77,
+    "more_info": 174,
+    "link_only": 119,
+    "separator": 19,
+    "center_line": 181
+  },
+  "press_docs_touched": 531,
+  "pii_inline_scrubbed": 47,
+  "press_big_cut_docs": [
+    "DOC_009932",
+    "DOC_008637",
+    "DOC_009707",
+    "DOC_011295",
+    "DOC_010318"
+  ],
+  "repost_removed": 140,
+  "repost_removed_by_source": {
+    "nasa_apod": 137,
+    "nasa_science": 3
+  },
+  "removed_pairs_across_splits": 33,
+  "kept_both_instruction_sources": [],
+  "rules": {
+    "nasa_apod": {
+      "jaccard": 0.5,
+      "char_ratio": 0.85
+    },
+    "nasa_science": {
+      "jaccard": 0.75,
+      "char_ratio": 0.9
+    }
+  },
+  "other_removed": {
+    "contact_page": 7,
+    "too_short_after_06b": 1,
+    "fiction_work_06b": 4
+  },
+  "arxiv_subtopic_relabeled": 1307,
+  "final_docs": 16284
+}

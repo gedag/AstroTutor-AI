@@ -1,0 +1,26 @@
+{
+  "stackexchange_total": 33519,
+  "stackexchange_candidates_selected": 449,
+  "stackexchange_removed": {
+    "length_out_of_range": 2880,
+    "depends_on_image": 522,
+    "out_of_scope_tag": 4444,
+    "out_of_domain": 392,
+    "low_score": 9822,
+    "no_answer": 4891
+  },
+  "doc_jobs": 333,
+  "doc_examples_planned": 3474,
+  "se_jobs": 45,
+  "refusal_jobs": 10,
+  "planned_by_type": {
+    "karsilastirma": 365,
+    "tanim_aciklama": 574,
+    "siniflandirma": 241,
+    "ozetleme": 292,
+    "adim_adim_problem_cozme": 338,
+    "neden_sonuc": 355,
+    "coktan_secmeli_soru_uretimi": 774,
+    "seviyeli_anlatim": 535
+  }
+}

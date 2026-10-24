@@ -271,36 +271,57 @@ def dl_wikipedia(key: str, dry: bool) -> None:
             cont = d["continue"]
 
     cand_file = src_dir / "candidates.json"
+    empty_file = src_dir / "empty_categories.json"
+
+    def select(cat: str, seen: set) -> list[dict] | None:
+        full = cat_ns + cat
+        pages = members(full, "page")
+        for sc in members(full, "subcat")[:40]:  # derinlik 1
+            pages += members(sc["title"], "page")
+        if not pages:
+            log.warning(f"{lang}: kategori boş/bulunamadı: {full}")
+            return None
+        pages = [x for x in pages if x.get("ns") == 0 and x.get("length", 0) >= c["min_bytes"]
+                 and not list_re.search(x["title"])]
+        uniq = {x["pageid"]: x for x in pages}
+        out = []
+        for x in sorted(uniq.values(), key=lambda x: -x.get("length", 0)):
+            if x["pageid"] in seen:
+                continue
+            seen.add(x["pageid"])
+            out.append({"pageid": x["pageid"], "title": x["title"], "length": x.get("length"),
+                        "wikidata": x.get("pageprops", {}).get("wikibase_item"), "category": cat})
+            if len(out) >= c["per_category"]:
+                break
+        log.info(f"{lang}: {full}: {len(uniq)} aday sayfa, {len(out)} seçildi")
+        return out
+
+    empty = set(json.loads(empty_file.read_text(encoding="utf-8"))) if empty_file.exists() else set()
     if cand_file.exists():
         chosen = json.loads(cand_file.read_text(encoding="utf-8"))
+        # Config'e sonradan eklenen / adı düzeltilen kategoriler: mevcut seçim BOZULMADAN eklenir
+        have = {x["category"] for x in chosen}
+        missing = [cat for cat in c["categories"] if cat not in have and cat not in empty]
+        if missing:
+            seen = {x["pageid"] for x in chosen}
+            for cat in missing:
+                got = select(cat, seen)
+                if got is None:
+                    empty.add(cat)
+                else:
+                    chosen += got
+            cand_file.write_text(json.dumps(chosen, ensure_ascii=False, indent=1), encoding="utf-8")
     else:
         chosen, seen = [], set()
         for cat in c["categories"]:
-            full = cat_ns + cat
-            pages = members(full, "page")
-            subcats = members(full, "subcat")
-            for sc in subcats[:40]:  # derinlik 1
-                pages += members(sc["title"], "page")
-            if not pages:
-                log.warning(f"{lang}: kategori boş/bulunamadı: {full}")
-                continue
-            pages = [x for x in pages if x.get("ns") == 0 and x.get("length", 0) >= c["min_bytes"]
-                     and not list_re.search(x["title"])]
-            uniq = {x["pageid"]: x for x in pages}
-            pages = sorted(uniq.values(), key=lambda x: -x.get("length", 0))
-            added = 0
-            for x in pages:
-                if x["pageid"] in seen:
-                    continue
-                seen.add(x["pageid"])
-                chosen.append({"pageid": x["pageid"], "title": x["title"], "length": x.get("length"),
-                               "wikidata": x.get("pageprops", {}).get("wikibase_item"), "category": cat})
-                added += 1
-                if added >= c["per_category"]:
-                    break
-            log.info(f"{lang}: {full}: {len(uniq)} aday sayfa, {added} seçildi (toplam {len(chosen)})")
+            got = select(cat, seen)
+            if got is None:
+                empty.add(cat)
+            else:
+                chosen += got
         chosen = chosen[: c["max_documents"]]
         cand_file.write_text(json.dumps(chosen, ensure_ascii=False, indent=1), encoding="utf-8")
+    empty_file.write_text(json.dumps(sorted(empty), ensure_ascii=False), encoding="utf-8")
     log.info(f"wikipedia_{lang}: {len(chosen)} madde seçildi")
     if dry:
         return
@@ -325,6 +346,33 @@ def dl_wikipedia(key: str, dry: bool) -> None:
         if i % 200 == 0:
             log.info(f"wikipedia_{lang}: {i}/{len(chosen)}")
     log.info(f"wikipedia_{lang}: bitti")
+    wiki_page_categories(sess, c["api"], src_dir, [x["pageid"] for x in chosen])
+
+
+def wiki_page_categories(sess: PoliteSession, api: str, src_dir: Path, pageids: list[int]) -> None:
+    """Her maddenin kendi (gizli olmayan) kategorilerini kaydeder: page_categories.json {pageid: [kategori,...]}.
+    04_filter alan kontrolünde kullanır. Gerekçe: kategori gezintisi alt kategorilere indiği için kurgu, bayrak,
+    genel spektroskopi gibi alan dışı maddeler de seçilebiliyor (23.10.2026)."""
+    out_file = src_dir / "page_categories.json"
+    cats = json.loads(out_file.read_text(encoding="utf-8")) if out_file.exists() else {}
+    todo = [pid for pid in pageids if str(pid) not in cats]
+    for i in range(0, len(todo), 50):
+        batch = todo[i:i + 50]
+        got: dict[str, list[str]] = {str(pid): [] for pid in batch}
+        cont: dict = {}
+        while True:
+            params = {"action": "query", "format": "json", "formatversion": "2", "prop": "categories",
+                      "clshow": "!hidden", "cllimit": "max", "pageids": "|".join(map(str, batch)),
+                      "maxlag": "5", **cont}
+            d = sess.get(api, params=params).json()
+            for pg in d.get("query", {}).get("pages", []):
+                got[str(pg["pageid"])] += [x["title"].split(":", 1)[1] for x in pg.get("categories", [])]
+            if "continue" not in d:
+                break
+            cont = d["continue"]
+        cats.update(got)
+        out_file.write_text(json.dumps(cats, ensure_ascii=False, indent=0), encoding="utf-8")
+    log.info(f"{src_dir.name}: {len(cats)} maddenin kategorileri kayıtlı")
 
 
 # --------------------------------------------------------------------------- Hugging Face

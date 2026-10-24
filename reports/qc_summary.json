@@ -1,0 +1,67 @@
+{
+  "corpus_auto": {
+    "Doküman sayısı": 16284,
+    "Boş metin": 0,
+    "300 karakterden kısa": 0,
+    "Benzersiz document_id": "evet",
+    "Kaynak / URL / lisans eksik": 0,
+    "Dil en/tr dışında": 0,
+    "Bozuk karakter (U+FFFD) içeren": 1,
+    "token_count eksik": 0,
+    "Aynı grup birden fazla kümede": 0
+  },
+  "instruction_auto": {
+    "Örnek sayısı": 3340,
+    "Benzersiz id": "evet",
+    "messages biçimi hatalı": 0,
+    "Kaynak bilgisi eksik": 0,
+    "Çoktan seçmeli JSON geçerli": "451/451",
+    "Aynı kaynak doküman birden fazla kümede": 0,
+    "LLM yargıç örneklemi (örnek)": 0,
+    "LLM yargıç başarısızlık oranı (tahmini hata oranı)": "-"
+  },
+  "corpus_review": {
+    "sample": 100,
+    "pre_reviewed": 100,
+    "human_reviewed": 100,
+    "pre_okunabilir": 1.0,
+    "pre_dogru_domain": 0.98,
+    "pre_extraction_dogru": 0.95,
+    "pre_header_footer_temiz": 1.0,
+    "pre_bozuk_karakter_yok": 1.0,
+    "pre_metadata_dogru": 0.93,
+    "pre_pass_rate": 0.88,
+    "human_pass_rate": 0.88,
+    "human_approved_pre": 100,
+    "error_types": {
+      "extraction_eksik": 2,
+      "alan_disi": 2,
+      "alt_konu_hatali": 7,
+      "liste_sayfasi": 1,
+      "tablo_eksik": 1,
+      "formul_kalintisi": 2
+    }
+  },
+  "instruction_review": {
+    "sample": 0,
+    "pre_reviewed": 0,
+    "human_reviewed": 0
+  },
+  "near_dup_threshold_agreement_pre": 0.64,
+  "near_dup_pre": {
+    "pairs": 50,
+    "above": 25,
+    "below": 25,
+    "false_removals": 0,
+    "missed": 18
+  },
+  "near_dup_human_is_approval": true,
+  "near_dup_threshold_agreement_human": 0.64,
+  "near_dup_human": {
+    "pairs": 50,
+    "above": 25,
+    "below": 25,
+    "false_removals": 0,
+    "missed": 18
+  }
+}

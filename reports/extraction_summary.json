@@ -1,0 +1,39 @@
+{
+  "per_source": {
+    "nasa_science": {
+      "raw": 3109,
+      "failed": 41,
+      "ok": 3068
+    },
+    "nasa_apod": {
+      "raw": 2720,
+      "failed": 3,
+      "ok": 2717
+    },
+    "openstax": {
+      "raw": 243,
+      "failed": 1,
+      "ok": 242
+    },
+    "arxiv_astro_ph": {
+      "raw": 6000,
+      "ok": 6000
+    },
+    "wikipedia_en": {
+      "raw": 3576,
+      "failed": 1,
+      "ok": 3575
+    },
+    "wikipedia_tr": {
+      "raw": 1737,
+      "failed": 5,
+      "ok": 1732
+    }
+  },
+  "total": {
+    "raw": 17385,
+    "failed": 51,
+    "ok": 17334
+  },
+  "failure_rate": 0.0029
+}

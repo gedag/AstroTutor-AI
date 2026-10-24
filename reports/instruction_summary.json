@@ -1,0 +1,77 @@
+{
+  "total": 3340,
+  "splits": {
+    "test": 155,
+    "train": 3031,
+    "validation": 154
+  },
+  "task_types": {
+    "ozetleme": 260,
+    "neden_sonuc": 336,
+    "coktan_secmeli_soru_uretimi": 451,
+    "tanim_aciklama": 520,
+    "seviyeli_anlatim": 497,
+    "adim_adim_problem_cozme": 247,
+    "karsilastirma": 324,
+    "siniflandirma": 151,
+    "bilgi_yetersizligi_kapsam_disi": 147,
+    "soru_cevap": 407
+  },
+  "levels": {
+    "ileri": 1049,
+    "orta": 1110,
+    "baslangic": 1181
+  },
+  "sources": {
+    "arxiv_astro_ph": 113,
+    "nasa_science": 777,
+    "openstax_astronomy_2e": 773,
+    "wikipedia_en": 759,
+    "wikipedia_tr": 364,
+    "none": 147,
+    "stackexchange_space_qa": 407
+  },
+  "methods": {
+    "llm_sentetik_kaynak_dokumandan": 2786,
+    "llm_sentetik_kapsam_disi": 147,
+    "llm_ceviri_duzenleme_stackexchange": 407
+  },
+  "task_type_by_split": {
+    "test": {
+      "ozetleme": 11,
+      "neden_sonuc": 14,
+      "coktan_secmeli_soru_uretimi": 21,
+      "seviyeli_anlatim": 22,
+      "siniflandirma": 10,
+      "tanim_aciklama": 21,
+      "adim_adim_problem_cozme": 16,
+      "karsilastirma": 12,
+      "bilgi_yetersizligi_kapsam_disi": 6,
+      "soru_cevap": 22
+    },
+    "train": {
+      "tanim_aciklama": 483,
+      "coktan_secmeli_soru_uretimi": 396,
+      "seviyeli_anlatim": 450,
+      "ozetleme": 236,
+      "neden_sonuc": 304,
+      "adim_adim_problem_cozme": 229,
+      "karsilastirma": 297,
+      "siniflandirma": 138,
+      "bilgi_yetersizligi_kapsam_disi": 131,
+      "soru_cevap": 367
+    },
+    "validation": {
+      "neden_sonuc": 18,
+      "ozetleme": 13,
+      "tanim_aciklama": 16,
+      "coktan_secmeli_soru_uretimi": 34,
+      "seviyeli_anlatim": 25,
+      "karsilastirma": 15,
+      "siniflandirma": 3,
+      "adim_adim_problem_cozme": 2,
+      "bilgi_yetersizligi_kapsam_disi": 10,
+      "soru_cevap": 18
+    }
+  }
+}

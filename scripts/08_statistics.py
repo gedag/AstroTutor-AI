@@ -64,6 +64,7 @@ def hbar(labels: list[str], values: list[float], title: str, fname: str, xlabel:
 
 def main() -> None:
     ext, flt, ded, tok = j("extraction_summary.json"), j("filter_summary.json"), j("dedup_summary.json"), j("token_stats.json")
+    d2 = j("dedup2_summary.json") if (R / "dedup2_summary.json").exists() else {}
     docs = []
     for s in ("train", "validation", "test"):
         docs += list(read_jsonl(p("final") / f"{s}.jsonl"))
@@ -96,6 +97,10 @@ def main() -> None:
           f"| Filtering sonrası | {fmt(n_filtered)} |",
           f"| Exact duplicate | {fmt(ded.get('exact_duplicates', 0))} |",
           f"| Near duplicate (Jaccard ≥ {ded.get('threshold')}) | {fmt(ded.get('near_duplicates', 0))} |",
+          f"| Yeniden yayın tekrarı (06b; APOD ve NASA Science, kimlik ve kümeler korunarak) | "
+          f"{fmt(d2.get('repost_removed', 0))} |",
+          f"| İletişim dizini sayfası / temizlik sonrası çok kısa (06b) | "
+          f"{fmt(sum(d2.get('other_removed', {}).values()))} |",
           f"| Final doküman | {fmt(len(docs))} |",
           f"| Toplam kelime | {fmt(words)} |",
           f"| Toplam token ({tok.get('tokenizer')}) | {fmt(tokens)} |",
@@ -197,9 +202,15 @@ def main() -> None:
     (R / "statistics.md").write_text("\n".join(md) + "\n", encoding="utf-8")
     (R / "statistics_summary.json").write_text(json.dumps({
         "sources": len(src_names), "raw": n_raw, "extraction_ok": n_ext_ok, "extraction_failed": n_ext_fail,
-        "after_filter": n_filtered, "exact_dup": ded.get("exact_duplicates"), "near_dup": ded.get("near_duplicates"),
+        "after_filter": n_filtered, "exact_dup": ded.get("exact_duplicates"), "near_dup": ded.get("near_duplicates"), "repost_dup": d2.get("repost_removed", 0),
         "final_docs": len(docs), "words": words, "tokens": tokens, "lang_token_share": dict(lang_tok),
         "removed_by_reason": dict(reasons), "subtopics": dict(sub), "splits": dict(sp)}, indent=2), encoding="utf-8")
+    # 06'nın yazdığı split özeti 06b'den önceki sayıları taşır; final kümelerle yeniden yazılır
+    (R / "split_summary.json").write_text(json.dumps(
+        {s: {"documents": sum(1 for d in docs if d["split"] == s),
+             "by_source": dict(Counter(d["source"] for d in docs if d["split"] == s))}
+         for s in ("train", "validation", "test")} | {"note": "final kümeler (06b sonrası, 08 tarafından)"},
+        indent=2), encoding="utf-8")
     log.info(f"statistics.md yazıldı: {len(docs)} doküman, {tokens:,} token")
 
 

@@ -1,0 +1,1051 @@
+id,stage,reason,source,detail
+NASA_000fbadbe6d4,filter,too_short,nasa_science,193 chars
+NASA_016169264e9e,filter,too_short,nasa_science,295 chars
+NASA_032a4ec71c7d,filter,too_short,nasa_science,239 chars
+NASA_041ab6f06ebe,filter,too_short,nasa_science,29 chars
+NASA_045f925c3c7e,filter,too_short,nasa_science,65 chars
+NASA_07a102b9a3a9,filter,too_short,nasa_science,38 chars
+NASA_083d1e48952b,filter,too_short,nasa_science,151 chars
+NASA_09251517cdf5,filter,too_short,nasa_science,10 chars
+NASA_0ba50916275a,filter,too_short,nasa_science,21 chars
+NASA_0bd9adeea686,filter,too_short,nasa_science,272 chars
+NASA_0c65972a0518,filter,too_short,nasa_science,137 chars
+NASA_0d59914ae6e3,filter,too_short,nasa_science,204 chars
+NASA_0dd9edf40d39,filter,reference_list,nasa_science,bib_line_ratio=0.906
+NASA_0f591fccb3af,filter,too_short,nasa_science,280 chars
+NASA_0f75638b9112,filter,too_short,nasa_science,16 chars
+NASA_0ffe1c62093a,filter,too_short,nasa_science,179 chars
+NASA_116583416311,filter,too_short,nasa_science,211 chars
+NASA_1320e92c7ce6,filter,too_short,nasa_science,79 chars
+NASA_142893c7166b,filter,too_short,nasa_science,201 chars
+NASA_150343776ccf,filter,too_short,nasa_science,283 chars
+NASA_153fd1e4f10f,filter,too_short,nasa_science,15 chars
+NASA_186354725edb,filter,too_short,nasa_science,220 chars
+NASA_1c74551a4750,filter,too_short,nasa_science,196 chars
+NASA_1c8cf8d45e70,filter,too_short,nasa_science,275 chars
+NASA_1ce1ae0d91fc,filter,too_short,nasa_science,24 chars
+NASA_1ce3f1106ad8,filter,garbled,nasa_science,garbled=0.000 symbol=0.55
+NASA_1d702d36cd5f,filter,too_short,nasa_science,15 chars
+NASA_1ddd92adb2a3,filter,too_short,nasa_science,157 chars
+NASA_1f8f1bdc301d,filter,out_of_domain,nasa_science,domain_score=0.0 off_topic=0
+NASA_200d9be399c5,filter,too_short,nasa_science,21 chars
+NASA_20979ec3afca,filter,wrong_language,nasa_science,es
+NASA_20cc2ffd6bd3,filter,too_short,nasa_science,275 chars
+NASA_221b8157996d,filter,too_short,nasa_science,260 chars
+NASA_22fee67fdc6d,filter,too_short,nasa_science,292 chars
+NASA_24f4d19dc578,filter,too_short,nasa_science,24 chars
+NASA_265dee601bfe,filter,too_short,nasa_science,14 chars
+NASA_266bc98b7b13,filter,reference_list,nasa_science,bib_line_ratio=0.809
+NASA_2745098f35b0,filter,too_short,nasa_science,282 chars
+NASA_276ddd7f1314,filter,wrong_language,nasa_science,la
+NASA_27dd7a2b0f7b,filter,too_short,nasa_science,241 chars
+NASA_28987f1916ab,filter,too_short,nasa_science,172 chars
+NASA_2a8c073f92c9,filter,too_short,nasa_science,192 chars
+NASA_2ab437d7dcbb,filter,too_short,nasa_science,169 chars
+NASA_2ac894111aed,filter,too_short,nasa_science,10 chars
+NASA_2ad166115878,filter,too_short,nasa_science,189 chars
+NASA_2af2dcf71eb7,filter,out_of_domain,nasa_science,domain_score=0.0 off_topic=0
+NASA_2b9995bad914,filter,too_short,nasa_science,167 chars
+NASA_30db3ec262d1,filter,too_short,nasa_science,249 chars
+NASA_321dc224fea1,filter,too_short,nasa_science,10 chars
+NASA_368161379b84,filter,too_short,nasa_science,15 chars
+NASA_385a59f79384,filter,too_short,nasa_science,252 chars
+NASA_3aaed94df447,filter,too_short,nasa_science,187 chars
+NASA_3c56aab35ce2,filter,too_short,nasa_science,287 chars
+NASA_3dfd5ea5cd6c,filter,too_short,nasa_science,159 chars
+NASA_3dfe62a6cad4,filter,too_short,nasa_science,258 chars
+NASA_44c0220508fb,filter,too_short,nasa_science,56 chars
+NASA_4535af4cdc1b,filter,too_short,nasa_science,170 chars
+NASA_4654cb53208a,filter,too_short,nasa_science,259 chars
+NASA_478ae05ccd54,filter,out_of_domain,nasa_science,domain_score=0.0 off_topic=0
+NASA_49fa4410a60e,filter,too_short,nasa_science,15 chars
+NASA_4ba7c1b25902,filter,too_short,nasa_science,117 chars
+NASA_4ca7cc2d80f6,filter,too_short,nasa_science,228 chars
+NASA_4d6cafcc59b8,filter,too_short,nasa_science,50 chars
+NASA_4de5d4fe3d10,filter,garbled,nasa_science,garbled=0.000 symbol=0.76
+NASA_4de68beea1f0,filter,too_short,nasa_science,271 chars
+NASA_4eb129a4c7a8,filter,wrong_language,nasa_science,es
+NASA_4f651b13826f,filter,too_short,nasa_science,23 chars
+NASA_50c2b566478c,filter,too_short,nasa_science,279 chars
+NASA_51c8ae6177c4,filter,too_short,nasa_science,177 chars
+NASA_5458cf39a528,filter,too_short,nasa_science,299 chars
+NASA_5773019d4a64,filter,too_short,nasa_science,277 chars
+NASA_59f35f4d7d26,filter,too_short,nasa_science,15 chars
+NASA_5c2131169150,filter,too_short,nasa_science,10 chars
+NASA_5fbe36a81575,filter,too_short,nasa_science,201 chars
+NASA_60a21b9fb07f,filter,garbled,nasa_science,garbled=0.000 symbol=0.89
+NASA_615864d5cfba,filter,too_short,nasa_science,180 chars
+NASA_63412709b648,filter,too_short,nasa_science,229 chars
+NASA_635e9a192453,filter,too_short,nasa_science,176 chars
+NASA_65ad9f12bf0c,filter,reference_list,nasa_science,bib_line_ratio=0.899
+NASA_66ce89ed94f2,filter,too_short,nasa_science,138 chars
+NASA_690a2dcef8a5,filter,too_short,nasa_science,15 chars
+NASA_6a3d728af133,filter,too_short,nasa_science,224 chars
+NASA_6cbeaf8c9385,filter,too_short,nasa_science,38 chars
+NASA_6d1022d7ea7c,filter,too_short,nasa_science,279 chars
+NASA_6e48c65e038c,filter,too_short,nasa_science,17 chars
+NASA_73a50972ea79,filter,too_short,nasa_science,185 chars
+NASA_7605564e35fc,filter,too_short,nasa_science,283 chars
+NASA_76b7c9e572f4,filter,reference_list,nasa_science,bib_line_ratio=0.75
+NASA_788bd06c62cf,filter,too_short,nasa_science,201 chars
+NASA_79189be2e7c6,filter,too_short,nasa_science,15 chars
+NASA_79eb4555393f,filter,too_short,nasa_science,16 chars
+NASA_7b1d94494da6,filter,too_short,nasa_science,7 chars
+NASA_7ced5509c5e3,filter,too_short,nasa_science,20 chars
+NASA_7fa2ca90e206,filter,too_short,nasa_science,39 chars
+NASA_8282b118c526,filter,too_short,nasa_science,19 chars
+NASA_837662062752,filter,too_short,nasa_science,202 chars
+NASA_83f0ab4d3738,filter,too_short,nasa_science,14 chars
+NASA_87888b16b296,filter,too_short,nasa_science,22 chars
+NASA_892eee8d47c7,filter,too_short,nasa_science,197 chars
+NASA_8b66fe94002b,filter,too_short,nasa_science,234 chars
+NASA_8d1149b37d10,filter,too_short,nasa_science,0 chars
+NASA_8d2aaab5c4ee,filter,out_of_domain,nasa_science,domain_score=0.0 off_topic=0
+NASA_8e36b71d6000,filter,too_short,nasa_science,108 chars
+NASA_8e9fce405076,filter,too_short,nasa_science,243 chars
+NASA_9066b822e05c,filter,too_short,nasa_science,248 chars
+NASA_95affeee4f87,filter,too_short,nasa_science,19 chars
+NASA_9716189a3940,filter,reference_list,nasa_science,bib_line_ratio=0.673
+NASA_99266d949d3b,filter,too_short,nasa_science,15 chars
+NASA_9c0241f7fc43,filter,too_short,nasa_science,194 chars
+NASA_9e52893cf43f,filter,too_short,nasa_science,164 chars
+NASA_9e63ebd4973a,filter,too_short,nasa_science,269 chars
+NASA_9e9bea79a4e9,filter,out_of_domain,nasa_science,domain_score=0.0 off_topic=0
+NASA_9fa7dfb4e91b,filter,too_short,nasa_science,280 chars
+NASA_a1b8553bad83,filter,too_short,nasa_science,206 chars
+NASA_a2ff6eb31fa9,filter,too_short,nasa_science,259 chars
+NASA_a38676f1436c,filter,too_short,nasa_science,187 chars
+NASA_a3d261ea3764,filter,too_short,nasa_science,163 chars
+NASA_a3edab977c36,filter,too_short,nasa_science,182 chars
+NASA_a536e8719d5b,filter,too_short,nasa_science,291 chars
+NASA_a69b0b76974e,filter,too_short,nasa_science,284 chars
+NASA_a702b93e3bc5,filter,too_short,nasa_science,174 chars
+NASA_ab4fc6df826e,filter,too_short,nasa_science,229 chars
+NASA_abf6d312a0ee,filter,too_short,nasa_science,294 chars
+NASA_b00c1ab7c0d5,filter,too_short,nasa_science,295 chars
+NASA_b0536d1eb365,filter,too_short,nasa_science,211 chars
+NASA_b0f446089699,filter,too_short,nasa_science,226 chars
+NASA_b0fd3621c26c,filter,too_short,nasa_science,217 chars
+NASA_b1910eb04e74,filter,too_short,nasa_science,219 chars
+NASA_b34b00fb4ab5,filter,too_short,nasa_science,15 chars
+NASA_b502e341a3d4,filter,out_of_domain,nasa_science,domain_score=0.0 off_topic=0
+NASA_b59ceec95a1b,filter,too_short,nasa_science,286 chars
+NASA_b8c900a8972a,filter,too_short,nasa_science,187 chars
+NASA_ba065b7a7fb3,filter,too_short,nasa_science,294 chars
+NASA_baaa30b00788,filter,too_short,nasa_science,17 chars
+NASA_be5b6a966295,filter,too_short,nasa_science,250 chars
+NASA_beca9e78ecd9,filter,too_short,nasa_science,10 chars
+NASA_c51308e756ba,filter,wrong_language,nasa_science,es
+NASA_c64b7ec5496a,filter,too_short,nasa_science,10 chars
+NASA_c6db0a6ba917,filter,too_short,nasa_science,261 chars
+NASA_c7a28f1dc8c0,filter,too_short,nasa_science,175 chars
+NASA_c987b0bb4bb8,filter,too_short,nasa_science,277 chars
+NASA_ca2b88c0ac91,filter,out_of_domain,nasa_science,domain_score=0.0 off_topic=0
+NASA_ca3d2c0f524c,filter,too_short,nasa_science,240 chars
+NASA_cad8aa441c06,filter,out_of_domain,nasa_science,domain_score=0.0 off_topic=0
+NASA_cc97205ab067,filter,too_short,nasa_science,166 chars
+NASA_cdfeab29ac27,filter,too_short,nasa_science,24 chars
+NASA_d04d87b2d040,filter,out_of_domain,nasa_science,domain_score=0.0 off_topic=0
+NASA_d0911adf4158,filter,too_short,nasa_science,54 chars
+NASA_d17036120e07,filter,too_short,nasa_science,20 chars
+NASA_d1c3fceeacff,filter,too_short,nasa_science,214 chars
+NASA_d3de030f37c2,filter,too_short,nasa_science,13 chars
+NASA_d400e13824a2,filter,wrong_language,nasa_science,es
+NASA_d5cafdfad6df,filter,too_short,nasa_science,246 chars
+NASA_d5f69f183790,filter,too_short,nasa_science,17 chars
+NASA_d7fed7a4bd38,filter,too_short,nasa_science,271 chars
+NASA_d903c157acad,filter,too_short,nasa_science,221 chars
+NASA_da6b7145d4e1,filter,too_short,nasa_science,231 chars
+NASA_daad07f0f0cf,filter,too_short,nasa_science,276 chars
+NASA_dfcbb5052c63,filter,too_short,nasa_science,206 chars
+NASA_e0c78f20a82d,filter,too_short,nasa_science,237 chars
+NASA_e2d01f637978,filter,too_short,nasa_science,96 chars
+NASA_e34f9c33bd2e,filter,too_short,nasa_science,192 chars
+NASA_e86406b9ebb3,filter,too_short,nasa_science,188 chars
+NASA_e9ac711768c8,filter,too_short,nasa_science,43 chars
+NASA_eb071447eca0,filter,too_short,nasa_science,204 chars
+NASA_ed58f98edae1,filter,too_short,nasa_science,45 chars
+NASA_edd08c7583e2,filter,too_short,nasa_science,16 chars
+NASA_ee266886a24d,filter,out_of_domain,nasa_science,domain_score=0.0 off_topic=0
+NASA_ef0b607b672a,filter,too_short,nasa_science,281 chars
+NASA_f009faba8053,filter,too_short,nasa_science,16 chars
+NASA_f01f2cfff96c,filter,too_short,nasa_science,265 chars
+NASA_f153bddca2ee,filter,too_short,nasa_science,284 chars
+NASA_f18ca9033d2a,filter,too_short,nasa_science,277 chars
+NASA_f2b0ef9896c1,filter,too_short,nasa_science,35 chars
+NASA_f341005a1953,filter,too_short,nasa_science,282 chars
+NASA_f5a3a2194464,filter,too_short,nasa_science,18 chars
+NASA_f5aea2926a1b,filter,too_short,nasa_science,162 chars
+NASA_f66557eb012e,filter,too_short,nasa_science,106 chars
+NASA_f9b8c11eaeed,filter,wrong_language,nasa_science,es
+NASA_fa8f654fce33,filter,too_short,nasa_science,165 chars
+NASA_fca545498e79,filter,too_short,nasa_science,255 chars
+NASA_fce85e2d0c1b,filter,too_short,nasa_science,267 chars
+NASA_fd4052b2ad91,filter,out_of_domain,nasa_science,domain_score=0.0 off_topic=0
+NASA_fe0fc935caa4,filter,too_short,nasa_science,189 chars
+NASA_fea190647d61,filter,too_short,nasa_science,267 chars
+NASA_fec21ebc296e,filter,too_short,nasa_science,23 chars
+APOD_12e280e0dcec,filter,too_short,nasa_apod,27 chars
+APOD_1386ba8d8a95,filter,too_short,nasa_apod,0 chars
+APOD_16f0041858a5,filter,out_of_domain,nasa_apod,domain_score=0.0 off_topic=0
+APOD_1d92620a88c9,filter,out_of_domain,nasa_apod,domain_score=0.0 off_topic=0
+APOD_204c02c9816f,filter,too_short,nasa_apod,31 chars
+APOD_297fab7c22ad,filter,too_short,nasa_apod,0 chars
+APOD_320bd5329593,filter,too_short,nasa_apod,42 chars
+APOD_38c393a7daf9,filter,too_short,nasa_apod,0 chars
+APOD_38d378db6f80,filter,out_of_domain,nasa_apod,domain_score=0.0 off_topic=0
+APOD_4cf64f8fd574,filter,out_of_domain,nasa_apod,domain_score=0.0 off_topic=0
+APOD_53c8e870539e,filter,out_of_domain,nasa_apod,domain_score=0.0 off_topic=0
+APOD_5cf9c03b1c7b,filter,too_short,nasa_apod,29 chars
+APOD_69e33aa2e726,filter,too_short,nasa_apod,42 chars
+APOD_6e783cecc68d,filter,too_short,nasa_apod,33 chars
+APOD_98c845ece049,filter,too_short,nasa_apod,41 chars
+APOD_a3c5b103947f,filter,out_of_domain,nasa_apod,domain_score=0.0 off_topic=0
+APOD_d29801afeb5f,filter,out_of_domain,nasa_apod,domain_score=0.0 off_topic=0
+APOD_d8107c23a7f4,filter,too_short,nasa_apod,28 chars
+APOD_e6c4e3f4ebbc,filter,too_short,nasa_apod,21 chars
+APOD_ec422a987180,filter,out_of_domain,nasa_apod,domain_score=0.0 off_topic=0
+APOD_f5a1e6d4d712,filter,out_of_domain,nasa_apod,domain_score=0.0 off_topic=0
+APOD_fae7e86aece6,filter,too_short,nasa_apod,52 chars
+OPENSTAX_0017,filter,out_of_domain,openstax,domain_score=28.3 off_topic=73
+OPENSTAX_0019,filter,out_of_domain,openstax,domain_score=125.9 off_topic=3
+OPENSTAX_0107,filter,too_short,openstax,279 chars
+OPENSTAX_0130,filter,too_short,openstax,239 chars
+ARXIV_1801.05383,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_1908.11564,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2309.12298,filter,too_short,arxiv_astro_ph,271 chars
+ARXIV_2501.18695,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2503.07589,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2504.00884,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2504.01569,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2504.15218,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2507.17721,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2507.20962,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2507.23287,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2508.13031,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2508.13282,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2508.14490,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2509.09040,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2509.20613,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2510.08390,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2510.13388,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2510.13657,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2510.14037,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2510.15156,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2510.16265,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2510.17963,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2510.18065,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2510.21205,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2510.24631,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2511.05341,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2511.07562,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2511.07762,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2511.10455,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2511.11787,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2511.14285,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2511.15731,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2511.16391,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2511.19148,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2511.20764,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2512.00871,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2512.10579,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2512.13673,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2512.13889,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2512.19301,filter,out_of_domain,arxiv_astro_ph,domain_score=25.2 off_topic=4
+ARXIV_2512.19835,filter,too_short,arxiv_astro_ph,246 chars
+ARXIV_2512.20264,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2512.21188,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2512.23416,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+ARXIV_2601.05310,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
+WIKIEN_1000624,filter,out_of_domain,wikipedia_en,domain_score=79.2 off_topic=6
+WIKIEN_10025,filter,out_of_domain_category,wikipedia_en,Flag of Europe | kategoriler: Blue and yellow flags; Council of Europe; Flags introduced in 1955; Flags of Europe; Flags of international organizations; Flags with circles; Flags with stars; Horizontally symmetrical flags
+WIKIEN_1028515,filter,out_of_domain,wikipedia_en,domain_score=28.3 off_topic=9
+WIKIEN_1035528,filter,out_of_domain,wikipedia_en,domain_score=25.4 off_topic=102
+WIKIEN_10399056,filter,out_of_domain_category,wikipedia_en,HITRAN | kategoriler: Atmospheric radiative transfer codes; Spectroscopy
+WIKIEN_1052556,filter,out_of_domain,wikipedia_en,domain_score=1.6 off_topic=0
+WIKIEN_10610469,filter,out_of_domain,wikipedia_en,domain_score=42.6 off_topic=3
+WIKIEN_10811554,filter,out_of_domain_category,wikipedia_en,Dolores Claiborne (film) | kategoriler: 1990s feminist films; 1995 American films; 1995 English-language films; 1995 drama films; 1995 films; 1995 mystery films; 1995 psychological thriller films; American feminist films
+WIKIEN_1085364,filter,out_of_domain_category,wikipedia_en,The Smoke Ring (novel) | kategoriler: 1987 American novels; 1987 English-language novels; 1987 science fiction novels; American science fiction novels; Ballantine Books books; Books with cover art by Michael Whelan; Del Rey books; Fiction about gas giants
+WIKIEN_11149,filter,out_of_domain_category,wikipedia_en,Fresnel equations | kategoriler: Geometrical optics; History of physics; Light; Physical optics; Polarization (waves)
+WIKIEN_11447,filter,out_of_domain_category,wikipedia_en,Flag of the United States | kategoriler: 1770s introductions; 1777 beginnings; 1777 establishments in the United States; 1777 in art; 1777 in politics; Flags of North America; Flags of the American Revolution; Flags of the United States
+WIKIEN_115657,filter,out_of_domain,wikipedia_en,domain_score=1.6 off_topic=0
+WIKIEN_11593,filter,out_of_domain_category,wikipedia_en,Flat Earth | kategoriler: Ancient Near Eastern cosmology; Conspiracy theories; Early scientific cosmologies; Flat Earth; Pseudoscience
+WIKIEN_11603215,filter,out_of_domain_category,wikipedia_en,Geological history of Earth | kategoriler: Earth; Evolution-related timelines; Geochronology; Geological history of Earth
+WIKIEN_1170166,filter,out_of_domain_category,wikipedia_en,Chirality (chemistry) | kategoriler: Biochemistry; Chemical nomenclature; Chirality; Origin of life; Pharmacology; Polarization (waves); Stereochemistry
+WIKIEN_1177592,filter,out_of_domain_category,wikipedia_en,Ellipsometry | kategoriler: Optical metrology; Radiometry; Spectroscopy
+WIKIEN_118396,filter,out_of_domain_category,wikipedia_en,Band gap | kategoriler: Electron states; Electronic band structures; Nuclear magnetic resonance; Quantum mechanics; Spectroscopy
+WIKIEN_1202098,filter,out_of_domain_category,wikipedia_en,Voigt profile | kategoriler: Continuous distributions; Probability distributions with non-finite variance; Special functions; Spectroscopy
+WIKIEN_1226796,filter,out_of_domain_category,wikipedia_en,The Skylark of Space | kategoriler: 1928 American novels; 1928 English-language novels; 1928 science fiction novels; 1940s adventure novels; American adventure novels; American science fiction novels; Edisonades; Fiction about interstellar and intergalactic travel
+WIKIEN_1240836,filter,out_of_domain_category,wikipedia_en,Terahertz time-domain spectroscopy | kategoriler: Explosive detection; Spectroscopy; Terahertz technology
+WIKIEN_1241000,filter,out_of_domain_category,wikipedia_en,Blue Stinger | kategoriler: 1999 video games; Action-adventure games; Activision games; Cancelled Sega Saturn games; Christmas video games; Climax Graphics games; Dreamcast-only games; Dreamcast games
+WIKIEN_12461819,filter,out_of_domain_category,wikipedia_en,Betsy Ross flag | kategoriler: 1770s introductions; 1777 beginnings; 1777 establishments in the United States; 1777 in art; 1777 in politics; Betsy Ross; Flag controversies; Flag controversies in the United States
+WIKIEN_1264842,filter,out_of_domain,wikipedia_en,domain_score=61.5 off_topic=3
+WIKIEN_1313664,filter,out_of_domain_category,wikipedia_en,Selection rule | kategoriler: Nuclear magnetic resonance; Quantum mechanics; Spectroscopy
+WIKIEN_13160311,filter,out_of_domain_category,wikipedia_en,Airborne Real-time Cueing Hyperspectral Enhanced Reconnaissance | kategoriler: Civil Air Patrol; Earth observation remote sensors; Spectroscopy
+WIKIEN_13165796,filter,out_of_domain_category,wikipedia_en,Ocean heat content | kategoriler: Climate change; Climatology; Earth; Earth sciences; Environmental science; Meteorological concepts; Oceanography
+WIKIEN_1326120,filter,out_of_domain_category,wikipedia_en,Spectroradiometer | kategoriler: Electromagnetic radiation meters; Spectroscopy
+WIKIEN_1328116,filter,out_of_domain_category,wikipedia_en,Neutrino oscillation | kategoriler: Electroweak theory; Neutrinos; Physics beyond the Standard Model; Standard Model
+WIKIEN_1373219,filter,out_of_domain_category,wikipedia_en,Darkness (2002 film) | kategoriler: 2000s demon films; 2000s gothic horror films; 2000s haunted house films; 2002 American films; 2002 English-language films; 2002 Spanish films; 2002 films; 2002 horror films
+WIKIEN_13844012,filter,out_of_domain_category,wikipedia_en,Greenhouse and icehouse Earth | kategoriler: Earth; Glaciology; History of climate variability and change
+WIKIEN_13847448,filter,out_of_domain_category,wikipedia_en,Time Crash | kategoriler: 2007 British television episodes; Children in Need; Doctor Who charity episodes; Doctor Who mini-episodes; Doctor Who multi-Doctor stories; Fiction about black holes; Fiction about supernovae; Fifth Doctor serials
+WIKIEN_13932867,filter,out_of_domain_category,wikipedia_en,Van-Pires | kategoriler: 1990s American animated television series; 1990s American children's television series; 1990s American horror television series; 1990s American superhero television series; 1997 American animated television series debuts; 1997 American television series endings; 1997 English
+WIKIEN_1401871,filter,out_of_domain_category,wikipedia_en,Pharaoh (Prus novel) | kategoriler: 1895 Polish novels; Eclipses in popular culture; Novels by Bolesław Prus; Novels first published in serial form; Novels set in ancient Egypt; Novels set in the 11th century BC; Polish historical novels; Polish novels adapted into films
+WIKIEN_14189709,filter,out_of_domain_category,wikipedia_en,Rutherford backscattering spectrometry | kategoriler: Ernest Rutherford; Ion beam methods; Materials science; Scientific techniques; Spectroscopy
+WIKIEN_14271726,filter,out_of_domain_category,wikipedia_en,StarCraft | kategoriler: Activision Blizzard franchises; Milky Way in fiction; StarCraft; Video game franchises introduced in 1998; Video games adapted into comics; Video games set in the 26th century
+WIKIEN_14374789,filter,out_of_domain_category,wikipedia_en,Pharaoh (film) | kategoriler: 1960s Polish-language films; 1960s epic films; 1966 films; 1966 historical films; Eclipses in popular culture; Films based on Polish novels; Films based on works by Bolesław Prus; Films directed by Jerzy Kawalerowicz
+WIKIEN_14461309,filter,out_of_domain_category,wikipedia_en,Nitrogen-vacancy center | kategoriler: Crystallographic defects; Diamond; Quantum computing; Spectroscopy; Spintronics
+WIKIEN_14998554,filter,out_of_domain_category,wikipedia_en,A Connecticut Yankee in King Arthur's Court (1949 film) | kategoriler: 1940s color films; 1940s fantasy comedy films; 1940s films about time travel; 1949 American films; 1949 English-language films; 1949 fantasy films; 1949 films; 1949 musical comedy films
+WIKIEN_15079944,filter,out_of_domain_category,wikipedia_en,The Origin of the Milky Way | kategoriler: 1570s paintings; Breastfeeding in art; Milky Way in fiction; Nude paintings of children; Nude paintings of women; Oil paintings on canvas; Paintings by Tintoretto; Paintings formerly in the Orleans Collection
+WIKIEN_1515472,filter,out_of_domain_category,wikipedia_en,Stokes parameters | kategoriler: Polarization (waves); Radiometry
+WIKIEN_1566242,filter,out_of_domain_category,wikipedia_en,Treehouse of Horror VI | kategoriler: 1995 American television episodes; Fiction about black holes; Fiction about child murder; Fiction about father–son relationships; Parodies of films; Parody television episodes; Television episodes about advertising; Television episodes about curses
+WIKIEN_15736,filter,out_of_domain,wikipedia_en,domain_score=56.5 off_topic=44
+WIKIEN_1590747,filter,out_of_domain_category,wikipedia_en,Franck–Condon principle | kategoriler: Molecular physics; Quantum chemistry; Spectroscopy
+WIKIEN_1591064,filter,out_of_domain_category,wikipedia_en,Breathalyzer | kategoriler: Alcohol law; Brands that became generic; Breathalyzer; Driving under the influence; Drug testing; Harm reduction; Law enforcement equipment; Spectroscopy
+WIKIEN_159472,filter,out_of_domain_category,wikipedia_en,Flight | kategoriler: Aerodynamics; Flight; Sky
+WIKIEN_162400,filter,out_of_domain_category,wikipedia_en,Force spectroscopy | kategoriler: Scanning probe microscopy; Spectroscopy
+WIKIEN_1652307,filter,out_of_domain_category,wikipedia_en,Isotopic labeling | kategoriler: Biochemistry methods; Isotopes; Laboratory techniques; Mass spectrometry; Nuclear physics; Physical chemistry; Spectroscopy
+WIKIEN_16565,filter,out_of_domain,wikipedia_en,domain_score=0.4 off_topic=0
+WIKIEN_166689,filter,out_of_domain_category,wikipedia_en,Interferometry | kategoriler: Interferometry; Optical instruments; Plasma diagnostics
+WIKIEN_1678541,filter,out_of_domain_category,wikipedia_en,Electron backscatter diffraction | kategoriler: Diffraction; Scattering; Scientific techniques; Spectroscopy
+WIKIEN_16817594,filter,out_of_domain_category,wikipedia_en,Tipping points in the climate system | kategoriler: Climate change feedbacks; Climatology; Earth; Politics of climate change
+WIKIEN_16857663,filter,out_of_domain_category,wikipedia_en,How Time Flys | kategoriler: 1970s comedy albums; 1973 albums; Columbia Records albums; Cultural depictions of Richard Nixon; Extraterrestrial life in popular culture; Fiction about black holes; Fiction about holography; Fiction featuring the turn of the 3rd millennium
+WIKIEN_17005346,filter,out_of_domain_category,wikipedia_en,Mass Effect: Ascension | kategoriler: 2008 Canadian novels; Canadian science fiction novels; Del Rey books; Milky Way in fiction; Novels about artificial intelligence; Novels based on Mass Effect
+WIKIEN_171313,filter,out_of_domain,wikipedia_en,domain_score=1.0 off_topic=0
+WIKIEN_174412,filter,out_of_domain_category,wikipedia_en,Birefringence | kategoriler: Asymmetry; Gemology; Optical mineralogy; Polarization (waves)
+WIKIEN_1744922,filter,out_of_domain_category,wikipedia_en,Gamma spectroscopy | kategoriler: Gamma rays; Nuclear physics; Radioactivity; Spectrometers; Spectroscopy
+WIKIEN_176399,filter,out_of_domain_category,wikipedia_en,Zeeman effect | kategoriler: Foundational quantum physics; Magneto-optic effects; Quantum magnetism; Spectroscopy
+WIKIEN_177320,filter,out_of_domain_category,wikipedia_en,Spectral line | kategoriler: Spectroscopy; Spectrum (physical sciences)
+WIKIEN_1803258,filter,out_of_domain_category,wikipedia_en,Reach for the Stars (video game) | kategoriler: 1983 video games; 4X video games; Amiga games; Apple IIGS games; Apple II games; Commodore 64 games; DOS games; Fiction about interstellar and intergalactic travel
+WIKIEN_1821202,filter,out_of_domain_category,wikipedia_en,Barabbas (1961 film) | kategoriler: 1960s adventure drama films; 1960s sword-and-sandal films; 1961 English-language films; 1961 Italian films; 1961 biographical films; 1961 drama films; 1961 films; Barabbas
+WIKIEN_18309,filter,out_of_domain_category,wikipedia_en,Lucifer | kategoriler: Arabian legendary creatures; Bogomilism; Book of Isaiah; Children of Eos; Christian mythology; Dawn; Deities in the Hebrew Bible; Diana (mythology)
+WIKIEN_18605319,filter,out_of_domain_category,wikipedia_en,Quark–gluon plasma | kategoriler: Exotic matter; Gluons; Phases of matter; Quark matter
+WIKIEN_1867895,filter,out_of_domain_category,wikipedia_en,Multispectral imaging | kategoriler: Imaging; Remote sensing; Spectroscopy
+WIKIEN_18755675,filter,out_of_domain_category,wikipedia_en,"Flag and coat of arms of Johor | kategoriler: Coats of arms of country subdivisions; Coats of arms with crowns; Coats of arms with stars; Coats of arms with the star and crescent; Coats of arms with tigers; Flags of Malaysia; Flags with blue, red and white; Flags with cantons"
+WIKIEN_189155,filter,out_of_domain_category,wikipedia_en,"Flags of the Confederate States of America | kategoriler: 1861 establishments in the Confederate States of America; Flags introduced in 1861; Flags of former countries; Flags of the Confederate States of America; Flags with blue, red and white; Flags with cantons; Flags with stars; Lists of flags of"
+WIKIEN_1894582,filter,out_of_domain_category,wikipedia_en,Dielectric spectroscopy | kategoriler: Electric and magnetic fields in matter; Electrochemistry; Impedance measurements; Spectroscopy
+WIKIEN_18969769,filter,out_of_domain_category,wikipedia_en,CP violation | kategoriler: Asymmetry; Conservation laws; Particle physics; Physics beyond the Standard Model; Quantum field theory
+WIKIEN_1919367,filter,out_of_domain_category,wikipedia_en,QCD matter | kategoriler: Phases of matter; Quantum chromodynamics; Quark matter; Unsolved problems in physics
+WIKIEN_19272041,filter,out_of_domain_category,wikipedia_en,Uranus (mythology) | kategoriler: Avian humanoids; Castration; Children of Gaia; Consorts of Gaia; Creation myths; Greek gods; Greek primordial deities; Heaven
+WIKIEN_1928465,filter,out_of_domain,wikipedia_en,domain_score=0.4 off_topic=0
+WIKIEN_1959732,filter,out_of_domain_category,wikipedia_en,Scanning tunneling spectroscopy | kategoriler: Scanning probe microscopy; Spectroscopy
+WIKIEN_1967137,filter,out_of_domain_category,wikipedia_en,QCD vacuum | kategoriler: Quark matter; Vacuum
+WIKIEN_1991073,filter,out_of_domain_category,wikipedia_en,Surface plasmon resonance | kategoriler: Biochemistry methods; Biophysics methods; Electromagnetism; Forensic techniques; Nanotechnology; Optical phenomena; Plasmonics; Protein–protein interaction assays
+WIKIEN_1991491,filter,out_of_domain_category,wikipedia_en,Neutrinoless double beta decay | kategoriler: Hypotheses in physics; Nuclear physics; Physics beyond the Standard Model; Radioactivity; Standard Model
+WIKIEN_1993856,filter,out_of_domain,wikipedia_en,domain_score=48.3 off_topic=12
+WIKIEN_2011001,filter,out_of_domain_category,wikipedia_en,Galactic Civilizations II: Dread Lords | kategoriler: 2006 video games; 4X video games; Indie games; Milky Way in fiction; Paradox Interactive games; Science fiction video games; Sequel video games; Single-player video games
+WIKIEN_202672,filter,out_of_domain_category,wikipedia_en,Spectral density | kategoriler: Fourier analysis; Frequency-domain analysis; Radio spectrum; Scattering; Signal processing; Spectroscopy; Spectrum (physical sciences); Waves
+WIKIEN_20571391,filter,out_of_domain_category,wikipedia_en,Geographical distance | kategoriler: Cartography; Earth; Geodesy
+WIKIEN_206631,filter,out_of_domain,wikipedia_en,domain_score=47.0 off_topic=5
+WIKIEN_206736,filter,out_of_domain_category,wikipedia_en,Flag of Georgia (U.S. state) | kategoriler: 2003 establishments in Georgia (U.S. state); Flag controversies in the United States; Flag redesigns in the 21st century; Flags displaying weapons; Flags introduced in 2003; Flags with cantons; Flags with stars; Quadcolor flags
+WIKIEN_2068726,filter,out_of_domain_category,wikipedia_en,History of Earth | kategoriler: Earth; Geochronology; Geology theories; Historical geology; World history
+WIKIEN_2090764,filter,out_of_domain_category,wikipedia_en,The Creature from the Pit | kategoriler: 1979 British television episodes; Fiction set around neutron stars; Fourth Doctor serials
+WIKIEN_2091149,filter,out_of_domain_category,wikipedia_en,The Horns of Nimon | kategoriler: 1979 British television episodes; 1980 British television episodes; Cultural depictions of Theseus; Doctor Who serials novelised by Terrance Dicks; Fiction about black holes; Fourth Doctor serials; Minotaur in popular culture
+WIKIEN_2137368,filter,out_of_domain_category,wikipedia_en,The Milky Way (1940 film) | kategoriler: 1940 American animated films; 1940 English-language films; 1940 animated short films; 1940 fantasy films; 1940 films; 1940 musical comedy films; 1940s fantasy comedy films; 1940s musical fantasy films
+WIKIEN_2149511,filter,out_of_domain_category,wikipedia_en,Sailor Moon Sailor Stars | kategoriler: 1996 Japanese television seasons; 1997 Japanese television seasons; Milky Way in fiction; Sailor Moon seasons; Space opera anime and manga
+WIKIEN_21564646,filter,out_of_domain_category,wikipedia_en,Eclipse (1994 film) | kategoriler: 1990s LGBTQ-related drama films; 1994 Canadian films; 1994 English-language films; 1994 LGBTQ-related films; 1994 drama films; 1994 films; Canadian LGBTQ-related films; Canadian drama films
+WIKIEN_22198560,filter,out_of_domain_category,wikipedia_en,Jesús Mosterín | kategoriler: 1941 births; 2017 deaths; 20th-century Spanish anthropologists; 20th-century Spanish philosophers; 21st-century Spanish anthropologists; 21st-century Spanish philosophers; Academic staff of the University of Barcelona; Analytic philosophers
+WIKIEN_2223805,filter,out_of_domain_category,wikipedia_en,National emblem of Indonesia | kategoriler: Coats of arms with birds; Coats of arms with bulls; Coats of arms with chains; Coats of arms with cotton; Coats of arms with eagles; Coats of arms with rice; Coats of arms with stars; Coats of arms with trees
+WIKIEN_224636,filter,out_of_domain_category,wikipedia_en,Supersymmetry | kategoriler: Concepts in physics; Concepts in the philosophy of science; History of science; Physics beyond the Standard Model; Quantum field theory; Supersymmetry; Theoretical physics
+WIKIEN_226741,filter,out_of_domain_category,wikipedia_en,Earth in science fiction | kategoriler: Earth; Fiction about Earth; Fiction about planets; Science fiction themes
+WIKIEN_22872100,filter,out_of_domain_category,wikipedia_en,The House of the Devil (2009 film) | kategoriler: 2000s haunted house films; 2009 American films; 2009 English-language films; 2009 films; 2009 independent films; 2009 supernatural horror films; American haunted house films; American independent films
+WIKIEN_22915,filter,out_of_domain,wikipedia_en,domain_score=118.6 off_topic=6
+WIKIEN_22933438,filter,out_of_domain_category,wikipedia_en,Meteor (miniseries) | kategoriler: 2000s American television miniseries; Disaster television series; Fiction about main-belt asteroids; Fiction about meteoroids; Television series about impact events
+WIKIEN_23048594,filter,out_of_domain_category,wikipedia_en,Mass Effect | kategoriler: Action role-playing video games; Apocalyptic video games; Electronic Arts franchises; Mass Effect; Military science fiction video games; Milky Way in fiction; Multiplayer and single-player video games; Romance video games
+WIKIEN_2308701,filter,out_of_domain,wikipedia_en,domain_score=1.3 off_topic=0
+WIKIEN_232729,filter,out_of_domain_category,wikipedia_en,Galactic Civilizations | kategoriler: 2003 video games; 4X video games; Fictional civilizations; Indie games; Milky Way in fiction; OS/2 games; Science fiction video games; Single-player video games
+WIKIEN_233668,filter,out_of_domain_category,wikipedia_en,Figure of the Earth | kategoriler: Earth; Geodesy; Geophysics
+WIKIEN_23493489,filter,out_of_domain_category,wikipedia_en,Flag of the president of the United States | kategoriler: Flags displaying animals; Flags including Latin; Flags with stars; National symbols of the United States; Personal flags of the United States; Presidency of the United States
+WIKIEN_2354711,filter,out_of_domain_category,wikipedia_en,Chinigchinix | kategoriler: Mission Indians; Native American mythology of California; Quaoar; Tongva
+WIKIEN_236486,filter,out_of_domain_category,wikipedia_en,Coat of arms of the Philippines | kategoriler: Coats of arms with arrows; Coats of arms with eagles; Coats of arms with lions; Coats of arms with stars; Coats of arms with sunrays; Coats of arms with suns; National coats of arms; National emblems with birds
+WIKIEN_23959374,filter,out_of_domain_category,wikipedia_en,"Multiangle light scattering | kategoriler: Colloidal chemistry; Scattering; Scattering, absorption and radiative transfer (optics); Scientific techniques; Spectroscopy"
+WIKIEN_23984205,filter,out_of_domain_category,wikipedia_en,Strangeness and quark–gluon plasma | kategoriler: Exotic matter; Nuclear physics; Phases of matter; Quantum chromodynamics; Quark matter; Strange quark
+WIKIEN_24008597,filter,out_of_domain,wikipedia_en,domain_score=1.4 off_topic=0
+WIKIEN_24138,filter,out_of_domain_category,wikipedia_en,Proton decay | kategoriler: Grand Unified Theory; Hypothetical particles; Particle physics; Physics beyond the Standard Model; Proton
+WIKIEN_24179592,filter,out_of_domain_category,wikipedia_en,Future of Earth | kategoriler: Earth; Futures studies; Geological history of Earth; Plate tectonics
+WIKIEN_24419441,filter,out_of_domain_category,wikipedia_en,StarCraft II | kategoriler: Activision Blizzard franchises; Cooperative video games; Milky Way in fiction; Real-time strategy video games; StarCraft II; StarCraft games; Video game franchises introduced in 2010; Video games about colonialism
+WIKIEN_2458954,filter,out_of_domain_category,wikipedia_en,Muon spin spectroscopy | kategoriler: Scientific techniques; Spectroscopy
+WIKIEN_24640712,filter,out_of_domain_category,wikipedia_en,Judy Berlin | kategoriler: 1999 American films; 1999 English-language films; 1999 black-and-white films; 1999 drama films; 1999 films; 1999 independent films; American black-and-white films; American drama films
+WIKIEN_246996,filter,out_of_domain_category,wikipedia_en,Flag of the Philippines | kategoriler: Flags introduced in 1898; Flags introduced in 1998; Flags of Asia; Flags of the Philippines; Flags with a sun; Flags with stars; National flags; National symbols of the Philippines
+WIKIEN_24923294,filter,out_of_domain,wikipedia_en,domain_score=39.1 off_topic=4
+WIKIEN_24930425,filter,out_of_domain_category,wikipedia_en,Flag of China | kategoriler: Flags adopted through competition; Flags introduced in 1949; Flags of Asia; Flags of China; Flags with stars; National flags; Red and yellow flags
+WIKIEN_2536106,filter,out_of_domain_category,wikipedia_en,The Satan Pit | kategoriler: 2006 British television episodes; Fiction about black holes; Fiction about the Devil; Television episodes about demonic possession; Tenth Doctor episodes; The Ood stories; Works set in the 5th millennium
+WIKIEN_25452675,filter,out_of_domain_category,wikipedia_en,Flag of the vice president of the United States | kategoriler: Flags displaying animals; Flags including Latin; Flags with stars; Franklin D. Roosevelt; National symbols of the United States; Personal flags of the United States; Vice presidency of the United States
+WIKIEN_2546296,filter,out_of_domain_category,wikipedia_en,Flux (novel) | kategoriler: 1993 British novels; 1993 English-language novels; 1993 science fiction novels; Fiction set around neutron stars; Hard science fiction; HarperCollins books; Novels about genetic engineering; Novels by Stephen Baxter
+WIKIEN_25783483,filter,out_of_domain_category,wikipedia_en,Mass Effect: Retribution | kategoriler: 2010 novels; Canadian science fiction novels; Del Rey books; Milky Way in fiction; Novels about artificial intelligence; Novels based on Mass Effect
+WIKIEN_25813358,filter,out_of_domain,wikipedia_en,domain_score=1.1 off_topic=0
+WIKIEN_2589751,filter,out_of_domain_category,wikipedia_en,Fluorescence correlation spectroscopy | kategoriler: Biophysics methods; Fluorescence techniques; Microscopy; Physical chemistry; Spectroscopy
+WIKIEN_2722105,filter,out_of_domain_category,wikipedia_en,Polarizer | kategoriler: Optical components; Polarization (waves)
+WIKIEN_27310834,filter,out_of_domain_category,wikipedia_en,Shear wave splitting | kategoriler: Polarization (waves); Seismology; Wave mechanics
+WIKIEN_2795186,filter,out_of_domain_category,wikipedia_en,Blackstar (TV series) | kategoriler: 1980s American animated television series; 1980s American children's television series; 1980s toys; 1981 American animated television series debuts; 1981 American television series endings; 1981 English-language television series debuts; 1981 English-language tel
+WIKIEN_28017,filter,out_of_domain,wikipedia_en,domain_score=53.3 off_topic=3
+WIKIEN_28305,filter,out_of_domain_category,wikipedia_en,String theory | kategoriler: Concepts in physics; Dimension; Mathematical physics; Multi-dimensional geometry; Physics beyond the Standard Model; String theory
+WIKIEN_2933388,filter,out_of_domain_category,wikipedia_en,Mass Effect (video game) | kategoriler: 2007 video games; Action role-playing video games; Apocalyptic video games; BioWare games; Censored video games; Demiurge Studios games; Electronic Arts games; LGBTQ-related controversies in video games
+WIKIEN_296036,filter,out_of_domain_category,wikipedia_en,Technicolor (physics) | kategoriler: Electroweak theory; Mass; Physics beyond the Standard Model
+WIKIEN_30027,filter,out_of_domain,wikipedia_en,domain_score=40.6 off_topic=17
+WIKIEN_30204464,filter,out_of_domain_category,wikipedia_en,Sunstone (medieval) | kategoriler: Culture of Iceland; Gemstones in culture; History of navigation; Navigational equipment; Polarization (waves)
+WIKIEN_306210,filter,out_of_domain_category,wikipedia_en,Coat of arms of Croatia | kategoriler: Coats of arms with crowns; Coats of arms with goats; Coats of arms with lions; Coats of arms with moons; Coats of arms with sables; Coats of arms with stars; Croatian coats of arms; National coats of arms
+WIKIEN_3071743,filter,out_of_domain_category,wikipedia_en,Star Trek (2009 film) | kategoriler: 2000s films about time travel; 2000s science fiction adventure films; 2009 American films; 2009 English-language films; 2009 films; 2009 science fiction action films; American 4DX films; American IMAX films
+WIKIEN_30731,filter,out_of_domain_category,wikipedia_en,Teleological argument | kategoriler: Anthropic principle; Arguments for the existence of God; Christian apologetics; Intelligent design; Teleology
+WIKIEN_30872816,filter,out_of_domain,wikipedia_en,domain_score=76.5 off_topic=90
+WIKIEN_309252,filter,out_of_domain_category,wikipedia_en,Phosphorescence | kategoriler: Luminescence; Phosphors and scintillators; Spectroscopy
+WIKIEN_310192,filter,out_of_domain_category,wikipedia_en,"Flag of Texas | kategoriler: Flags of Texas; Flags with blue, red and white; Flags with stars; Symbols of Texas; United States state flags"
+WIKIEN_31058701,filter,out_of_domain_category,wikipedia_en,Luceafărul (poem) | kategoriler: 1883 in Austria; 1883 poems; Fiction about meteoroids; Fiction set on Jupiter; Fiction set on Venus; Narrative poems; Philosophical poems; Poetry by Mihai Eminescu
+WIKIEN_31140821,filter,out_of_domain_category,wikipedia_en,Ambuli | kategoriler: 2012 3D films; 2012 Indian films; 2012 Tamil-language films; 2012 films; 2012 science fiction horror films; 2012 supernatural horror films; Eclipses in popular culture; Films scored by Sam C. S.
+WIKIEN_31156672,filter,out_of_domain,wikipedia_en,domain_score=84.2 off_topic=3
+WIKIEN_313416,filter,out_of_domain_category,wikipedia_en,Spectrum analyzer | kategoriler: Acoustics; Electronic test equipment; Laboratory equipment; Radio technology; Scattering; Signal processing; Spectroscopy; Spectrum (physical sciences)
+WIKIEN_31553276,filter,out_of_domain_category,wikipedia_en,Seal of Minnesota | kategoriler: Coats of arms introduced in 2023; Coats of arms with birds; Coats of arms with rice; Coats of arms with stars; Coats of arms with trees; Native American-related controversies; Native American history of Minnesota; Symbols of Minnesota
+WIKIEN_31760032,filter,out_of_domain_category,wikipedia_en,Vibrational analysis with scanning probe microscopy | kategoriler: Scanning probe microscopy; Spectroscopy
+WIKIEN_318869,filter,out_of_domain_category,wikipedia_en,Iceland spar | kategoriler: Calcium minerals; Carbonate minerals; Medieval history of Iceland; Optical materials; Polarization (waves); Transparent materials; Trigonal minerals
+WIKIEN_323592,filter,out_of_domain,wikipedia_en,domain_score=22.0 off_topic=5
+WIKIEN_32423318,filter,out_of_domain_category,wikipedia_en,Guilty Crown | kategoriler: 2011 Japanese television series debuts; 2011 anime television series debuts; 2011 manga; 2012 Japanese novels; 2012 manga; ASCII Media Works manga; Action anime and manga; Anime OVAs
+WIKIEN_3259030,filter,out_of_domain_category,wikipedia_en,Polarimeter | kategoriler: French inventions; Optical instruments; Polarization (waves)
+WIKIEN_32594594,filter,out_of_domain_category,wikipedia_en,Superconducting nanowire single-photon detector | kategoriler: Engineering; Optical metrology; Optoelectronics; Particle detectors; Photodetectors; Photonics; Quantum optics; Radiometry
+WIKIEN_33256286,filter,out_of_domain,wikipedia_en,domain_score=1.0 off_topic=0
+WIKIEN_33338392,filter,out_of_domain_category,wikipedia_en,2011 OPERA faster-than-light neutrino anomaly | kategoriler: 2011 in science; CERN; Experimental particle physics; Faster-than-light travel; Neutrino experiments; Obsolete theories in physics; Physics beyond the Standard Model
+WIKIEN_33404658,filter,out_of_domain_category,wikipedia_en,Treehouse of Horror XXIII | kategoriler: 2012 American television episodes; 2012 phenomenon; Fiction about black holes; Television episodes about curses; Television episodes about demons; Television episodes about time travel; Television episodes directed by Steven Dean Moore; Television episodes se
+WIKIEN_342127,filter,out_of_domain_category,wikipedia_en,Anti-gravity | kategoriler: Anti-gravity; Fringe physics; General relativity; History of physics; History of science and technology in the United States; Pseudoscience; Science fiction themes
+WIKIEN_34385670,filter,out_of_domain_category,wikipedia_en,Photoelectron photoion coincidence spectroscopy | kategoriler: Chemical kinetics; Electron spectroscopy; Mass spectrometry; Physical chemistry; Spectroscopy; Thermochemistry
+WIKIEN_34411,filter,out_of_domain,wikipedia_en,domain_score=43.6 off_topic=52
+WIKIEN_34569620,filter,out_of_domain_category,wikipedia_en,Mass Effect: Deception | kategoriler: 2012 American novels; 2012 English-language novels; 2012 science fiction novels; American science fiction novels; Del Rey books; Milky Way in fiction; Novels based on Mass Effect; Orbit Books books
+WIKIEN_34861251,filter,out_of_domain,wikipedia_en,domain_score=0.6 off_topic=0
+WIKIEN_35017199,filter,out_of_domain_category,wikipedia_en,"Differential dynamic microscopy | kategoriler: Biochemistry methods; Microscopy; Physical chemistry; Scattering, absorption and radiative transfer (optics); Scientific techniques; Spectroscopy"
+WIKIEN_352711,filter,out_of_domain,wikipedia_en,domain_score=1.6 off_topic=0
+WIKIEN_35387320,filter,out_of_domain_category,wikipedia_en,Firedrake (folklore) | kategoriler: Dragons; European legendary creatures; Fiction about meteoroids; Fire in culture; Firedrakes in folklore; Incubi; Legendary serpents
+WIKIEN_35417850,filter,out_of_domain_category,wikipedia_en,Laser Doppler imaging | kategoriler: Doppler effects; Female genital procedures; Laser applications; Measurement; Medical imaging; Optical imaging
+WIKIEN_35721386,filter,out_of_domain,wikipedia_en,domain_score=1.9 off_topic=0
+WIKIEN_357353,filter,out_of_domain_category,wikipedia_en,Large Hadron Collider | kategoriler: Buildings and structures in Ain; Buildings and structures in the canton of Geneva; CERN accelerators; CERN facilities; E-Science; Government buildings completed in 2008; International science experiments; Laboratories in France
+WIKIEN_35891052,filter,out_of_domain_category,wikipedia_en,Photoacoustic effect | kategoriler: Medical diagnosis; Photoacoustics; Spectroscopy
+WIKIEN_35980148,filter,out_of_domain_category,wikipedia_en,History of spectroscopy | kategoriler: History of chemistry; History of physics; Ionizing radiation; Plasma diagnostics; Quantum mechanics; Spectroscopy
+WIKIEN_3621514,filter,out_of_domain_category,wikipedia_en,Kamen Rider Kabuto | kategoriler: 2006 Japanese television series debuts; 2007 Japanese television series endings; Alternate history television series; Fiction about experimental medical treatments; Fiction about meteoroids; Fiction about parasites; Fiction about sentient objects; Kamen Rider televi
+WIKIEN_366726,filter,out_of_domain_category,wikipedia_en,The Three Doctors (Doctor Who) | kategoriler: 1972 British television episodes; 1973 British television episodes; Anniversary television episodes; Doctor Who anniversary specials; Doctor Who multi-Doctor stories; Doctor Who serials novelised by Terrance Dicks; Fiction about black holes; First Doctor
+WIKIEN_36929631,filter,out_of_domain_category,wikipedia_en,Operando spectroscopy | kategoriler: Catalysis; Spectroscopy
+WIKIEN_37373,filter,out_of_domain_category,wikipedia_en,Paradise Lost | kategoriler: 1667 poems; 1667 poetry books; 1674 poems; 1674 poetry books; Beelzebub; Biblical paraphrases; Biblical poetry; Christian poetry
+WIKIEN_37749350,filter,too_short,wikipedia_en,241 chars
+WIKIEN_37749573,filter,out_of_domain_category,wikipedia_en,Teenage Mutant Ninja Turtles (1987 TV series) season 4 | kategoriler: 1990 American animated television seasons; 1991 American animated television seasons; Fiction about asteroids; Fiction about consciousness transfer; Fiction about universities and colleges; Florida in fiction; Teenage Mutant Ninja
+WIKIEN_3776089,filter,out_of_domain_category,wikipedia_en,From Dusk Till Dawn 2: Texas Blood Money | kategoriler: 1990s Western (genre) horror films; 1990s vampire films; 1999 American films; 1999 English-language films; 1999 crime films; 1999 direct-to-video films; 1999 films; 1999 horror films
+WIKIEN_378727,filter,out_of_domain,wikipedia_en,domain_score=1.5 off_topic=0
+WIKIEN_37888051,filter,out_of_domain_category,wikipedia_en,Teenage Mutant Ninja Turtles (1987 TV series) season 8 | kategoriler: 1994 American animated television seasons; Fiction about black holes; Teenage Mutant Ninja Turtles (1987 TV series) seasons
+WIKIEN_37919912,filter,out_of_domain,wikipedia_en,domain_score=0.0 off_topic=0
+WIKIEN_37936488,filter,out_of_domain_category,wikipedia_en,Functional magnetic resonance spectroscopy of the brain | kategoriler: Magnetic resonance imaging; Neuroimaging; Nuclear magnetic resonance; Spectroscopy
+WIKIEN_38080015,filter,out_of_domain,wikipedia_en,domain_score=0.6 off_topic=0
+WIKIEN_38381971,filter,out_of_domain_category,wikipedia_en,Vibronic spectroscopy | kategoriler: Spectroscopy
+WIKIEN_38714,filter,out_of_domain_category,wikipedia_en,World | kategoriler: Earth; Ontology; World
+WIKIEN_38737,filter,out_of_domain,wikipedia_en,domain_score=57.9 off_topic=3
+WIKIEN_38930,filter,out_of_domain,wikipedia_en,domain_score=105.1 off_topic=5
+WIKIEN_39,filter,out_of_domain_category,wikipedia_en,Albedo | kategoriler: 1760s neologisms; Climate change feedbacks; Climate forcing; Climatology; Electromagnetic radiation; Land surface effects on climate; Meteorological quantities; Radiation
+WIKIEN_39038,filter,out_of_domain_category,wikipedia_en,"Hanford Site | kategoriler: 1943 establishments in Washington (state); Atomic tourism; Buildings and structures in Benton County, Washington; Columbia River; Environmental disasters in the United States; Geography of Benton County, Washington; Geography of Washington (state); Gravitational-wave astr"
+WIKIEN_39260084,filter,out_of_domain_category,wikipedia_en,Spectral line shape | kategoriler: Spectroscopy
+WIKIEN_39516319,filter,out_of_domain_category,wikipedia_en,Beyond the Blue Event Horizon | kategoriler: 1980 American novels; 1980 English-language novels; 1980 science fiction novels; Del Rey books; Fiction about black holes; Fiction about faster-than-light travel; Fiction set in the Oort cloud; Novels about artificial intelligence
+WIKIEN_3953600,filter,out_of_domain,wikipedia_en,domain_score=22.1 off_topic=3
+WIKIEN_39774,filter,out_of_domain_category,wikipedia_en,Optical rotation | kategoriler: Polarization (waves); Stereochemistry
+WIKIEN_399416,filter,out_of_domain_category,wikipedia_en,Flag of California | kategoriler: 1911 establishments in California; Bears in art; Flags displaying animals; Flags introduced in 1911; Flags of California; Flags with stars; Symbols of California; United States state flags
+WIKIEN_40008467,filter,out_of_domain_category,wikipedia_en,Ace Combat Infinity | kategoriler: 2014 video games; Ace Combat spinoff games; Alternate history video games; Bandai Namco games; Combat flight simulators; Fiction about aerial warfare; Fiction about meteoroids; Free-to-play video games
+WIKIEN_402286,filter,out_of_domain_category,wikipedia_en,Rocket Robin Hood | kategoriler: 1960s Canadian animated television series; 1960s Canadian children's television series; 1960s science fiction television series; 1966 Canadian television series debuts; 1966 English-language television series debuts; 1966 animated television series debuts; 1969 Canad
+WIKIEN_40819859,filter,out_of_domain_category,wikipedia_en,Galactic Civilizations III | kategoriler: 2015 video games; 4X video games; Indie games; Milky Way in fiction; Multiplayer and single-player video games; Science fiction video games; Sequel video games; Space opera video games
+WIKIEN_41077022,filter,out_of_domain_category,wikipedia_en,Earth's internal heat budget | kategoriler: Earth; Geodynamics; Geothermal energy; Heat transfer; Plate tectonics
+WIKIEN_4110654,filter,out_of_domain_category,wikipedia_en,A Matter of Time (Star Trek: The Next Generation) | kategoriler: 1991 American television episodes; Fiction about black holes; Star Trek: The Next Generation season 5 episodes; Star Trek episodes about time travel; Television episodes directed by Paul Lynch (director); Television episodes set in the
+WIKIEN_41383199,filter,out_of_domain_category,wikipedia_en,Two-photon circular dichroism | kategoriler: Nonlinear optics; Polarization (waves)
+WIKIEN_41564,filter,out_of_domain_category,wikipedia_en,Polarization (waves) | kategoriler: Antennas (radio); Broadcast engineering; Electromagnetic radiation; Physical optics; Polarization (waves)
+WIKIEN_4224324,filter,out_of_domain_category,wikipedia_en,Origin of water on Earth | kategoriler: Beginnings; Earth; Hadean; Origins; Scientific problems; Water
+WIKIEN_423942,filter,out_of_domain_category,wikipedia_en,"Flag of Ohio | kategoriler: Culture of Ohio; Flags introduced in 1901; Flags of Ohio; Flags with blue, red and white; Flags with circles; Flags with stars; Symbols of Ohio; United States state flags"
+WIKIEN_42419909,filter,out_of_domain_category,wikipedia_en,The Birth of the Milky Way | kategoriler: 1630s paintings; Breastfeeding in art; Milky Way in fiction; Mythological paintings by Peter Paul Rubens; Nude paintings of children; Nude paintings of women; Oil paintings on canvas; Paintings by Peter Paul Rubens in the Museo del Prado
+WIKIEN_4248608,filter,out_of_domain_category,wikipedia_en,The Land Before Time X: The Great Longneck Migration | kategoriler: 2003 American animated direct-to-video films; 2003 English-language films; 2003 children's animated films; 2003 films; Animated films about dinosaurs; Animated films about friendship; Direct-to-video sequel films; Eclipses in popula
+WIKIEN_42534471,filter,too_short,wikipedia_en,286 chars
+WIKIEN_42786109,filter,out_of_domain_category,wikipedia_en,Blackhole (video game) | kategoriler: 2015 video games; Fiction about black holes; Fiction about nanotechnology; Fiction about physics; Fiction about teleportation; GameMaker games; Indie games; Linux games
+WIKIEN_43245775,filter,out_of_domain_category,wikipedia_en,Black Sun (Space: 1999) | kategoriler: 1975 British television episodes; Fiction about black holes; Space: 1999 episodes
+WIKIEN_4343515,filter,out_of_domain_category,wikipedia_en,Bloody Birthday | kategoriler: 1980s supernatural slasher films; 1981 American films; 1981 English-language films; 1981 films; 1981 slasher films; 1981 supernatural horror films; American independent films; American slasher films
+WIKIEN_43447393,filter,out_of_domain_category,wikipedia_en,End of Eternity (Space: 1999) | kategoriler: 1975 British television episodes; Fiction about asteroids; Space: 1999 episodes; Television episodes about immortality; Television episodes about psychic powers
+WIKIEN_4389255,filter,out_of_domain_category,wikipedia_en,Dragon's Egg | kategoriler: 1980 American novels; 1980 English-language novels; 1980 debut novels; 1980 science fiction novels; American science fiction novels; Del Rey books; Fiction about physics; Fiction set around neutron stars
+WIKIEN_44312647,filter,out_of_domain_category,wikipedia_en,The Legend of Zelda: Majora's Mask 3D | kategoriler: 2015 video games; Action-adventure games; Apocalyptic video games; Dark fantasy video games; Fantasy video games; Fiction set on moons; Grezzo games; Nintendo 3DS-only games
+WIKIEN_4438055,filter,out_of_domain_category,wikipedia_en,Tau Zero | kategoriler: 1970 American novels; 1970 English-language novels; 1970 science fiction novels; American science fiction novels; Doubleday (publisher) books; Fiction about nebulae; Fiction about time dilation; Hard science fiction
+WIKIEN_447460,filter,out_of_domain_category,wikipedia_en,"Flag of Myanmar | kategoriler: Flags introduced in 2010; Flags of Myanmar; Flags with green, red and yellow; Flags with stars; Horizontally symmetrical flags; National flags; National symbols of Myanmar; Quadcolor flags"
+WIKIEN_4476,filter,out_of_domain_category,wikipedia_en,"Beer–Lambert law | kategoriler: Electromagnetic radiation; Scattering, absorption and radiative transfer (optics); Spectroscopy; Visibility"
+WIKIEN_4511790,filter,out_of_domain_category,wikipedia_en,Asteroids in fiction | kategoriler: Fiction about asteroids
+WIKIEN_4528170,filter,out_of_domain,wikipedia_en,domain_score=56.8 off_topic=14
+WIKIEN_4532970,filter,out_of_domain_category,wikipedia_en,The Impossible Planet | kategoriler: 2006 British television episodes; Fiction about black holes; Television episodes about spirit possession; Tenth Doctor episodes; The Ood stories; Works set in the 5th millennium
+WIKIEN_45517339,filter,out_of_domain_category,wikipedia_en,The Expanse (novel series) | kategoriler: American science fiction novels; Book series introduced in 2011; Fiction about main-belt asteroids; Fiction about wormholes; Fiction set on dwarf planets; Fiction with multiple narrators; Hard science fiction; Hugo Award–winning works
+WIKIEN_455224,filter,out_of_domain,wikipedia_en,domain_score=1.5 off_topic=0
+WIKIEN_4555635,filter,out_of_domain_category,wikipedia_en,Frequency comb | kategoriler: Laser science; Nonlinear optics; Spectroscopy; Spectrum (physical sciences)
+WIKIEN_4562953,filter,out_of_domain_category,wikipedia_en,State Seal of Myanmar | kategoriler: Coats of arms with lions; Coats of arms with maps; Coats of arms with stars; National emblems; National seals; National symbols of Myanmar
+WIKIEN_45641123,filter,out_of_domain_category,wikipedia_en,Outer Wilds | kategoriler: 2019 video games; Action-adventure games; Annapurna Interactive games; Apocalyptic video games; British Academy Games Award for Best Game winners; British Academy Games Award for Game Design winners; Existentialist video games; Fiction about black holes
+WIKIEN_457015,filter,out_of_domain_category,wikipedia_en,Coat of arms of Australia | kategoriler: Australian coats of arms; Black swans; Coats of arms with birds; Coats of arms with crosses; Coats of arms with crowns; Coats of arms with kangaroos; Coats of arms with lions; Coats of arms with stars
+WIKIEN_457096,filter,out_of_domain_category,wikipedia_en,National emblem of Belarus | kategoriler: Belarusian coats of arms; Coats of arms with clover; Coats of arms with flax; Coats of arms with globes; Coats of arms with maps; Coats of arms with stars; Coats of arms with sunrays; Coats of arms with suns
+WIKIEN_459180,filter,out_of_domain_category,wikipedia_en,Flag of Vietnam | kategoriler: Flags introduced in 1955; Flags of Vietnam; Flags with stars; Horizontally symmetrical flags; National flags; National symbols of Vietnam; Red and yellow flags
+WIKIEN_459326,filter,out_of_domain_category,wikipedia_en,"Flag of Syria | kategoriler: Flags introduced in 1930; Flags introduced in 2025; Flags of Asia; Flags with black, green and white; Flags with stars; Horizontally symmetrical flags; National flags; National symbols of Syria"
+WIKIEN_463238,filter,out_of_domain_category,wikipedia_en,Allegiance (video game) | kategoriler: 2000 video games; Action games; Commercial video games with freely available source code; Fiction about asteroids; First-person strategy video games; Microsoft free software; Microsoft games; Multiplayer video games
+WIKIEN_46753817,filter,out_of_domain_category,wikipedia_en,Silicon-vacancy center in diamond | kategoriler: Crystallographic defects; Diamond; Quantum information science; Spectroscopy; Spintronics
+WIKIEN_47487,filter,out_of_domain_category,wikipedia_en,Azimuth | kategoriler: Angle; Cartography; Geodesy; Horizontal coordinate system; Navigation; Surveying
+WIKIEN_478195,filter,out_of_domain_category,wikipedia_en,Normal mode | kategoriler: Classical mechanics; Ordinary differential equations; Quantum mechanics; Singular value decomposition; Spectroscopy
+WIKIEN_480465,filter,out_of_domain_category,wikipedia_en,Spectrophotometry | kategoriler: Photochemistry; Radiometry; Spectroscopy
+WIKIEN_486436,filter,out_of_domain_category,wikipedia_en,Rotational–vibrational spectroscopy | kategoriler: Chemical physics; Spectroscopy
+WIKIEN_48685,filter,out_of_domain,wikipedia_en,domain_score=1.9 off_topic=0
+WIKIEN_488484,filter,out_of_domain_category,wikipedia_en,Pitch Black (film) | kategoriler: 2000 American films; 2000 English-language films; 2000 films; 2000 independent films; 2000 science fiction action films; 2000 science fiction horror films; 2000s monster movies; 2000s space adventure films
+WIKIEN_4952672,filter,out_of_domain_category,wikipedia_en,Hydrogen–deuterium exchange | kategoriler: Chemical reactions; Deuterium; Mass spectrometry; Protein structure; Spectroscopy
+WIKIEN_495891,filter,out_of_domain_category,wikipedia_en,Flag of Indiana | kategoriler: 1917 in Indiana; Blue and yellow flags; Daughters of the American Revolution; Flags introduced in 1917; Flags of Indiana; Flags with stars; Symbols of Indiana; United States state flags
+WIKIEN_495981,filter,out_of_domain_category,wikipedia_en,Flag of Massachusetts | kategoriler: Flag controversies in the United States; Flags displaying weapons; Flags including Latin; Flags introduced in 1971; Flags of Massachusetts; Flags with coats of arms; Flags with stars; Native American-related controversies
+WIKIEN_495993,filter,out_of_domain_category,wikipedia_en,Flag of Minnesota | kategoriler: 2023 establishments in Minnesota; Blue and white flags; Blue flags; Culture of Minnesota; Flag controversies in the United States; Flag redesigns in the 21st century; Flags introduced in 2024; Flags of Minnesota
+WIKIEN_496001,filter,out_of_domain_category,wikipedia_en,Flag of Mississippi | kategoriler: 2021 establishments in Mississippi; African-American-related controversies; Flag controversies in the United States; Flag redesigns in the 21st century; Flags adopted through competition; Flags introduced in 2021; Flags of Mississippi; Flags with stars
+WIKIEN_497274,filter,out_of_domain_category,wikipedia_en,Flag of Utah | kategoriler: 1913 establishments in Utah; 2011 establishments in Utah; 2022 establishments in Utah; Flag controversies in the United States; Flag redesigns in the 21st century; Flags displaying animals; Flags introduced in 1913; Flags introduced in 2011
+WIKIEN_49800,filter,out_of_domain_category,wikipedia_en,Lara Croft: Tomb Raider | kategoriler: 2000s action adventure films; 2001 American films; 2001 British films; 2001 English-language films; 2001 German films; 2001 Japanese films; 2001 fantasy adventure films; 2001 films
+WIKIEN_498356,filter,out_of_domain_category,wikipedia_en,The Colour Out of Space | kategoriler: 1927 English-language short stories; 1927 short stories; American short stories adapted into films; Cthulhu Mythos short stories; Fiction about impact events; Fiction about meteoroids; Pulp stories; Short stories adapted into comics
+WIKIEN_51507225,filter,out_of_domain_category,wikipedia_en,All Tomorrows | kategoriler: 2006 novels; 2006 science fiction novels; Books about evolution; C. M. Kösemen; Evolution in popular culture; Fiction about extinction; Fiction books about genocide; Human evolution books
+WIKIEN_515639,filter,out_of_domain,wikipedia_en,domain_score=54.8 off_topic=12
+WIKIEN_51572572,filter,out_of_domain_category,wikipedia_en,Photo-reflectance | kategoriler: Condensed matter physics; Optical metrology; Semiconductor analysis; Spectroscopy
+WIKIEN_516386,filter,out_of_domain_category,wikipedia_en,Fluorescence spectroscopy | kategoriler: Fluorescence; Spectroscopy
+WIKIEN_518692,filter,out_of_domain_category,wikipedia_en,Faraday effect | kategoriler: Magneto-optic effects; Michael Faraday; Polarization (waves)
+WIKIEN_52086235,filter,out_of_domain,wikipedia_en,domain_score=1.4 off_topic=0
+WIKIEN_5215428,filter,out_of_domain,wikipedia_en,domain_score=79.0 off_topic=9
+WIKIEN_528116,filter,out_of_domain_category,wikipedia_en,The Integral Trees | kategoriler: 1984 American novels; 1984 English-language novels; 1984 science fiction novels; American science fiction novels; Del Rey books; Fiction about gas giants; Fiction set around neutron stars; Locus Award–winning works
+WIKIEN_52870898,filter,out_of_domain_category,wikipedia_en,Attraction (2017 film) | kategoriler: 2010s dystopian films; 2010s science fiction drama films; 2017 3D films; 2017 Russian-language films; 2017 Russian films; 2017 films; 2017 science fiction action films; 2017 science fiction thriller films
+WIKIEN_5307518,filter,out_of_domain_category,wikipedia_en,The Day After Tomorrow (TV special) | kategoriler: 1975 television specials; Apocalyptic television episodes; BBC children's television shows; BBC science fiction television shows; British television specials; Educational television episodes; English-language British television shows; English-langua
+WIKIEN_531239,filter,out_of_domain_category,wikipedia_en,Rotational spectroscopy | kategoriler: Rigid bodies mechanics; Rotation; Spectroscopy
+WIKIEN_53730614,filter,out_of_domain_category,wikipedia_en,Family symmetries | kategoriler: Physics beyond the Standard Model; Symmetry
+WIKIEN_53738649,filter,out_of_domain_category,wikipedia_en,World Enough and Time (Doctor Who) | kategoriler: 2017 British television episodes; Cybermen television stories; Doctor Who multi-Master stories; Fiction about black holes; Fiction about time dilation; Television episodes directed by Rachel Talalay; Television episodes set in 1986; Television episod
+WIKIEN_53738650,filter,out_of_domain_category,wikipedia_en,The Doctor Falls | kategoriler: 2017 British television episodes; Cybermen television stories; Doctor Who multi-Doctor stories; Doctor Who multi-Master stories; Fiction about black holes; Fiction about time dilation; First Doctor serials; Television episodes directed by Rachel Talalay
+WIKIEN_54214587,filter,too_short,wikipedia_en,247 chars
+WIKIEN_546875,filter,out_of_domain_category,wikipedia_en,Prisoners of the Sun | kategoriler: 1949 Belgian novels; 1949 graphic novels; 1949 in comics; Belgian graphic novels; Belgian novels adapted into plays; Belgian novels adapted into television shows; Comics adapted into plays; Comics adapted into television series
+WIKIEN_54958897,filter,out_of_domain_category,wikipedia_en,Verónica (2017 Spanish film) | kategoriler: 2010s demon films; 2017 Spanish-language films; 2017 Spanish films; 2017 films; 2017 supernatural horror films; Apache Films films; Eclipses in popular culture; Films directed by Paco Plaza
+WIKIEN_55054778,filter,out_of_domain,wikipedia_en,domain_score=1.4 off_topic=0
+WIKIEN_55353749,filter,out_of_domain_category,wikipedia_en,The Kid Who Would Be King | kategoriler: 2010s children's adventure films; 2019 American films; 2019 British films; 2019 English-language films; 2019 children's fantasy films; 2019 fantasy adventure films; 2019 films; 20th Century Fox films
+WIKIEN_558685,filter,out_of_domain_category,wikipedia_en,Natural environment | kategoriler: Earth; Habitat; Natural environment
+WIKIEN_567527,filter,out_of_domain,wikipedia_en,domain_score=42.2 off_topic=3
+WIKIEN_58024402,filter,out_of_domain_category,wikipedia_en,Perfect Strangers (2017 film) | kategoriler: 2017 Spanish-language films; 2017 Spanish films; 2017 comedy thriller films; 2017 films; Eclipses in popular culture; Films based on Perfect Strangers (2016 film); Films directed by Álex de la Iglesia; Films produced by Ghislain Barrois
+WIKIEN_5827181,filter,out_of_domain_category,wikipedia_en,"Diffuse reflectance spectroscopy | kategoriler: Scattering, absorption and radiative transfer (optics); Spectroscopy"
+WIKIEN_58519634,filter,out_of_domain_category,wikipedia_en,Schwarzschild's equation for radiative transfer | kategoriler: Radiometry
+WIKIEN_587247,filter,out_of_domain,wikipedia_en,domain_score=110.9 off_topic=15
+WIKIEN_5891915,filter,out_of_domain,wikipedia_en,domain_score=1.1 off_topic=0
+WIKIEN_59216757,filter,out_of_domain_category,wikipedia_en,Earth's circumference | kategoriler: Earth; Geodesy; Units of length
+WIKIEN_59444,filter,out_of_domain_category,wikipedia_en,Energy level | kategoriler: Atomic physics; Chemical properties; Computational chemistry; Molecular physics; Quantum chemistry; Spectroscopy; Theoretical chemistry
+WIKIEN_59586120,filter,out_of_domain_category,wikipedia_en,Mantle oxidation state | kategoriler: Earth; Geochemistry; Geophysics; High pressure science
+WIKIEN_59596489,filter,out_of_domain_category,wikipedia_en,Deep carbon cycle | kategoriler: Carbon cycle; Earth; Geochemistry; Plate tectonics
+WIKIEN_596177,filter,out_of_domain_category,wikipedia_en,Terror of the Vervoids | kategoriler: 1986 British television episodes; Fiction about black holes; Sixth Doctor serials; Television episodes directed by Chris Clough; Television episodes set in the 30th century; Television episodes written by Pip and Jane Baker
+WIKIEN_5962,filter,out_of_domain,wikipedia_en,domain_score=106.0 off_topic=3
+WIKIEN_60339106,filter,out_of_domain_category,wikipedia_en,Tiamat's Wrath | kategoriler: 2019 American novels; 2019 English-language novels; American science fiction novels; Books about black holes; Fiction set around neutron stars; Novels by James S. A. Corey; Orbit Books books; Space opera novels
+WIKIEN_60667578,filter,out_of_domain_category,wikipedia_en,Virtually imaged phased array | kategoriler: Interferometry; Optical components; Spectroscopy
+WIKIEN_606970,filter,out_of_domain_category,wikipedia_en,Minimal Supersymmetric Standard Model | kategoriler: Physics beyond the Standard Model; Supersymmetric quantum field theory
+WIKIEN_60874,filter,out_of_domain_category,wikipedia_en,Photoluminescence | kategoriler: Luminescence; Spectroscopy
+WIKIEN_61002,filter,out_of_domain,wikipedia_en,domain_score=6.8 off_topic=5
+WIKIEN_6170575,filter,out_of_domain_category,wikipedia_en,"Dynamic light scattering | kategoriler: Biochemistry methods; Colloidal chemistry; Physical chemistry; Scattering, absorption and radiative transfer (optics); Scientific techniques; Spectroscopy"
+WIKIEN_61895638,filter,out_of_domain,wikipedia_en,domain_score=64.7 off_topic=3
+WIKIEN_62137449,filter,out_of_domain,wikipedia_en,domain_score=21.3 off_topic=5
+WIKIEN_6238190,filter,out_of_domain_category,wikipedia_en,Galactic Civilizations II: Dark Avatar | kategoriler: 2007 video games; 4X video games; Milky Way in fiction; Single-player video games; Stardock games; Turn-based strategy video games; Video game expansion packs; Video games developed in the United States
+WIKIEN_62421802,filter,out_of_domain_category,wikipedia_en,Perturbed angular correlation | kategoriler: Atomic physics; Electromagnetism; Laboratory techniques in condensed matter physics; Materials science; Nuclear physics; Scientific techniques; Solid-state chemistry; Spectroscopy
+WIKIEN_6262231,filter,out_of_domain_category,wikipedia_en,Water distribution on Earth | kategoriler: Earth; Water and the environment
+WIKIEN_63376505,filter,out_of_domain_category,wikipedia_en,Indo-European cosmogony | kategoriler: Comparative mythology; Cosmogony; Proto-Indo-European mythology; Religious cosmologies; Religious studies
+WIKIEN_64208794,filter,out_of_domain_category,wikipedia_en,Macroscope (science concept) | kategoriler: Earth; Geographic data and information; Natural environment; Physical sciences; Remote sensing
+WIKIEN_6432722,filter,out_of_domain_category,wikipedia_en,Photon polarization | kategoriler: Physical phenomena; Polarization (waves); Quantum mechanics
+WIKIEN_64803611,filter,out_of_domain_category,wikipedia_en,Direction of prayer | kategoriler: Christian prayer; Horizontal coordinate system; Jewish practices; Salah
+WIKIEN_65379,filter,out_of_domain_category,wikipedia_en,The Day of the Triffids | kategoriler: 1950s horror novels; 1951 British novels; 1951 English-language novels; 1951 science fiction novels; 1957 radio dramas; 1968 radio dramas; BBC Radio programmes; Biopunk novels
+WIKIEN_6585366,filter,out_of_domain_category,wikipedia_en,Emblem of Vietnam | kategoriler: Coats of arms of communist states; Coats of arms with cogwheels; Coats of arms with rice; Coats of arms with stars; Coats of arms with wheat; National emblems; National emblems with gears; National symbols of Vietnam
+WIKIEN_67227,filter,out_of_domain_category,wikipedia_en,A Brief History of Time | kategoriler: 1988 English-language non-fiction books; 1988 non-fiction books; Bantam Books books; Books by Stephen Hawking; Cosmology books; Popular physics books
+WIKIEN_67525376,filter,out_of_domain_category,wikipedia_en,Representative layer theory | kategoriler: Spectroscopy
+WIKIEN_6866802,filter,too_short,wikipedia_en,130 chars
+WIKIEN_69520552,filter,out_of_domain,wikipedia_en,domain_score=1.9 off_topic=0
+WIKIEN_69845004,filter,out_of_domain,wikipedia_en,domain_score=0.8 off_topic=0
+WIKIEN_7021,filter,out_of_domain_category,wikipedia_en,Crookes radiometer | kategoriler: 19th-century inventions; British inventions; Electromagnetic radiation meters; Energy conversion; External combustion engines; Heat transfer; Hot air engines; Novelty items
+WIKIEN_70430394,filter,out_of_domain_category,wikipedia_en,Sister Death | kategoriler: 2020s ghost films; 2023 Spanish-language films; 2023 Spanish films; 2023 films; 2023 horror films; 2023 supernatural films; Eclipses in popular culture; Films about Catholic nuns
+WIKIEN_70650935,filter,out_of_domain_category,wikipedia_en,Sailor Moon Cosmos | kategoriler: 2020s animated superhero films; 2023 anime films; 2023 films; 2023 superhero films; Animated films based on animated series; Animated films set in outer space; Films released in separate parts; Films scored by Yasuharu Takanashi
+WIKIEN_70718499,filter,out_of_domain,wikipedia_en,domain_score=0.0 off_topic=0
+WIKIEN_7080815,filter,out_of_domain_category,wikipedia_en,Infinite Undiscovery | kategoriler: 2008 video games; Action role-playing video games; Fantasy video games; Fiction about deicide; Fiction set on moons; Single-player video games; Square Enix games; Tri-Ace
+WIKIEN_7148738,filter,out_of_domain_category,wikipedia_en,Molecular Hamiltonian | kategoriler: Molecular physics; Quantum chemistry; Spectroscopy
+WIKIEN_7163781,filter,out_of_domain_category,wikipedia_en,Stars in fiction | kategoriler: Fiction about stars
+WIKIEN_71806847,filter,out_of_domain_category,wikipedia_en,Direction determination | kategoriler: Horizontal coordinate system; Navigation
+WIKIEN_71937717,filter,out_of_domain_category,wikipedia_en,Synchrotron radiation circular dichroism spectroscopy | kategoriler: Spectroscopy
+WIKIEN_725135,filter,out_of_domain_category,wikipedia_en,Gonggong | kategoriler: Chinese gods; Chinese legendary creatures; Classic of Mountains and Seas; Deities in Chinese folk religion; Destroyer gods; Evil gods; Four Criminals; Four Perils
+WIKIEN_7321060,filter,out_of_domain_category,wikipedia_en,Interferometric synthetic-aperture radar | kategoriler: Geodesy; Geophysical survey; Interferometry; Synthetic aperture radar
+WIKIEN_7322,filter,out_of_domain_category,wikipedia_en,Creation myth | kategoriler: Comparative mythology; Cosmogony; Creation myths; Religious cosmologies; Traditional stories
+WIKIEN_73231,filter,out_of_domain_category,wikipedia_en,Weather forecasting | kategoriler: Broadcasting; Journalism by field; News; Sky; Weather forecasting; Weather prediction
+WIKIEN_73664,filter,out_of_domain,wikipedia_en,domain_score=31.0 off_topic=4
+WIKIEN_74027509,filter,out_of_domain,wikipedia_en,domain_score=1.6 off_topic=0
+WIKIEN_7480,filter,out_of_domain_category,wikipedia_en,Cross section (physics) | kategoriler: Atomic physics; Dimensional analysis; Experimental particle physics; Measurement; Nuclear physics; Particle physics; Physical quantities; Scattering
+WIKIEN_76025517,filter,out_of_domain_category,wikipedia_en,Geno (Super Mario RPG) | kategoriler: Fiction about stars; Fictional characters who use magic; Fictional dolls; Fictional extraterrestrial characters; Fictional gods; Fictional warriors; Male characters in video games; Mario role-playing game characters
+WIKIEN_760394,filter,too_short,wikipedia_en,261 chars
+WIKIEN_76142154,filter,out_of_domain_category,wikipedia_en,Vibrational spectroscopic map | kategoriler: Spectroscopy
+WIKIEN_76408,filter,out_of_domain_category,wikipedia_en,Transverse wave | kategoriler: Acoustics; Polarization (waves); Wave mechanics; Waves
+WIKIEN_76475460,filter,out_of_domain_category,wikipedia_en,Impact events in fiction | kategoriler: Fiction about asteroids; Fiction about comets; Fiction about impact events
+WIKIEN_771651,filter,out_of_domain_category,wikipedia_en,Scream of the Shalka | kategoriler: 2004 British novels; 2004 English-language novels; 2004 science fiction novels; British drama web series; Doctor Who anniversary specials; Fiction about black holes; Non-canon Doctor Who episodes; Novels set in Lancashire
+WIKIEN_77333569,filter,out_of_domain,wikipedia_en,domain_score=1.0 off_topic=0
+WIKIEN_78273,filter,out_of_domain_category,wikipedia_en,"Flag of Chile | kategoriler: Flags introduced in 1817; Flags of Chile; Flags with blue, red and white; Flags with cantons; Flags with stars; National flags; National symbols of Chile"
+WIKIEN_785,filter,out_of_domain_category,wikipedia_en,"Asteroids (video game) | kategoriler: 1979 video games; Accolade, Inc. games; Arcade video games; Atari 2600 games; Atari 7800 games; Atari 8-bit computer games; Atari Lynx games; Atari arcade games"
+WIKIEN_80175644,filter,out_of_domain_category,wikipedia_en,Killing Me / Killing You | kategoriler: 2017 manga; Adventure anime and manga; Comics about death; Fiction about immortality; Fiction about meteoroids; Fujimi Shobo manga; Manga series; Seinen manga
+WIKIEN_804218,filter,out_of_domain,wikipedia_en,domain_score=56.2 off_topic=8
+WIKIEN_80454109,filter,out_of_domain,wikipedia_en,domain_score=1.0 off_topic=0
+WIKIEN_80551218,filter,out_of_domain_category,wikipedia_en,Quasiparticle interference imaging | kategoriler: Condensed matter physics; Electron spectroscopy; Electronic band structures; Scanning probe microscopy; Spectroscopy
+WIKIEN_81166,filter,out_of_domain_category,wikipedia_en,King Solomon's Mines | kategoriler: 1880s English-language novels; 1885 British novels; 1885 fantasy novels; Adventure novels adapted into films; British adventure novels; British fantasy novels; British novels adapted for radio; British novels adapted into comics
+WIKIEN_8288266,filter,out_of_domain_category,wikipedia_en,Chemical imaging | kategoriler: Fluorescence techniques; Infrared imaging; Magnetic resonance imaging; Microscopy; Spectroscopy
+WIKIEN_83131746,filter,out_of_domain_category,wikipedia_en,Firedrakes in English folklore | kategoriler: British folklore; European legendary creatures; Fiction about meteoroids; Fire in culture; Firedrakes in folklore; Legendary serpents
+WIKIEN_83131871,filter,out_of_domain_category,wikipedia_en,Fiery serpents in Slavic folklore | kategoriler: Belarusian folklore; Estonian folklore; Fiction about meteoroids; Fire in culture; Firedrakes in folklore; Incubi; Legendary serpents; Lithuanian folklore
+WIKIEN_8323351,filter,out_of_domain_category,wikipedia_en,Fresnel rhomb | kategoriler: History of physics; Physical optics; Polarization (waves); Prisms (optics)
+WIKIEN_841452,filter,out_of_domain_category,wikipedia_en,Pherecydes of Syros | kategoriler: 6th-century BC Greek philosophers; Cosmogony; People from Syros; Presocratic philosophers; Religious cosmologies; Seven Sages of Greece
+WIKIEN_84896,filter,out_of_domain_category,wikipedia_en,Orcus | kategoriler: Hades; Orcus (dwarf planet); Roman gods; Roman underworld; Underworld gods; Wild men
+WIKIEN_866991,filter,out_of_domain,wikipedia_en,domain_score=47.9 off_topic=5
+WIKIEN_8724,filter,out_of_domain_category,wikipedia_en,Doppler effect | kategoriler: Acoustics; Doppler effects; Radar signal processing; Radio frequency propagation; Sound; Wave mechanics
+WIKIEN_887388,filter,out_of_domain_category,wikipedia_en,Dragonslayer (1981 film) | kategoriler: 1981 American films; 1981 English-language films; 1981 adventure films; 1981 children's films; 1981 films; American dark fantasy films; American fantasy adventure films; American sword and sorcery films
+WIKIEN_8905156,filter,out_of_domain_category,wikipedia_en,King Solomon's Mines (1937 film) | kategoriler: 1930s fantasy adventure films; 1937 British films; 1937 English-language films; 1937 fantasy films; 1937 films; British black-and-white films; British fantasy adventure films; Eclipses in popular culture
+WIKIEN_89633,filter,out_of_domain_category,wikipedia_en,"Warhammer 40,000 | kategoriler: 1987 books; Campaign settings; Demons in popular culture; Dystopian fiction; Fiction about psychic powers; Fictional mutants; Games Workshop games; Games about extraterrestrial life"
+WIKIEN_900584,filter,out_of_domain_category,wikipedia_en,The Seventh Sign | kategoriler: 1988 American films; 1988 English-language films; 1988 films; 1988 horror films; American pregnancy films; American religious horror films; American supernatural horror films; Apocalyptic films
+WIKIEN_902820,filter,out_of_domain_category,wikipedia_en,Emissivity | kategoriler: Heat transfer; Physical quantities; Radiometry
+WIKIEN_92193,filter,out_of_domain_category,wikipedia_en,Circular dichroism | kategoriler: Biophysics methods; Physical quantities; Polarization (waves); Protein structure
+WIKIEN_92206,filter,out_of_domain_category,wikipedia_en,Magnetic circular dichroism | kategoriler: Magneto-optic effects; Polarization (waves); Spectroscopy
+WIKIEN_944638,filter,out_of_domain_category,wikipedia_en,Earth's energy budget | kategoriler: Atmospheric sciences; Climate forcing; Climate variability and change; Climatology; Earth; Earth sciences; Energy; Environmental science
+WIKIEN_95314,filter,out_of_domain_category,wikipedia_en,Haumea (mythology) | kategoriler: Deity stubs; Fertility goddesses; Haumea; Hawaiian goddesses
+WIKIEN_9604,filter,out_of_domain_category,wikipedia_en,Many-worlds interpretation | kategoriler: 1957 in science; 1970s neologisms; Hugh Everett III; Interpretations of quantum mechanics; Metaphysical realism; Metaphysics of science; Multiverse; Quantum measurement
+WIKIEN_9823,filter,out_of_domain_category,wikipedia_en,Eris (mythology) | kategoriler: Chaos goddesses; Children of Hera; Children of Nyx; Daughters of Zeus; Deities in the Iliad; Discordianism; Eris (dwarf planet); Eris (mythology)
+WIKITR_1112385,filter,too_short,wikipedia_tr,267 chars
+WIKITR_1179027,filter,out_of_domain_category,wikipedia_tr,Atmosfer kimyası | kategoriler: Atmosfer; Atmosfer kimyası; Kimya; Çevresel kimya
+WIKITR_120006,filter,out_of_domain_category,wikipedia_tr,Cowboy Bebop | kategoriler: 1998 anime serileri; 1998 mangaları; Adult Swim; Aksiyon animeleri ve mangaları; Animax; Bandai Visual; Bilimkurgu anime; Cowboy Bebop
+WIKITR_1201195,filter,out_of_domain_category,wikipedia_tr,Sönümlü poisson denklemi | kategoriler: Elektrostatik; Kısmi diferansiyel denklemler; Plazma fiziği
+WIKITR_1212952,filter,too_short,wikipedia_tr,289 chars
+WIKITR_123042,filter,out_of_domain_category,wikipedia_tr,Christian Andreas Doppler | kategoriler: 1803 doğumlular; 1853'te ölenler; Avusturyalı fizikçiler; Avusturyalı matematikçiler; Doppler etkisi; Salzburg doğumlular; Venedik'te defnedilenler; Venedik'te ölenler
+WIKITR_123178,filter,out_of_domain_category,wikipedia_tr,Doppler etkisi | kategoriler: Doppler etkisi
+WIKITR_1278622,filter,too_short,wikipedia_tr,273 chars
+WIKITR_1280080,filter,too_short,wikipedia_tr,277 chars
+WIKITR_1281852,filter,too_short,wikipedia_tr,257 chars
+WIKITR_1282175,filter,too_short,wikipedia_tr,235 chars
+WIKITR_1282196,filter,too_short,wikipedia_tr,278 chars
+WIKITR_1282859,filter,too_short,wikipedia_tr,274 chars
+WIKITR_1285188,filter,too_short,wikipedia_tr,286 chars
+WIKITR_12913,filter,out_of_domain_category,wikipedia_tr,Dünya'nın mantosu | kategoriler: Dünya'nın yapısı; Jeomorfoloji
+WIKITR_1297820,filter,out_of_domain_category,wikipedia_tr,Brewster açısı | kategoriler: Açı; Fiziksel optik; Geometrik optik; Polarizasyon
+WIKITR_1300437,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_1305877,filter,out_of_domain_category,wikipedia_tr,Polarizör | kategoriler: Optik aletler; Polarizasyon
+WIKITR_1331344,filter,out_of_domain,wikipedia_tr,domain_score=0.8 off_topic=0
+WIKITR_134976,filter,out_of_domain_category,wikipedia_tr,Aşınma çevrimi | kategoriler: Jeomorfoloji
+WIKITR_1349890,filter,too_short,wikipedia_tr,227 chars
+WIKITR_1400864,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_1409904,filter,out_of_domain_category,wikipedia_tr,Polarizörler | kategoriler: Optik aletler; Polarizasyon
+WIKITR_1409911,filter,out_of_domain_category,wikipedia_tr,Atmosfer optiği | kategoriler: Atmosfer; Dünya'nın yapısı; Optik; Optik olaylar
+WIKITR_1442263,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_145127,filter,out_of_domain,wikipedia_tr,domain_score=97.5 off_topic=3
+WIKITR_1471015,filter,too_short,wikipedia_tr,254 chars
+WIKITR_1474834,filter,out_of_domain_category,wikipedia_tr,Floresan lamba | kategoriler: Amerika Birleşik Devletleri icatları; Cıva; Floresans; Gaz deşarj lambaları; Lambalar; Plazma fiziği
+WIKITR_1513721,filter,out_of_domain_category,wikipedia_tr,Büyük Tasarım | kategoriler: 2010 kitapları; Astronomi kitapları; Din eleştirisi kitapları; Fizik kitapları; Kozmoloji kitapları; Popüler bilim kitapları; Stephen Hawking kitapları
+WIKITR_153461,filter,out_of_domain_category,wikipedia_tr,Metronom | kategoriler: Alman icatları; Ritim; Sarkaçlar
+WIKITR_157211,filter,out_of_domain_category,wikipedia_tr,Ay Savaşçısı | kategoriler: 1991 mangaları; 1992 anime serileri; ABS-CBN programları; Atv dizileri; Ay Savaşçısı; Ergenler ile ilgili televizyon dizileri; Fantastik anime; Kodansha mangaları
+WIKITR_1606462,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_16393,filter,out_of_domain_category,wikipedia_tr,Küçük Prens | kategoriler: 100 Temel Eser; 1940'larda Fransız romanları; 1940'larda çocuk kitapları; 1943 romanları; Antoine de Saint-Exupéry eserleri; En İyi Kısa Roman Hugo Ödülü kazanan eserler; Fransız felsefi romanları; Fransız çocuk romanları
+WIKITR_1664294,filter,too_short,wikipedia_tr,264 chars
+WIKITR_1665189,filter,out_of_domain_category,wikipedia_tr,Time Crash | kategoriler: 2007 televizyon bölümleri; Beşinci Doktor bölümleri; Doctor Who kısa bölümleri; Kurguda kara delikler; Kurguda süpernovalar; Onuncu Doktor bölümleri
+WIKITR_1667588,filter,too_short,wikipedia_tr,283 chars
+WIKITR_1668325,filter,too_short,wikipedia_tr,294 chars
+WIKITR_1668564,filter,too_short,wikipedia_tr,292 chars
+WIKITR_1668605,filter,too_short,wikipedia_tr,266 chars
+WIKITR_1669284,filter,too_short,wikipedia_tr,271 chars
+WIKITR_1670803,filter,too_short,wikipedia_tr,291 chars
+WIKITR_1670997,filter,too_short,wikipedia_tr,276 chars
+WIKITR_1671004,filter,too_short,wikipedia_tr,292 chars
+WIKITR_1671019,filter,too_short,wikipedia_tr,285 chars
+WIKITR_1672236,filter,too_short,wikipedia_tr,297 chars
+WIKITR_1675694,filter,out_of_domain_category,wikipedia_tr,Orgon (hipotez) | kategoriler: Bilim taslakları; Buluşlar; Hipotezler; Kozmoloji; Seksoloji; Sözdebilim; Wilhelm Reich
+WIKITR_1692535,filter,out_of_domain,wikipedia_tr,domain_score=1.5 off_topic=0
+WIKITR_1693813,filter,out_of_domain,wikipedia_tr,domain_score=1.5 off_topic=0
+WIKITR_1715585,filter,out_of_domain_category,wikipedia_tr,Kriyosfer | kategoriler: Dünya'nın yapısı; Subilim; Yer bilimleri
+WIKITR_1718544,filter,out_of_domain_category,wikipedia_tr,Ayrışma (jeoloji) | kategoriler: Ayrışma (jeoloji); Jeolojik süreçler; Jeomorfoloji; Klimatoloji; Pedoloji; Toprak; Yer bilimleri
+WIKITR_1729491,filter,too_short,wikipedia_tr,218 chars
+WIKITR_1733610,filter,too_short,wikipedia_tr,196 chars
+WIKITR_1741339,filter,out_of_domain_category,wikipedia_tr,Ayna simetrisi | kategoriler: Cebirsel geometri; Matematiksel fizik; Sicim teorisi
+WIKITR_1745000,filter,too_short,wikipedia_tr,287 chars
+WIKITR_177831,filter,out_of_domain_category,wikipedia_tr,Foucault sarkacı | kategoriler: Fransız icatları; Sarkaçlar
+WIKITR_1787603,filter,out_of_domain_category,wikipedia_tr,Yıldızlararası | kategoriler: 2010'larda bilimkurgu macera filmleri; 2010'larda dramatik bilimkurgu filmleri; 2010'larda felaket filmleri; 2010'larda İngilizce filmler; 2014 çıkışlı Amerika Birleşik Devletleri filmleri; 2014 çıkışlı dramatik filmler; 2014 çıkışlı filmler; 2067'de geçen filmler
+WIKITR_1793960,filter,out_of_domain_category,wikipedia_tr,Sicim kuramı ve kuantum alan kuramı arasındaki ilişki | kategoriler: Kuantum alan teorisi; Kuantum fiziği; Sicim teorisi
+WIKITR_1794968,filter,out_of_domain,wikipedia_tr,domain_score=1.3 off_topic=0
+WIKITR_1796500,filter,out_of_domain_category,wikipedia_tr,Hidrotermal baca | kategoriler: Hidrotermal bacalar; Jeodinamik; Jeomorfoloji; Levha tektoniği
+WIKITR_1798495,filter,out_of_domain_category,wikipedia_tr,Sicim kuramının tarihi | kategoriler: Fizik tarihi; Sicim teorisi
+WIKITR_1806286,filter,out_of_domain_category,wikipedia_tr,Plazma odak makinesi | kategoriler: Plazma fiziği; Çekirdeksel kaynaşma
+WIKITR_1806944,filter,out_of_domain_category,wikipedia_tr,Atmosferik dağılım | kategoriler: Akustik; Atmosfer; Kırınım; Ses
+WIKITR_1810097,filter,too_short,wikipedia_tr,231 chars
+WIKITR_1810246,filter,too_short,wikipedia_tr,226 chars
+WIKITR_181566,filter,out_of_domain_category,wikipedia_tr,Hendrik Lorentz | kategoriler: 1853 doğumlular; 1928'de ölenler; 20. yüzyıl fizikçileri; Arnhem doğumlular; Copley Madalyası sahipleri (1901-1950); Edinburgh Kraliyet Topluluğu üyeleri; Franklin Madalyası sahipleri; Genel görelilik
+WIKITR_185325,filter,out_of_domain_category,wikipedia_tr,Asit yağmuru | kategoriler: Jeomorfoloji; Orman patolojisi; Yağış; Çevre kirliliği; Çevresel kimya
+WIKITR_186509,filter,out_of_domain_category,wikipedia_tr,Mie saçılması | kategoriler: Atmosfer; Elektrodinamik; Elektromanyetizma; Işık; Saçılma
+WIKITR_1923337,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_1928452,filter,out_of_domain_category,wikipedia_tr,Elektrostatik boşalma | kategoriler: Elektrik arızası; Elektrik güvenliği; Elektrostatik; Plazma fiziği
+WIKITR_1928482,filter,out_of_domain_category,wikipedia_tr,Anti-kütleçekim | kategoriler: Anti-kütleçekimi; Bilimkurgu konuları; Fizik tarihi; Genel görelilik; Sözdebilim; Sınırfizik
+WIKITR_1928701,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_1932092,filter,out_of_domain,wikipedia_tr,domain_score=1.4 off_topic=0
+WIKITR_1937660,filter,out_of_domain_category,wikipedia_tr,Marfa ışıkları | kategoriler: Meteoroloji folkloru; Paranormal; Plazma fiziği; Presidio County; Teksas'taki çevre; Ufoloji
+WIKITR_20057,filter,out_of_domain_category,wikipedia_tr,HAARP | kategoriler: Alaska'daki yapılar; Araştırma istasyonları; Atmosfer; Valdez–Cordova Census Area; Çevre araştırması
+WIKITR_2011881,filter,out_of_domain_category,wikipedia_tr,Doppler genişlemesi | kategoriler: Doppler etkisi; Fiziksel olaylar
+WIKITR_2047846,filter,too_short,wikipedia_tr,236 chars
+WIKITR_2060727,filter,out_of_domain_category,wikipedia_tr,Define Gezegeni | kategoriler: 2000'lerde Amerika Birleşik Devletleri animasyon filmleri; 2000'lerde gençlik filmleri; 2000'lerde İngilizce filmler; 2002 çıkışlı bilimkurgu filmleri; 2002 çıkışlı filmler; Amerika Birleşik Devletleri gençlik filmleri; Amerika Birleşik Devletleri robot filmleri; Ameri
+WIKITR_2080157,filter,out_of_domain_category,wikipedia_tr,Dilaton | kategoriler: Hipotetik temel parçacıklar; Sicim teorisi; Süpersimetri
+WIKITR_2094813,filter,too_short,wikipedia_tr,215 chars
+WIKITR_2095453,filter,too_short,wikipedia_tr,195 chars
+WIKITR_2095702,filter,too_short,wikipedia_tr,203 chars
+WIKITR_2095832,filter,too_short,wikipedia_tr,206 chars
+WIKITR_2095855,filter,too_short,wikipedia_tr,211 chars
+WIKITR_2096234,filter,too_short,wikipedia_tr,216 chars
+WIKITR_2096244,filter,too_short,wikipedia_tr,271 chars
+WIKITR_2096254,filter,too_short,wikipedia_tr,249 chars
+WIKITR_210199,filter,out_of_domain_category,wikipedia_tr,Akaşa kayıtları | kategoriler: Antropozofi; Ezoterik kozmoloji; Teozofi
+WIKITR_2109826,filter,out_of_domain_category,wikipedia_tr,Plazma aktüatörü | kategoriler: Aktüatörler; Elektrostatik; Plazma fiziği
+WIKITR_2111177,filter,out_of_domain_category,wikipedia_tr,Yıldırım topu | kategoriler: Plazma fiziği; Yıldırım; Çözülememiş fizik problemleri
+WIKITR_2111181,filter,out_of_domain_category,wikipedia_tr,Rayleigh gökyüzü modeli | kategoriler: Polarizasyon
+WIKITR_221559,filter,out_of_domain_category,wikipedia_tr,Bengi dönüş | kategoriler: Din felsefesi; Dinî kozmolojiler; Felsefi argümanlar; Friedrich Nietzsche; Nedensellik
+WIKITR_2308733,filter,out_of_domain_category,wikipedia_tr,Dark (dizi) | kategoriler: 1880'lerde geçen televizyon dizileri; 1920'lerde geçen televizyon dizileri; 1953'te geçen televizyon dizileri; 1954'te geçen televizyon dizileri; 1974'te geçen televizyon dizileri; 1986'da geçen televizyon dizileri; 1987'de geçen televizyon dizileri; 2010'larda Alman drama
+WIKITR_2313330,filter,too_short,wikipedia_tr,270 chars
+WIKITR_2316456,filter,too_short,wikipedia_tr,284 chars
+WIKITR_2339771,filter,too_short,wikipedia_tr,140 chars
+WIKITR_2385739,filter,out_of_domain_category,wikipedia_tr,Gudea silindirleri | kategoriler: Antik Yakın ve Orta Doğu kil nesneleri; Irak'taki arkeolojik buluntular; Kil tabletler; Louvre Müzesi koleksiyonu; Mezopotamya mitolojisi; Mitolojik evren bilimleri; Sümerce edebiyat; Yaratılış efsaneleri
+WIKITR_2408603,filter,out_of_domain_category,wikipedia_tr,Düz Dünya | kategoriler: Düz Dünya teorisi; Erken dönem bilimsel kozmolojiler; Komplo teorileri; Sözdebilim
+WIKITR_2475110,filter,out_of_domain_category,wikipedia_tr,İndüksiyonla birleşmiş plazma | kategoriler: Elektrodinamik; Plazma fiziği; Spektroskopi
+WIKITR_2522068,filter,too_short,wikipedia_tr,260 chars
+WIKITR_2522714,filter,too_short,wikipedia_tr,231 chars
+WIKITR_2526599,filter,too_short,wikipedia_tr,223 chars
+WIKITR_2526600,filter,too_short,wikipedia_tr,295 chars
+WIKITR_2530629,filter,out_of_domain_category,wikipedia_tr,Yüzey plazmonu | kategoriler: Fotonik; Katı hâl fiziği; Nanoteknoloji; Plazma fiziği; Yüzey dalgaları
+WIKITR_2612172,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_261791,filter,out_of_domain_category,wikipedia_tr,Yaratılışçılık | kategoriler: Dinî kozmolojiler; Hristiyan terminolojisi; Sözdebilim; Teizm; Yaratılış efsaneleri; Yaratılışçılık; Yaşamın kökeni; Yürürlükte olmayan biyoloji kuramları
+WIKITR_261869,filter,too_short,wikipedia_tr,214 chars
+WIKITR_262167,filter,too_short,wikipedia_tr,274 chars
+WIKITR_2622059,filter,out_of_domain_category,wikipedia_tr,Plaj gelişimi | kategoriler: Jeomorfoloji; Kıyı coğrafyası; Okyanus bilimi terminolojisi; Sedimantoloji
+WIKITR_262595,filter,too_short,wikipedia_tr,208 chars
+WIKITR_2628745,filter,out_of_domain_category,wikipedia_tr,Yükselmiş kıyı | kategoriler: Gölsel yeryüzü şekilleri; Jeomorfoloji; Kıyı coğrafyası
+WIKITR_2647611,filter,out_of_domain_category,wikipedia_tr,Mass Effect (seri) | kategoriler: 2007'de başlatılan video oyunu serileri; Aksiyon-rol yapma video oyunları; Askerî bilimkurgu video oyunları; Bilimkurgu video oyunları; BioWare oyunları; Electronic Arts imtiyazları; Konusu gelecekte geçen video oyunları; Kurguda Samanyolu
+WIKITR_2818483,filter,out_of_domain_category,wikipedia_tr,Faraday kupası | kategoriler: Kütle spektrometrisi; Plazma fiziği; Ölçü aletleri
+WIKITR_2818686,filter,out_of_domain_category,wikipedia_tr,İyon siklotron rezonansı | kategoriler: Bilimsel teknikler; Madde içinde elektrik ve manyetik alanlar; Plazma fiziği; Yoğun madde fiziği
+WIKITR_2846582,filter,too_short,wikipedia_tr,297 chars
+WIKITR_2853752,filter,out_of_domain_category,wikipedia_tr,Mapuçe mitolojisi | kategoriler: Etnik din; Ezoterik kozmoloji; Şamanizm
+WIKITR_2857317,filter,too_short,wikipedia_tr,250 chars
+WIKITR_2885033,filter,out_of_domain_category,wikipedia_tr,İklim jeomorfolojisi | kategoriler: Jeomorfoloji; Klimatoloji
+WIKITR_2885049,filter,out_of_domain_category,wikipedia_tr,Denüdasyon | kategoriler: Jeolojik süreçler; Jeomorfoloji
+WIKITR_2885065,filter,out_of_domain,wikipedia_tr,domain_score=0.9 off_topic=0
+WIKITR_2887361,filter,out_of_domain_category,wikipedia_tr,Enkaz Akışı | kategoriler: Doğal afetler; Jeolojik tehlikeler; Jeomorfoloji
+WIKITR_2983003,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_2987086,filter,out_of_domain_category,wikipedia_tr,Sarkaçlı saat | kategoriler: Hollandalı icatları; Osilatörler; Saatler; Sarkaçlar
+WIKITR_2995135,filter,out_of_domain,wikipedia_tr,domain_score=1.0 off_topic=0
+WIKITR_2995517,filter,too_short,wikipedia_tr,214 chars
+WIKITR_3020893,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_3032828,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_3060257,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_3101405,filter,out_of_domain_category,wikipedia_tr,Don't Look Up | kategoriler: 2020'lerde bilimkurgu komedi filmleri; 2020'lerde hiciv filmleri; 2020'lerde İngilizce filmler; 2021 çıkışlı Amerika Birleşik Devletleri filmleri; 2021 çıkışlı filmler; 2021 çıkışlı komedi filmleri; Adam McKay'in senaryosunu yazdığı filmler; Adam McKay'in yapımcısı olduğ
+WIKITR_3210094,filter,out_of_domain_category,wikipedia_tr,Soluk Mavi Nokta (kitap) | kategoriler: Amerikan araştırma kitapları; Astronomi kitapları; Carl Sagan eserleri; Random House kitapları; İngilizce kitaplar
+WIKITR_3417186,filter,out_of_domain_category,wikipedia_tr,Yaratılış miti | kategoriler: Dinî kozmolojiler; Karşılaştırmalı mitoloji; Yaratılış efsaneleri
+WIKITR_3417878,filter,out_of_domain_category,wikipedia_tr,Enlil ile Ninlil | kategoriler: Dinî kozmolojiler; Kil tabletler; Mitolojik dağlar; Sümerce edebiyat; Yaratılış efsaneleri
+WIKITR_3461951,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_3468726,filter,too_short,wikipedia_tr,114 chars
+WIKITR_3469027,filter,out_of_domain,wikipedia_tr,domain_score=68.0 off_topic=3
+WIKITR_3504003,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_3535944,filter,out_of_domain_category,wikipedia_tr,Atmosferik nehir | kategoriler: Atmosfer; Atmosfer dinamiği; Etkili hava ve konveksiyon; Hava olayları; Meteorolojik olaylar
+WIKITR_3544222,filter,out_of_domain_category,wikipedia_tr,Kristal sistemi | kategoriler: Jeomorfoloji; Kristal sistemleri; Kristalografi; Mineraloji; Simetri; Öklid geometrisi
+WIKITR_3550855,filter,out_of_domain_category,wikipedia_tr,Astral düzlem | kategoriler: Ezoterik kozmoloji; Ölümden sonra yaşam yerleri
+WIKITR_3602779,filter,out_of_domain_category,wikipedia_tr,Calabi-Yau manifoldu | kategoriler: Cebirsel geometri; Diferansiyel geometri; Karmaşık manifoldlar; Matematiksel fizik; Sicim teorisi
+WIKITR_3616740,filter,out_of_domain_category,wikipedia_tr,Yüzeye çıkma tarihlemesi | kategoriler: Erozyon; Jeokronolojik yaş tayini yöntemleri; Jeomorfoloji; Tarihsel jeoloji
+WIKITR_4090427,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_4211661,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_4243097,filter,out_of_domain_category,wikipedia_tr,İbrani astronomisi | kategoriler: Antik astronomi; Dinî kozmolojiler
+WIKITR_4243545,filter,too_short,wikipedia_tr,267 chars
+WIKITR_440467,filter,too_short,wikipedia_tr,200 chars
+WIKITR_4465252,filter,out_of_domain_category,wikipedia_tr,Kitâb-ı Mukaddes kozmolojisi | kategoriler: Dinî kozmolojiler; Hristiyanlıkta kozmoloji; Kitâb-ı Mukaddes
+WIKITR_4493727,filter,out_of_domain_category,wikipedia_tr,Büyük Patlama teorisinin dinî yorumları | kategoriler: Bilim ve din; Büyük Patlama; Dinî kozmolojiler
+WIKITR_4500701,filter,out_of_domain_category,wikipedia_tr,All Tomorrows | kategoriler: 2006 bilimkurgu romanları; 2006 romanları; 2021'de tanıtılan internet meme'leri; Evrim kitapları; Genetik mühendisliği ile ilgili romanlar; Konusu gelecekte geçen romanlar; Kurguda Mars; Kurguda Samanyolu
+WIKITR_452485,filter,out_of_domain_category,wikipedia_tr,Dinî kozmoloji | kategoriler: Dinî inanç ve doktrin; Dinî kozmolojiler
+WIKITR_454764,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_4556251,filter,out_of_domain_category,wikipedia_tr,Gelecek dünya | kategoriler: Dinî kozmolojiler; Eskatoloji; Kitâb-ı Mukaddes'te geçen sözler; İznik İnanç Bildirgesi
+WIKITR_4652351,filter,out_of_domain_category,wikipedia_tr,Sürtünme hızı | kategoriler: Akışkanlar mekaniği; Hesaplamalı akışkanlar dinamiği; Jeofizik; Jeomorfoloji; Sedimantoloji
+WIKITR_4746386,filter,out_of_domain,wikipedia_tr,domain_score=86.4 off_topic=10
+WIKITR_488387,filter,too_short,wikipedia_tr,279 chars
+WIKITR_554520,filter,out_of_domain_category,wikipedia_tr,Polarizasyon | kategoriler: Antenler; Elektromanyetik radyasyon; Polarizasyon
+WIKITR_558076,filter,out_of_domain_category,wikipedia_tr,Süpersicim teorisi | kategoriler: Sicim teorisi; Süpersimetri
+WIKITR_592216,filter,out_of_domain_category,wikipedia_tr,Yer bilimleri | kategoriler: Yer bilimleri
+WIKITR_644154,filter,out_of_domain_category,wikipedia_tr,İzostazi | kategoriler: Jeodinamik; Jeomorfoloji; Kaldırma kuvveti
+WIKITR_64952,filter,out_of_domain_category,wikipedia_tr,Düalist kozmoloji | kategoriler: Düalizm; Metafizik teorileri; Mitolojik evren bilimleri
+WIKITR_657144,filter,out_of_domain_category,wikipedia_tr,Sarkaç | kategoriler: Fizik taslakları; Sarkaçlar
+WIKITR_67047,filter,out_of_domain_category,wikipedia_tr,Armageddon (film) | kategoriler: 1990'larda aksiyon filmleri; 1990'larda bilimkurgu filmleri; 1990'larda felaket filmleri; 1990'larda İngilizce filmler; 1998 çıkışlı Amerika Birleşik Devletleri filmleri; 1998 çıkışlı filmler; Aerosmith; Altın Ahududu Ödülü kazanan filmler
+WIKITR_725196,filter,too_short,wikipedia_tr,275 chars
+WIKITR_775738,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
+WIKITR_792958,filter,out_of_domain_category,wikipedia_tr,Makemake (mitoloji) | kategoriler: Bereket tanrıları; Makemake; Paskalya Adası; Rapanui mitolojisi; Tarım tanrıları; Yaratıcı tanrılar
+WIKITR_81105,filter,out_of_domain_category,wikipedia_tr,M teorisi | kategoriler: Sicim teorisi
+WIKITR_815705,filter,too_short,wikipedia_tr,210 chars
+WIKITR_851040,filter,too_short,wikipedia_tr,257 chars
+WIKITR_852862,filter,too_short,wikipedia_tr,242 chars
+WIKITR_856231,filter,too_short,wikipedia_tr,150 chars
+WIKITR_873442,filter,too_short,wikipedia_tr,108 chars
+NASA_79b2a7270aed,dedup,duplicate,nasa_science,same_sha256_as=NASA_5bfd75e926dd
+NASA_3aa39dbf1d85,dedup,duplicate,nasa_science,same_sha256_as=NASA_03a701a3dcc3
+NASA_052e9fc8fc03,dedup,duplicate,nasa_science,same_sha256_as=NASA_0360efc7240b
+NASA_17d87b576ef0,dedup,duplicate,nasa_science,same_sha256_as=NASA_0a84b36dca19
+NASA_d552cd171f27,dedup,duplicate,nasa_science,same_sha256_as=NASA_86bc3b5c161e
+NASA_e307c0400657,dedup,duplicate,nasa_science,same_sha256_as=NASA_69f726d10860
+NASA_c47493f86e58,dedup,duplicate,nasa_science,same_sha256_as=NASA_58d37e74bf1d
+NASA_e90e1b131c5a,dedup,duplicate,nasa_science,same_sha256_as=NASA_bbb46da36eb6
+NASA_f85236a92c56,dedup,duplicate,nasa_science,same_sha256_as=NASA_41fa0fece3fe
+NASA_e0e434e0649f,dedup,duplicate,nasa_science,same_sha256_as=NASA_92d350dfbc56
+NASA_9fa904e620db,dedup,duplicate,nasa_science,same_sha256_as=NASA_297f9dd3aaeb
+NASA_567127b8b330,dedup,duplicate,nasa_science,same_sha256_as=NASA_007a5ca31805
+NASA_50e9a457537f,dedup,duplicate,nasa_science,same_sha256_as=NASA_2750ce82cf7a
+NASA_973cd0c45a74,dedup,duplicate,nasa_science,same_sha256_as=NASA_2750ce82cf7a
+APOD_bc6c2313fc9d,dedup,duplicate,nasa_apod,same_sha256_as=APOD_89de0fdc731e
+APOD_8aad0b5c5234,dedup,duplicate,nasa_apod,same_sha256_as=APOD_129b1ca96d24
+APOD_bf06771eacba,dedup,duplicate,nasa_apod,same_sha256_as=APOD_1aa9bcd20219
+APOD_517591df5488,dedup,duplicate,nasa_apod,same_sha256_as=APOD_39e419a1d713
+APOD_74a5803be3dc,dedup,duplicate,nasa_apod,same_sha256_as=APOD_4acf79a30296
+APOD_817d980a0d98,dedup,duplicate,nasa_apod,same_sha256_as=APOD_441523a13e63
+APOD_503030ee7791,dedup,duplicate,nasa_apod,same_sha256_as=APOD_240e552e36c1
+APOD_613d90c32a36,dedup,duplicate,nasa_apod,same_sha256_as=APOD_50d85c0bb960
+APOD_26ae157d16bd,dedup,duplicate,nasa_apod,same_sha256_as=APOD_117590107e9c
+APOD_92649e007d7b,dedup,duplicate,nasa_apod,same_sha256_as=APOD_294b489bc6a2
+APOD_dae2957ec34f,dedup,duplicate,nasa_apod,same_sha256_as=APOD_294b489bc6a2
+APOD_7529817e2bf1,dedup,duplicate,nasa_apod,same_sha256_as=APOD_69f0dbe1d53c
+APOD_f2c431550c21,dedup,duplicate,nasa_apod,same_sha256_as=APOD_85b4c5d0571e
+APOD_87fef9f4029e,dedup,duplicate,nasa_apod,same_sha256_as=APOD_2aa324c5e9b5
+APOD_5547003b4cd4,dedup,duplicate,nasa_apod,same_sha256_as=APOD_0be0554f6ad2
+APOD_8c0d9f048a1d,dedup,duplicate,nasa_apod,same_sha256_as=APOD_37c8733b38a3
+APOD_d6f7384fe9e3,dedup,duplicate,nasa_apod,same_sha256_as=APOD_37c8733b38a3
+APOD_f31d7d37eb1b,dedup,duplicate,nasa_apod,same_sha256_as=APOD_37c8733b38a3
+APOD_9170cd21e228,dedup,duplicate,nasa_apod,same_sha256_as=APOD_67ea0cb2e107
+APOD_1d02fc335395,dedup,duplicate,nasa_apod,same_sha256_as=APOD_1009888b85a0
+APOD_f98c10710570,dedup,duplicate,nasa_apod,same_sha256_as=APOD_1009888b85a0
+APOD_5f01f496b91b,dedup,duplicate,nasa_apod,same_sha256_as=APOD_0794b6f723c4
+APOD_9b04de29d9a5,dedup,duplicate,nasa_apod,same_sha256_as=APOD_0794b6f723c4
+APOD_6a55d578e5fc,dedup,duplicate,nasa_apod,same_sha256_as=APOD_656ec23d9769
+APOD_e74c4bf36bb5,dedup,duplicate,nasa_apod,same_sha256_as=APOD_a0ad3f208886
+APOD_c48f94adc72e,dedup,duplicate,nasa_apod,same_sha256_as=APOD_1ac0e08697ca
+APOD_cf8e77e5d45d,dedup,duplicate,nasa_apod,same_sha256_as=APOD_8cf4e1e93db7
+APOD_d9aa78f812ed,dedup,duplicate,nasa_apod,same_sha256_as=APOD_215867b0180e
+APOD_ecc861d48e0c,dedup,duplicate,nasa_apod,same_sha256_as=APOD_096e40eefa3a
+APOD_7384c6b4fc3c,dedup,duplicate,nasa_apod,same_sha256_as=APOD_4293a92c2bce
+APOD_ce359c169a8b,dedup,duplicate,nasa_apod,same_sha256_as=APOD_b4214eeb82c7
+APOD_a62e353fde5a,dedup,duplicate,nasa_apod,same_sha256_as=APOD_803d2ee9b2ac
+APOD_f646bdd8e320,dedup,near_duplicate,nasa_apod,jaccard=1.000 kept=APOD_8d4b689fdcaf
+APOD_92a137ceb576,dedup,near_duplicate,nasa_apod,jaccard=1.000 kept=APOD_5361dfda68e3
+APOD_d5412524e587,dedup,near_duplicate,nasa_apod,jaccard=1.000 kept=APOD_3ad73ff016b3
+APOD_f5775f0ba26c,dedup,near_duplicate,nasa_apod,jaccard=1.000 kept=APOD_2b2829e9bf92
+APOD_25f2647e9612,dedup,near_duplicate,nasa_apod,jaccard=1.000 kept=APOD_addf3973f1c2
+APOD_1908d3d69114,dedup,near_duplicate,nasa_apod,jaccard=1.000 kept=APOD_6fcdb4a393f1
+APOD_d6f1c8b85219,dedup,near_duplicate,nasa_apod,jaccard=1.000 kept=APOD_07f0ff9abe3f
+APOD_8b85fef79040,dedup,near_duplicate,nasa_apod,jaccard=1.000 kept=APOD_04044a0118cf
+NASA_0a42de6840d0,dedup,near_duplicate,nasa_science,jaccard=0.996 kept=NASA_ab3d7d1c2c20
+APOD_d529061d3176,dedup,near_duplicate,nasa_apod,jaccard=0.994 kept=APOD_f0e174111cf0
+APOD_c703a4a84b9e,dedup,near_duplicate,nasa_apod,jaccard=0.993 kept=APOD_06ce18587724
+APOD_697fc310eb37,dedup,near_duplicate,nasa_apod,jaccard=0.993 kept=APOD_2ca1c988296f
+APOD_af0980f247df,dedup,near_duplicate,nasa_apod,jaccard=0.988 kept=APOD_01c9ed10c828
+APOD_d95a6be23fdb,dedup,near_duplicate,nasa_apod,jaccard=0.985 kept=APOD_2a1c3a2d7876
+APOD_3d1a40e1c954,dedup,near_duplicate,nasa_apod,jaccard=0.977 kept=APOD_597dd6b426b0
+APOD_d28c98b0279f,dedup,near_duplicate,nasa_apod,jaccard=0.966 kept=APOD_e926e4f5e840
+APOD_af66a40f09e0,dedup,near_duplicate,nasa_apod,jaccard=0.963 kept=APOD_90666e8f05a1
+ARXIV_2511.13436,dedup,near_duplicate,arxiv_astro_ph,jaccard=0.962 kept=ARXIV_2511.14041
+APOD_656ec23d9769,dedup,near_duplicate,nasa_apod,jaccard=0.961 kept=APOD_dcad518c4395
+APOD_6c9482fcb8a3,dedup,near_duplicate,nasa_apod,jaccard=0.954 kept=APOD_8be937cac64a
+APOD_8fa70c087386,dedup,near_duplicate,nasa_apod,jaccard=0.952 kept=APOD_c56d39a05455
+APOD_6ae1e36ad7bc,dedup,near_duplicate,nasa_apod,jaccard=0.951 kept=APOD_4b3237f8dd25
+APOD_560eba301cc0,dedup,near_duplicate,nasa_apod,jaccard=0.949 kept=APOD_376a629ddc58
+APOD_1b33cb0276fb,dedup,near_duplicate,nasa_apod,jaccard=0.947 kept=APOD_4eda7e1418b0
+APOD_331d54286418,dedup,near_duplicate,nasa_apod,jaccard=0.947 kept=APOD_d8dd54447a3a
+APOD_ef70efee52c1,dedup,near_duplicate,nasa_apod,jaccard=0.947 kept=APOD_e9fd18a66e18
+APOD_1f6b96d49915,dedup,near_duplicate,nasa_apod,jaccard=0.947 kept=APOD_a8a424fb8f65
+APOD_6ffe8acb0750,dedup,near_duplicate,nasa_apod,jaccard=0.946 kept=APOD_ef9bfd44309e
+APOD_29b1c8406a60,dedup,near_duplicate,nasa_apod,jaccard=0.944 kept=APOD_25edc44e53a9
+NASA_c803cae29cbf,dedup,near_duplicate,nasa_science,jaccard=0.942 kept=NASA_613ad9a7577a
+APOD_d31415536491,dedup,near_duplicate,nasa_apod,jaccard=0.942 kept=APOD_4691abd5fea9
+APOD_53742f022404,dedup,near_duplicate,nasa_apod,jaccard=0.940 kept=APOD_3a8503e5516b
+APOD_39e419a1d713,dedup,near_duplicate,nasa_apod,jaccard=0.936 kept=APOD_35b538a374b5
+APOD_ac448cc764bd,dedup,near_duplicate,nasa_apod,jaccard=0.936 kept=APOD_ac7c31bf1d9e
+APOD_49b29250e066,dedup,near_duplicate,nasa_apod,jaccard=0.935 kept=APOD_5419d75ab9d2
+APOD_4a8da0a42ed1,dedup,near_duplicate,nasa_apod,jaccard=0.934 kept=APOD_129b1ca96d24
+APOD_9d73458affb2,dedup,near_duplicate,nasa_apod,jaccard=0.932 kept=APOD_31f3735f4f82
+APOD_573debb24376,dedup,near_duplicate,nasa_apod,jaccard=0.929 kept=APOD_e2688726fba9
+APOD_924cf19536b6,dedup,near_duplicate,nasa_apod,jaccard=0.927 kept=APOD_49dfdc37a14b
+APOD_adc9d25ce147,dedup,near_duplicate,nasa_apod,jaccard=0.927 kept=APOD_039a5f10e37c
+APOD_deaa47dd1b73,dedup,near_duplicate,nasa_apod,jaccard=0.926 kept=APOD_1016720ef41e
+APOD_3e609e8286a3,dedup,near_duplicate,nasa_apod,jaccard=0.926 kept=APOD_3065aa9def43
+APOD_74f8ce1965fb,dedup,near_duplicate,nasa_apod,jaccard=0.924 kept=APOD_499acb5e3cd0
+APOD_c5a3f1eaac39,dedup,near_duplicate,nasa_apod,jaccard=0.922 kept=APOD_4b617f1d9327
+APOD_14fe25c956ed,dedup,near_duplicate,nasa_apod,jaccard=0.919 kept=APOD_b062dab44af5
+APOD_8c284c584ff3,dedup,near_duplicate,nasa_apod,jaccard=0.919 kept=APOD_a307974e38f5
+APOD_aafa044d046c,dedup,near_duplicate,nasa_apod,jaccard=0.919 kept=APOD_550843d22ebe
+APOD_98e615b1e854,dedup,near_duplicate,nasa_apod,jaccard=0.918 kept=APOD_982ddcc5bc18
+APOD_3e37ed59ae67,dedup,near_duplicate,nasa_apod,jaccard=0.918 kept=APOD_dcad518c4395
+APOD_a3eba95c3ef7,dedup,near_duplicate,nasa_apod,jaccard=0.917 kept=APOD_c099d3925bf1
+APOD_81fd062a7912,dedup,near_duplicate,nasa_apod,jaccard=0.917 kept=APOD_adc631e846ef
+APOD_dbde13c5e264,dedup,near_duplicate,nasa_apod,jaccard=0.916 kept=APOD_0aeb888622bf
+APOD_efd66ae24571,dedup,near_duplicate,nasa_apod,jaccard=0.915 kept=APOD_3d281c7e1988
+APOD_d305a2136ae6,dedup,near_duplicate,nasa_apod,jaccard=0.914 kept=APOD_f9ad2a2fca04
+APOD_f9b5e8e73ddd,dedup,near_duplicate,nasa_apod,jaccard=0.909 kept=APOD_3ceea7e722d5
+APOD_b4214eeb82c7,dedup,near_duplicate,nasa_apod,jaccard=0.908 kept=APOD_57021ad6fb7d
+APOD_8d4b689fdcaf,dedup,near_duplicate,nasa_apod,jaccard=0.906 kept=APOD_6a1768c3652e
+APOD_ebcc926ce34b,dedup,near_duplicate,nasa_apod,jaccard=0.906 kept=APOD_cd98feffe5ea
+APOD_beb961e6d972,dedup,near_duplicate,nasa_apod,jaccard=0.903 kept=APOD_25c592fb363a
+APOD_e498b8e1a0c1,dedup,near_duplicate,nasa_apod,jaccard=0.900 kept=APOD_334773aea7a2
+APOD_85b3615a78eb,dedup,near_duplicate,nasa_apod,jaccard=0.899 kept=APOD_41de4a945f45
+APOD_6322d66d2fcd,dedup,near_duplicate,nasa_apod,jaccard=0.899 kept=APOD_7dae8f67776c
+APOD_8493c9610b6b,dedup,near_duplicate,nasa_apod,jaccard=0.897 kept=APOD_8924eaf596ee
+APOD_82dceb2ccfa3,dedup,near_duplicate,nasa_apod,jaccard=0.897 kept=APOD_c8e60e3e2aa1
+NASA_fb93fa8360ae,dedup,near_duplicate,nasa_science,jaccard=0.892 kept=NASA_a121c069a7b1
+APOD_0ef49bbb812f,dedup,near_duplicate,nasa_apod,jaccard=0.892 kept=APOD_c807e35e5d26
+APOD_89079801e648,dedup,near_duplicate,nasa_apod,jaccard=0.888 kept=APOD_e317990aaefc
+APOD_d0e2739083ee,dedup,near_duplicate,nasa_apod,jaccard=0.886 kept=APOD_4344ddb6e764
+APOD_69c8dd96c646,dedup,near_duplicate,nasa_apod,jaccard=0.885 kept=APOD_f3faf0fae257
+APOD_5d2200f0b419,dedup,near_duplicate,nasa_apod,jaccard=0.884 kept=APOD_dc4c7148934a
+APOD_861100e36418,dedup,near_duplicate,nasa_apod,jaccard=0.884 kept=APOD_ec30d1316451
+APOD_2e8e629d0558,dedup,near_duplicate,nasa_apod,jaccard=0.883 kept=APOD_d32d8bf6d5d6
+APOD_3ceea7e722d5,dedup,near_duplicate,nasa_apod,jaccard=0.882 kept=APOD_c33662b133bb
+APOD_25edc44e53a9,dedup,near_duplicate,nasa_apod,jaccard=0.880 kept=APOD_8924eaf596ee
+APOD_6ebbf29bdf5a,dedup,near_duplicate,nasa_apod,jaccard=0.874 kept=APOD_0e6dc75d3748
+APOD_b0484b5104e7,dedup,near_duplicate,nasa_apod,jaccard=0.874 kept=APOD_852b46a233ba
+NASA_fd8cf101490c,dedup,near_duplicate,nasa_science,jaccard=0.874 kept=NASA_98b4b633a11a
+APOD_b062dab44af5,dedup,near_duplicate,nasa_apod,jaccard=0.873 kept=APOD_c38a6182b172
+NASA_b10dd6364397,dedup,near_duplicate,nasa_science,jaccard=0.870 kept=NASA_078b5bd6e70f
+APOD_7a6927addc2e,dedup,near_duplicate,nasa_apod,jaccard=0.869 kept=APOD_b5fa0a228759
+APOD_6e0d3d473e10,dedup,near_duplicate,nasa_apod,jaccard=0.869 kept=APOD_b6270dafc429
+APOD_790062edcae6,dedup,near_duplicate,nasa_apod,jaccard=0.869 kept=APOD_d114aeacdb52
+NASA_60ab49e83730,dedup,near_duplicate,nasa_science,jaccard=0.866 kept=NASA_eb78ff074af1
+APOD_0be0554f6ad2,dedup,near_duplicate,nasa_apod,jaccard=0.865 kept=APOD_31d816b91bd0
+NASA_6748df9bb571,dedup,near_duplicate,nasa_science,jaccard=0.865 kept=NASA_2c3b818bd0c3
+APOD_8e7b444e8c93,dedup,near_duplicate,nasa_apod,jaccard=0.861 kept=APOD_2955c60f7204
+APOD_e8a205cffcbf,dedup,near_duplicate,nasa_apod,jaccard=0.860 kept=APOD_e81b19c0933f
+APOD_1dcdc63188d2,dedup,near_duplicate,nasa_apod,jaccard=0.856 kept=APOD_026599a4293d
+NASA_b94d83749fed,dedup,near_duplicate,nasa_science,jaccard=0.852 kept=NASA_e636be686b4e
+APOD_1b704ac69dfb,dedup,near_duplicate,nasa_apod,jaccard=0.851 kept=APOD_7dff4c950321
+APOD_014bae91581d,dedup2,repost_duplicate,nasa_apod,DOC_005971 -> tutulan DOC_007867 (train); jaccard=0.603 karakter=0.952
+APOD_034c6a9499e4,dedup2,repost_duplicate,nasa_apod,DOC_005991 -> tutulan DOC_006375 (train); jaccard=0.784 karakter=0.937
+APOD_06b274cda489,dedup2,repost_duplicate,nasa_apod,DOC_006027 -> tutulan DOC_007508 (train); jaccard=0.507 karakter=0.861
+APOD_0794b6f723c4,dedup2,repost_duplicate,nasa_apod,DOC_006033 -> tutulan DOC_006171 (train); jaccard=0.602 karakter=0.896
+APOD_07f0ff9abe3f,dedup2,repost_duplicate,nasa_apod,DOC_006040 -> tutulan DOC_005976 (train); jaccard=0.847 karakter=0.966
+APOD_0ae871fea754,dedup2,repost_duplicate,nasa_apod,DOC_006064 -> tutulan DOC_006358 (train); jaccard=0.660 karakter=0.913
+APOD_0b152f5b24a5,dedup2,repost_duplicate,nasa_apod,DOC_006066 -> tutulan DOC_005999 (train); jaccard=0.642 karakter=0.879
+APOD_0bd3c47b4e43,dedup2,repost_duplicate,nasa_apod,DOC_006077 -> tutulan DOC_007878 (train); jaccard=0.823 karakter=0.911
+APOD_10e041c0bf03,dedup2,repost_duplicate,nasa_apod,DOC_006132 -> tutulan DOC_005984 (train); jaccard=0.655 karakter=0.956
+APOD_1408cdc0c851,dedup2,repost_duplicate,nasa_apod,DOC_006157 -> tutulan DOC_008012 (validation); jaccard=0.571 karakter=0.911
+APOD_15b0d35803d7,dedup2,repost_duplicate,nasa_apod,DOC_006173 -> tutulan DOC_007237 (train); jaccard=0.638 karakter=0.907
+APOD_174f55d8b026,dedup2,repost_duplicate,nasa_apod,DOC_006196 -> tutulan DOC_007943 (train); jaccard=0.782 karakter=0.911
+APOD_1771a972f88c,dedup2,repost_duplicate,nasa_apod,DOC_006197 -> tutulan DOC_007521 (train); jaccard=0.805 karakter=0.973
+APOD_1864f75a21d2,dedup2,repost_duplicate,nasa_apod,DOC_006212 -> tutulan DOC_006616 (train); jaccard=0.796 karakter=0.955
+APOD_19cc436ce937,dedup2,repost_duplicate,nasa_apod,DOC_006219 -> tutulan DOC_006133 (validation); jaccard=0.585 karakter=0.867
+APOD_1cb523d9d982,dedup2,repost_duplicate,nasa_apod,DOC_006249 -> tutulan DOC_006903 (train); jaccard=0.676 karakter=0.862
+APOD_1d7e2fd369fa,dedup2,repost_duplicate,nasa_apod,DOC_006253 -> tutulan DOC_007209 (train); jaccard=0.726 karakter=0.958
+APOD_20cea7fd280e,dedup2,repost_duplicate,nasa_apod,DOC_006289 -> tutulan DOC_006402 (train); jaccard=0.570 karakter=0.880
+APOD_22ac476de109,dedup2,repost_duplicate,nasa_apod,DOC_006301 -> tutulan DOC_007092 (train); jaccard=0.817 karakter=0.981
+APOD_25c592fb363a,dedup2,repost_duplicate,nasa_apod,DOC_006329 -> tutulan DOC_008309 (train); jaccard=0.518 karakter=0.862
+APOD_294b489bc6a2,dedup2,repost_duplicate,nasa_apod,DOC_006359 -> tutulan DOC_007646 (train); jaccard=0.711 karakter=0.939
+APOD_2a1c3a2d7876,dedup2,repost_duplicate,nasa_apod,DOC_006368 -> tutulan DOC_006627 (train); jaccard=0.846 karakter=0.960
+APOD_2f436de52017,dedup2,repost_duplicate,nasa_apod,DOC_006427 -> tutulan DOC_007504 (train); jaccard=0.753 karakter=0.899
+APOD_2f4bba79573b,dedup2,repost_duplicate,nasa_apod,DOC_006428 -> tutulan DOC_007646 (train); jaccard=0.602 karakter=0.893
+APOD_2f7fed4fa5b5,dedup2,repost_duplicate,nasa_apod,DOC_006432 -> tutulan DOC_007167 (test); jaccard=0.556 karakter=0.885
+APOD_3056a25af859,dedup2,repost_duplicate,nasa_apod,DOC_006444 -> tutulan DOC_008140 (train); jaccard=0.748 karakter=0.958
+APOD_31f3735f4f82,dedup2,repost_duplicate,nasa_apod,DOC_006461 -> tutulan DOC_006404 (train); jaccard=0.578 karakter=0.913
+APOD_325af69c3ee6,dedup2,repost_duplicate,nasa_apod,DOC_006463 -> tutulan DOC_007539 (train); jaccard=0.838 karakter=0.904
+APOD_32b55290b850,dedup2,repost_duplicate,nasa_apod,DOC_006466 -> tutulan DOC_006915 (train); jaccard=0.649 karakter=0.923
+APOD_347cde47639b,dedup2,repost_duplicate,nasa_apod,DOC_006479 -> tutulan DOC_006077 (validation); jaccard=0.688 karakter=0.962
+APOD_3590d31b6dc2,dedup2,repost_duplicate,nasa_apod,DOC_006488 -> tutulan DOC_006018 (train); jaccard=0.737 karakter=0.900
+APOD_35b538a374b5,dedup2,repost_duplicate,nasa_apod,DOC_006490 -> tutulan DOC_006636 (train); jaccard=0.608 karakter=0.887
+APOD_36161ee7aaed,dedup2,repost_duplicate,nasa_apod,DOC_006494 -> tutulan DOC_006028 (train); jaccard=0.548 karakter=0.874
+APOD_36471929d635,dedup2,repost_duplicate,nasa_apod,DOC_006496 -> tutulan DOC_008018 (train); jaccard=0.765 karakter=0.907
+APOD_37c8733b38a3,dedup2,repost_duplicate,nasa_apod,DOC_006513 -> tutulan DOC_008367 (train); jaccard=0.824 karakter=0.989
+APOD_3a14da306001,dedup2,repost_duplicate,nasa_apod,DOC_006534 -> tutulan DOC_008250 (train); jaccard=0.711 karakter=0.892
+APOD_3a1c143fd206,dedup2,repost_duplicate,nasa_apod,DOC_006535 -> tutulan DOC_007049 (train); jaccard=0.779 karakter=0.974
+APOD_3b7845c99465,dedup2,repost_duplicate,nasa_apod,DOC_006551 -> tutulan DOC_006173 (train); jaccard=0.824 karakter=0.978
+APOD_3c19b60c9d95,dedup2,repost_duplicate,nasa_apod,DOC_006557 -> tutulan DOC_005971 (train); jaccard=0.550 karakter=0.966
+APOD_3d281c7e1988,dedup2,repost_duplicate,nasa_apod,DOC_006567 -> tutulan DOC_006892 (train); jaccard=0.760 karakter=0.907
+APOD_40c3e3310adb,dedup2,repost_duplicate,nasa_apod,DOC_006605 -> tutulan DOC_008410 (train); jaccard=0.810 karakter=0.975
+APOD_421a6e3fcf01,dedup2,repost_duplicate,nasa_apod,DOC_006619 -> tutulan DOC_006918 (train); jaccard=0.654 karakter=0.957
+APOD_4ea6b8ee6402,dedup2,repost_duplicate,nasa_apod,DOC_006738 -> tutulan DOC_006058 (train); jaccard=0.823 karakter=0.952
+APOD_4f9c78f8f051,dedup2,repost_duplicate,nasa_apod,DOC_006747 -> tutulan DOC_005976 (train); jaccard=0.547 karakter=0.917
+APOD_51d1c7480803,dedup2,repost_duplicate,nasa_apod,DOC_006771 -> tutulan DOC_007201 (train); jaccard=0.825 karakter=0.984
+APOD_52b1a7a27421,dedup2,repost_duplicate,nasa_apod,DOC_006785 -> tutulan DOC_006600 (train); jaccard=0.828 karakter=0.976
+APOD_538d605c081f,dedup2,repost_duplicate,nasa_apod,DOC_006800 -> tutulan DOC_007969 (train); jaccard=0.787 karakter=0.905
+APOD_546189705b13,dedup2,repost_duplicate,nasa_apod,DOC_006807 -> tutulan DOC_008002 (train); jaccard=0.740 karakter=0.973
+APOD_57021ad6fb7d,dedup2,repost_duplicate,nasa_apod,DOC_006835 -> tutulan DOC_008204 (validation); jaccard=0.734 karakter=0.930
+APOD_57493865b2e0,dedup2,repost_duplicate,nasa_apod,DOC_006838 -> tutulan DOC_007818 (train); jaccard=0.661 karakter=0.934
+APOD_57c66e695223,dedup2,repost_duplicate,nasa_apod,DOC_006842 -> tutulan DOC_008342 (train); jaccard=0.512 karakter=0.875
+APOD_5ae02669fa7e,dedup2,repost_duplicate,nasa_apod,DOC_006867 -> tutulan DOC_007703 (train); jaccard=0.761 karakter=0.910
+APOD_6004f84076d5,dedup2,repost_duplicate,nasa_apod,DOC_006913 -> tutulan DOC_006897 (train); jaccard=0.845 karakter=0.943
+APOD_607f4d33074f,dedup2,repost_duplicate,nasa_apod,DOC_006918 -> tutulan DOC_008306 (train); jaccard=0.652 karakter=0.940
+APOD_60f982a06411,dedup2,repost_duplicate,nasa_apod,DOC_006922 -> tutulan DOC_007897 (train); jaccard=0.608 karakter=0.920
+APOD_619deeae2e90,dedup2,repost_duplicate,nasa_apod,DOC_006930 -> tutulan DOC_008525 (train); jaccard=0.697 karakter=0.912
+APOD_6296a24bf690,dedup2,repost_duplicate,nasa_apod,DOC_006940 -> tutulan DOC_008525 (train); jaccard=0.810 karakter=0.975
+APOD_634855b4870a,dedup2,repost_duplicate,nasa_apod,DOC_006953 -> tutulan DOC_006683 (train); jaccard=0.645 karakter=0.932
+APOD_641b6d610927,dedup2,repost_duplicate,nasa_apod,DOC_006963 -> tutulan DOC_008349 (train); jaccard=0.643 karakter=0.916
+APOD_64dd48d52734,dedup2,repost_duplicate,nasa_apod,DOC_006970 -> tutulan DOC_007854 (train); jaccard=0.577 karakter=0.887
+APOD_650e3d4032dc,dedup2,repost_duplicate,nasa_apod,DOC_006972 -> tutulan DOC_006396 (train); jaccard=0.784 karakter=0.966
+APOD_658b28642148,dedup2,repost_duplicate,nasa_apod,DOC_006979 -> tutulan DOC_006555 (train); jaccard=0.656 karakter=0.908
+APOD_665016e51595,dedup2,repost_duplicate,nasa_apod,DOC_006989 -> tutulan DOC_006634 (train); jaccard=0.804 karakter=0.890
+APOD_669416a3d6bc,dedup2,repost_duplicate,nasa_apod,DOC_006991 -> tutulan DOC_006632 (validation); jaccard=0.543 karakter=0.908
+APOD_6775c0c1964a,dedup2,repost_duplicate,nasa_apod,DOC_007000 -> tutulan DOC_007101 (train); jaccard=0.820 karakter=0.959
+APOD_6ad1d956e68f,dedup2,repost_duplicate,nasa_apod,DOC_007042 -> tutulan DOC_006630 (train); jaccard=0.892 karakter=0.974
+APOD_6f386805a5b9,dedup2,repost_duplicate,nasa_apod,DOC_007092 -> tutulan DOC_007147 (train); jaccard=0.805 karakter=0.967
+APOD_7016594d0e12,dedup2,repost_duplicate,nasa_apod,DOC_007104 -> tutulan DOC_008366 (train); jaccard=0.721 karakter=0.887
+APOD_717bf302cb0f,dedup2,repost_duplicate,nasa_apod,DOC_007114 -> tutulan DOC_008534 (test); jaccard=0.687 karakter=0.955
+APOD_73d82c19745d,dedup2,repost_duplicate,nasa_apod,DOC_007128 -> tutulan DOC_007596 (train); jaccard=0.741 karakter=0.972
+APOD_78f47e7393d9,dedup2,repost_duplicate,nasa_apod,DOC_007174 -> tutulan DOC_008349 (train); jaccard=0.841 karakter=0.957
+APOD_7e49c5feb659,dedup2,repost_duplicate,nasa_apod,DOC_007223 -> tutulan DOC_007381 (train); jaccard=0.692 karakter=0.933
+APOD_7fb8b0674f8b,dedup2,repost_duplicate,nasa_apod,DOC_007235 -> tutulan DOC_006171 (train); jaccard=0.741 karakter=0.948
+APOD_84769ebd4c1a,dedup2,repost_duplicate,nasa_apod,DOC_007282 -> tutulan DOC_008003 (train); jaccard=0.823 karakter=0.965
+APOD_85b4c5d0571e,dedup2,repost_duplicate,nasa_apod,DOC_007299 -> tutulan DOC_006725 (train); jaccard=0.849 karakter=0.948
+APOD_8662d7511183,dedup2,repost_duplicate,nasa_apod,DOC_007309 -> tutulan DOC_007425 (train); jaccard=0.683 karakter=0.878
+APOD_879d2ce2b202,dedup2,repost_duplicate,nasa_apod,DOC_007327 -> tutulan DOC_006389 (train); jaccard=0.761 karakter=0.954
+APOD_89de0fdc731e,dedup2,repost_duplicate,nasa_apod,DOC_007349 -> tutulan DOC_007246 (train); jaccard=0.848 karakter=0.965
+APOD_8e8434206186,dedup2,repost_duplicate,nasa_apod,DOC_007392 -> tutulan DOC_008103 (train); jaccard=0.768 karakter=0.933
+APOD_8e99960ba300,dedup2,repost_duplicate,nasa_apod,DOC_007393 -> tutulan DOC_007892 (train); jaccard=0.658 karakter=0.895
+APOD_91271709c25a,dedup2,repost_duplicate,nasa_apod,DOC_007413 -> tutulan DOC_006496 (train); jaccard=0.829 karakter=0.955
+APOD_92820e166a8e,dedup2,repost_duplicate,nasa_apod,DOC_007421 -> tutulan DOC_006395 (train); jaccard=0.843 karakter=0.907
+APOD_92ae0224e883,dedup2,repost_duplicate,nasa_apod,DOC_007422 -> tutulan DOC_008327 (train); jaccard=0.756 karakter=0.958
+APOD_94e038162dda,dedup2,repost_duplicate,nasa_apod,DOC_007441 -> tutulan DOC_006801 (train); jaccard=0.713 karakter=0.869
+APOD_9847a7edcf09,dedup2,repost_duplicate,nasa_apod,DOC_007484 -> tutulan DOC_007323 (train); jaccard=0.644 karakter=0.884
+APOD_99975642b8b5,dedup2,repost_duplicate,nasa_apod,DOC_007503 -> tutulan DOC_006996 (train); jaccard=0.738 karakter=0.966
+APOD_9eba750cea17,dedup2,repost_duplicate,nasa_apod,DOC_007552 -> tutulan DOC_006038 (train); jaccard=0.676 karakter=0.881
+APOD_a2fc8299fb22,dedup2,repost_duplicate,nasa_apod,DOC_007589 -> tutulan DOC_006590 (train); jaccard=0.742 karakter=0.909
+APOD_a3fb54e27a8d,dedup2,repost_duplicate,nasa_apod,DOC_007597 -> tutulan DOC_006312 (train); jaccard=0.744 karakter=0.950
+APOD_a66b31b3e188,dedup2,repost_duplicate,nasa_apod,DOC_007619 -> tutulan DOC_006859 (train); jaccard=0.732 karakter=0.949
+APOD_aebb8b2521cb,dedup2,repost_duplicate,nasa_apod,DOC_007713 -> tutulan DOC_007648 (validation); jaccard=0.621 karakter=0.926
+APOD_af6ea4498bc1,dedup2,repost_duplicate,nasa_apod,DOC_007719 -> tutulan DOC_006622 (train); jaccard=0.500 karakter=0.890
+APOD_b19b21563463,dedup2,repost_duplicate,nasa_apod,DOC_007740 -> tutulan DOC_007604 (train); jaccard=0.521 karakter=0.865
+APOD_b1ba95fc8c10,dedup2,repost_duplicate,nasa_apod,DOC_007742 -> tutulan DOC_007287 (train); jaccard=0.736 karakter=0.945
+APOD_b1d9590e676c,dedup2,repost_duplicate,nasa_apod,DOC_007744 -> tutulan DOC_006423 (train); jaccard=0.757 karakter=0.976
+APOD_b238b0904d07,dedup2,repost_duplicate,nasa_apod,DOC_007750 -> tutulan DOC_008161 (train); jaccard=0.662 karakter=0.895
+APOD_b431a0ef224f,dedup2,repost_duplicate,nasa_apod,DOC_007765 -> tutulan DOC_006951 (train); jaccard=0.708 karakter=0.852
+APOD_b70eaead5070,dedup2,repost_duplicate,nasa_apod,DOC_007794 -> tutulan DOC_008072 (train); jaccard=0.632 karakter=0.952
+APOD_b758bbbfa8f5,dedup2,repost_duplicate,nasa_apod,DOC_007798 -> tutulan DOC_006967 (train); jaccard=0.667 karakter=0.882
+APOD_bb8a5a062867,dedup2,repost_duplicate,nasa_apod,DOC_007833 -> tutulan DOC_006842 (train); jaccard=0.833 karakter=0.962
+APOD_bf31e9f12514,dedup2,repost_duplicate,nasa_apod,DOC_007866 -> tutulan DOC_008329 (train); jaccard=0.634 karakter=0.932
+APOD_c0b2ad63a2f2,dedup2,repost_duplicate,nasa_apod,DOC_007883 -> tutulan DOC_006863 (train); jaccard=0.636 karakter=0.889
+APOD_c19ebdfe623f,dedup2,repost_duplicate,nasa_apod,DOC_007894 -> tutulan DOC_006701 (train); jaccard=0.848 karakter=0.977
+APOD_c1ab0ed58213,dedup2,repost_duplicate,nasa_apod,DOC_007896 -> tutulan DOC_008268 (train); jaccard=0.579 karakter=0.879
+APOD_c2744950cdf5,dedup2,repost_duplicate,nasa_apod,DOC_007902 -> tutulan DOC_007887 (train); jaccard=0.569 karakter=0.901
+APOD_c551c973470f,dedup2,repost_duplicate,nasa_apod,DOC_007934 -> tutulan DOC_006552 (train); jaccard=0.587 karakter=0.864
+APOD_c58e517bd846,dedup2,repost_duplicate,nasa_apod,DOC_007938 -> tutulan DOC_008217 (train); jaccard=0.877 karakter=0.989
+APOD_cb429dc0806d,dedup2,repost_duplicate,nasa_apod,DOC_007995 -> tutulan DOC_006776 (train); jaccard=0.716 karakter=0.983
+APOD_d025978a0d16,dedup2,repost_duplicate,nasa_apod,DOC_008033 -> tutulan DOC_008197 (train); jaccard=0.627 karakter=0.872
+APOD_d08b99d2c789,dedup2,repost_duplicate,nasa_apod,DOC_008041 -> tutulan DOC_006220 (train); jaccard=0.693 karakter=0.946
+APOD_d191dd502641,dedup2,repost_duplicate,nasa_apod,DOC_008048 -> tutulan DOC_006417 (train); jaccard=0.607 karakter=0.953
+APOD_d1b2ce924e3b,dedup2,repost_duplicate,nasa_apod,DOC_008049 -> tutulan DOC_008247 (train); jaccard=0.784 karakter=0.928
+APOD_d2f44692b406,dedup2,repost_duplicate,nasa_apod,DOC_008065 -> tutulan DOC_008001 (train); jaccard=0.761 karakter=0.973
+APOD_d5e9667c4f5a,dedup2,repost_duplicate,nasa_apod,DOC_008098 -> tutulan DOC_006292 (validation); jaccard=0.701 karakter=0.960
+APOD_d9ea0e3189d4,dedup2,repost_duplicate,nasa_apod,DOC_008135 -> tutulan DOC_006133 (validation); jaccard=0.536 karakter=0.851
+APOD_dcea14c431d6,dedup2,repost_duplicate,nasa_apod,DOC_008167 -> tutulan DOC_007217 (train); jaccard=0.626 karakter=0.930
+APOD_de376a07a189,dedup2,repost_duplicate,nasa_apod,DOC_008181 -> tutulan DOC_008032 (train); jaccard=0.815 karakter=0.982
+APOD_dec51254eb24,dedup2,repost_duplicate,nasa_apod,DOC_008193 -> tutulan DOC_006872 (train); jaccard=0.671 karakter=0.913
+APOD_e2f3ee828307,dedup2,repost_duplicate,nasa_apod,DOC_008240 -> tutulan DOC_006638 (train); jaccard=0.771 karakter=0.931
+APOD_e317990aaefc,dedup2,repost_duplicate,nasa_apod,DOC_008242 -> tutulan DOC_008072 (train); jaccard=0.832 karakter=0.985
+APOD_e332102f29c0,dedup2,repost_duplicate,nasa_apod,DOC_008244 -> tutulan DOC_007547 (train); jaccard=0.575 karakter=0.920
+APOD_e48298dfe870,dedup2,repost_duplicate,nasa_apod,DOC_008260 -> tutulan DOC_007659 (train); jaccard=0.596 karakter=0.889
+APOD_e77f00829d70,dedup2,repost_duplicate,nasa_apod,DOC_008291 -> tutulan DOC_007400 (train); jaccard=0.769 karakter=0.975
+APOD_ea9f9301a740,dedup2,repost_duplicate,nasa_apod,DOC_008321 -> tutulan DOC_007877 (train); jaccard=0.606 karakter=0.917
+APOD_eaa43bc8b283,dedup2,repost_duplicate,nasa_apod,DOC_008323 -> tutulan DOC_006608 (train); jaccard=0.774 karakter=0.937
+APOD_ed218bb8a2ac,dedup2,repost_duplicate,nasa_apod,DOC_008348 -> tutulan DOC_007133 (train); jaccard=0.626 karakter=0.975
+APOD_edc49828bebe,dedup2,repost_duplicate,nasa_apod,DOC_008354 -> tutulan DOC_006628 (train); jaccard=0.919 karakter=0.934
+APOD_f01473d1f827,dedup2,repost_duplicate,nasa_apod,DOC_008383 -> tutulan DOC_006710 (train); jaccard=0.728 karakter=0.956
+APOD_f22c2762a628,dedup2,repost_duplicate,nasa_apod,DOC_008400 -> tutulan DOC_007722 (train); jaccard=0.608 karakter=0.854
+APOD_f3faf0fae257,dedup2,repost_duplicate,nasa_apod,DOC_008419 -> tutulan DOC_006692 (train); jaccard=0.778 karakter=0.959
+APOD_f6760ead2b66,dedup2,repost_duplicate,nasa_apod,DOC_008445 -> tutulan DOC_008370 (test); jaccard=0.718 karakter=0.940
+APOD_f71812d4980c,dedup2,repost_duplicate,nasa_apod,DOC_008451 -> tutulan DOC_006354 (train); jaccard=0.632 karakter=0.901
+APOD_fb17b241f9e6,dedup2,repost_duplicate,nasa_apod,DOC_008487 -> tutulan DOC_006220 (train); jaccard=0.702 karakter=0.887
+APOD_fba03b4e0dec,dedup2,repost_duplicate,nasa_apod,DOC_008492 -> tutulan DOC_008311 (train); jaccard=0.777 karakter=0.976
+APOD_fc6ac2b1d13e,dedup2,repost_duplicate,nasa_apod,DOC_008502 -> tutulan DOC_007684 (train); jaccard=0.720 karakter=0.914
+APOD_fd5b83386919,dedup2,repost_duplicate,nasa_apod,DOC_008511 -> tutulan DOC_007666 (train); jaccard=0.696 karakter=0.937
+APOD_feb57173b765,dedup2,repost_duplicate,nasa_apod,DOC_008524 -> tutulan DOC_008138 (train); jaccard=0.674 karakter=0.909
+NASA_6883faed7069,dedup2,repost_duplicate,nasa_science,DOC_009772 -> tutulan DOC_010305 (validation); jaccard=0.788 karakter=0.903
+NASA_77ae3e401385,dedup2,repost_duplicate,nasa_science,DOC_009946 -> tutulan DOC_010946 (test); jaccard=0.847 karakter=0.974
+NASA_ede611b39f89,dedup2,repost_duplicate,nasa_science,DOC_011210 -> tutulan DOC_010277 (train); jaccard=0.809 karakter=0.951
+NASA_08ba37496a0b,dedup2,contact_page,nasa_science,DOC_008637: 185 karakter; https://science.nasa.gov/mission/lro/media-resources/
+NASA_09e01826b71a,dedup2,contact_page,nasa_science,DOC_008647: 471 karakter; https://science.nasa.gov/mission/osiris-rex/media-resources/
+NASA_3f35f681c584,dedup2,contact_page,nasa_science,DOC_009245: 332 karakter; https://science.nasa.gov/mission/viper/media-resources/
+NASA_4cc1be34013d,dedup2,contact_page,nasa_science,DOC_009430: 371 karakter; https://science.nasa.gov/mission/ladee/media-resources/
+NASA_63d778cc89d3,dedup2,contact_page,nasa_science,DOC_009707: 458 karakter; https://science.nasa.gov/planetary-science/programs/radioisotope-power-systems/contact/
+NASA_7671ce4a9500,dedup2,too_short_after_06b,nasa_science,DOC_009932: 195 karakter
+NASA_98aff086f4a3,dedup2,contact_page,nasa_science,DOC_010318: 796 karakter; https://science.nasa.gov/mission/psyche/media-contacts/
+NASA_f6680d972897,dedup2,contact_page,nasa_science,DOC_011295: 393 karakter; https://science.nasa.gov/mission/lucy/media-resources/
+WIKIEN_11660577,dedup2,fiction_work_06b,wikipedia_en,DOC_011741: Pluto (song) | kategoriler: 1997 songs; Björk songs; Industrial songs; Pluto; Song recordings produced by Björk; Songs written by Björk
+WIKIEN_648781,dedup2,fiction_work_06b,wikipedia_en,DOC_014034: Treasure Planet | kategoriler: 2000s epic films; 2002 American animated films; 2002 English-language films; 2002 children's films; 2002 films; 2002 science fiction action films
+WIKIEN_896326,dedup2,fiction_work_06b,wikipedia_en,DOC_014740: Revelation Space | kategoriler: 2000 British novels; 2000 English-language novels; 2000 debut novels; 2000 science fiction novels; British science fiction novels; Fiction about consciousness transfer
+WIKITR_128686,dedup2,fiction_work_06b,wikipedia_tr,DOC_014994: Yıldız Geçidi (film) | kategoriler: 1928'de geçen filmler; 1990'larda aksiyon filmleri; 1990'larda bilimkurgu filmleri; 1990'larda İngilizce filmler; 1994'te başlatılan medya imtiyazları; 1994'te geçen filmler

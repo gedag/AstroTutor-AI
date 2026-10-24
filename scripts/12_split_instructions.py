@@ -23,6 +23,9 @@ S = CFG["split"]
 def main() -> None:
     rows = list(read_jsonl(p("interim") / "instructions_verified.jsonl"))
     rows.sort(key=lambda r: r["raw_example_id"])
+    # Kimlikler ve küme atamaları kalite kontrol çıkarmalarından ÖNCE, tüm doğrulanmış örnekler üzerinden
+    # belirlenir: bir örnek çıkarıldığında diğerlerinin INS_ numarası ve kümesi değişmez.
+    ins_id = {x["raw_example_id"]: f"INS_{i:05d}" for i, x in enumerate(rows, 1)}
     doc_license = {}
     for s in ("train", "validation", "test"):
         for d in read_jsonl(p("final") / f"{s}.jsonl"):
@@ -34,8 +37,14 @@ def main() -> None:
     n = len(groups)
     n_test, n_val = round(n * S["test"]), round(n * S["validation"])
     gsplit = {g: ("test" if i < n_test else "validation" if i < n_test + n_val else "train") for i, g in enumerate(groups)}
+    excl_f = p("interim") / "qc_excluded_raw_ids.json"
+    excl = set(json.loads(excl_f.read_text(encoding="utf-8"))) if excl_f.exists() else set()
+    if excl:  # kalite kontrolde (14) sorunlu bulunanlar
+        log.info(f"Kalite kontrolde çıkarılmış {len(excl)} örnek dışarıda bırakılıyor")
     out = []
-    for i, x in enumerate(rows, 1):
+    for x in rows:
+        if x["raw_example_id"] in excl:
+            continue
         split = x.get("split_hint") or gsplit[x["source_document"]]
         if x["source_name"] == "stackexchange_space_qa":
             lic = "CC BY-SA 4.0 (Stack Exchange içeriğinin Türkçe türevi)"
@@ -44,15 +53,17 @@ def main() -> None:
         else:
             lic = doc_license.get(x["source_document"])
         out.append({
-            "id": f"INS_{i:05d}", "source_document": x["source_document"], "source_url": x.get("source_url"),
+            "id": ins_id[x["raw_example_id"]], "source_document": x["source_document"], "source_url": x.get("source_url"),
             "source_name": x["source_name"], "task_type": x["task_type"], "level": x["level"],
             "messages": [{"role": "user", "content": x["instruction"].strip()},
                          {"role": "assistant", "content": x["response"].strip()}],
             "instruction": x["instruction"].strip(), "response": x["response"].strip(),
             "supporting_evidence": x.get("supporting_evidence"), "generation_method": x["generation_method"],
             "generator_model": x["generator_model"], "prompt_version": x["prompt_version"],
-            "auto_verified": x.get("auto_verified", False), "judge_model": (x.get("judge") or {}).get("judge_model"),
-            "human_verified": None, "verified_by": "kural_kontrolleri+llm_yargic" if x.get("auto_verified") else None,
+            "auto_verified": x.get("auto_verified", False), "llm_judged": x.get("llm_judged", False),
+            "judge_model": (x.get("judge") or {}).get("judge_model"),
+            "human_verified": None,  # 14_qc_report.py incelenen örneklerde doldurur
+            "verified_by": ("kural+kanit" + ("+llm_yargic" if x.get("llm_judged") else "")) if x.get("auto_verified") else None,
             "license": lic, "split": split, "raw_example_id": x["raw_example_id"]})
     write_jsonl(p("final") / "instruction_v1.0.jsonl", out)
     by = defaultdict(list)

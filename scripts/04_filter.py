@@ -5,7 +5,11 @@ Sırasıyla uygulanan filtreler ve çıkarma etiketleri:
   garbled         : bozuk karakter (�, mojibake, özel kullanım alanı) oranı > max_garbled_ratio
                     veya metnin yarısından fazlası rakam/simge (tablo artığı)
   wrong_language  : lingua ile tespit edilen dil allowed_languages dışında
+  reference_list  : satırlarının max_bib_line_ratio'dan fazlası kaynakça girdisi olan sayfa (yayın listesi;
+                    oran 03_clean'de hesaplanır)
   out_of_domain   : astronomi terim yoğunluğu < min_domain_score  veya astroloji işaretleri
+  out_of_domain_category : (yalnız Wikipedia) maddenin kendi kategorilerinden hiçbiri astronomi/uzay konulu
+                    değil; kurgu/kültür/eser kategorileri sayılmaz (scripts/domain_lexicon.py)
 
 Girdi : data/cleaned/*.jsonl      Çıktı : data/interim/filtered.jsonl
 Elenenler: reports/removed_documents.csv (stage=filter)
@@ -18,7 +22,7 @@ import unicodedata
 from collections import Counter
 
 from common import CFG, RemovalLog, get_logger, p, read_jsonl, write_jsonl
-from domain_lexicon import domain_score, off_topic_hits
+from domain_lexicon import domain_score, off_topic_hits, wiki_category_on_topic
 
 log = get_logger("04_filter")
 F = CFG["filtering"]
@@ -48,8 +52,22 @@ def build_detector():
     return LanguageDetectorBuilder.from_languages(*langs).with_preloaded_language_models().build()
 
 
+def load_wiki_categories() -> dict[str, list[str]]:
+    """raw_id (WIKIEN_<pageid>) -> maddenin kategorileri (01_download.py: page_categories.json)."""
+    out = {}
+    for lang in ("en", "tr"):
+        f = p("raw") / "wikipedia" / lang / "page_categories.json"
+        if not f.exists():
+            log.warning(f"{f} yok: Wikipedia kategori kontrolü {lang} için atlanıyor")
+            continue
+        for pid, cats in json.loads(f.read_text(encoding="utf-8")).items():
+            out[f"WIKI{lang.upper()}_{pid}"] = cats
+    return out
+
+
 def main() -> None:
     det = build_detector()
+    wiki_cats = load_wiki_categories()
     removed = RemovalLog(p("reports") / "removed_documents.csv", "filter", reset=False)
     kept, stats = [], Counter()
     lang_counts = Counter()
@@ -59,6 +77,9 @@ def main() -> None:
             stats[f"{src}:in"] += 1
             if len(t) < F["min_chars"]:
                 removed.add(d["raw_id"], "too_short", src, f"{len(t)} chars")
+                continue
+            if d.get("bib_line_ratio", 0) > F["max_bib_line_ratio"]:
+                removed.add(d["raw_id"], "reference_list", src, f"bib_line_ratio={d['bib_line_ratio']}")
                 continue
             g = garbled_ratio(t)
             sr = symbol_ratio(t)
@@ -75,6 +96,14 @@ def main() -> None:
             if ds < F["min_domain_score"] or ot >= 3:
                 removed.add(d["raw_id"], "out_of_domain", src, f"domain_score={ds:.1f} off_topic={ot}")
                 continue
+            if src.startswith("wikipedia") and d["raw_id"] in wiki_cats:
+                cats = wiki_cats[d["raw_id"]]
+                if not wiki_category_on_topic(cats, t):
+                    removed.add(d["raw_id"], "out_of_domain_category", src,
+                                f"{d.get('title')} | kategoriler: {'; '.join(cats[:8])}")
+                    continue
+            elif src.startswith("wikipedia"):
+                stats["wiki_no_category_info"] += 1
             d.update({"language": code, "domain_score": round(ds, 1), "garbled_ratio": round(g, 4)})
             kept.append(d)
             stats[f"{src}:kept"] += 1

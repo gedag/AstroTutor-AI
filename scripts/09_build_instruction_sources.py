@@ -14,10 +14,13 @@ C) Kapsam dışı / bilgi yetersizliği örnekleri için tema listesi (kaynak do
 """
 from __future__ import annotations
 
+import csv
 import glob
 import json
 import re
 from collections import Counter, defaultdict
+
+import pyarrow.parquet as pq
 
 from common import CFG, ROOT, RemovalLog, get_logger, p, read_jsonl, rng, write_jsonl
 from domain_lexicon import domain_score
@@ -42,12 +45,25 @@ def fix_exponents(t: str) -> str:
     return EXP_FIX.sub(lambda m: f"{m.group(1)} × 10^{m.group(2)}", t)
 
 
-def eval_ngrams(n: int) -> set[tuple]:
-    """Değerlendirme setlerindeki tüm soru/seçenek metinlerinin kelime n-gram'ları."""
+# Sızıntı kontrolüne girmeyen sütunlar: kimlik/etiket alanları ve Hubble MCQ'nun soruların üretildiği bağlam pasajı
+# (source_document; corpus ile örtüşmesi validate_datasets.py'de ayrıca raporlanır)
+EVAL_ID_COLS = {"uid", "id", "model_id", "mcq_source", "labels", "permutation_idx", "answerable"}
+EVAL_CONTEXT_COLS = {"source_document"}
+
+
+def eval_ngrams(n: int, context: bool = False) -> set[tuple]:
+    """Değerlendirme setlerindeki soru/seçenek/cevap/açıklama metinlerinin kelime n-gram'ları.
+    context=True: yalnız soruların üretildiği bağlam pasajları (Hubble MCQ `source_document`).
+
+    24.10.2026 hata düzeltmesi: ilk sürüm yalnız `dtype == object` sütunlara bakıyordu; pandas 3'te metin sütunları
+    `str` tipinde olduğu için Astrobench, Astro-mcqa ve Hubble MCQ hiç okunmuyordu (yalnız astro-mcq'nun liste
+    sütunları giriyordu: 5.853 n-gram)."""
     import pandas as pd
 
     grams = set()
     for f in glob.glob(str(p("eval_reference") / "**" / "*"), recursive=True):
+        if f.endswith("manifest.jsonl"):
+            continue
         try:
             if f.endswith(".parquet"):
                 df = pd.read_parquet(f)
@@ -61,7 +77,9 @@ def eval_ngrams(n: int) -> set[tuple]:
             log.warning(f"eval okunamadı {f}: {e}")
             continue
         for col in df.columns:
-            if df[col].dtype == object:
+            if col in EVAL_ID_COLS or ((col in EVAL_CONTEXT_COLS) != context):
+                continue
+            if pd.api.types.is_object_dtype(df[col]) or pd.api.types.is_string_dtype(df[col]):
                 for v in df[col].dropna().astype(str):
                     w = re.findall(r"\w+", v.lower())
                     grams.update(tuple(w[i:i + n]) for i in range(len(w) - n + 1))
@@ -118,13 +136,17 @@ def build_se(removed: RemovalLog, grams: set, n_target: int) -> list[dict]:
     return pick
 
 
-def build_doc_jobs(quota: dict[str, int]) -> list[dict]:
+def build_doc_jobs(quota: dict[str, int], exclude_docs: frozenset = frozenset(), per_type_cap: int = 3,
+                   seed_offset: int = 10, batch: str | None = None) -> list[dict]:
+    """exclude_docs: zaten işi olan dokümanlar (ek pakette aynı doküman ikinci kez kullanılmaz).
+    per_type_cap: bir dokümandan aynı görev türünden en fazla kaç örnek istenir."""
     docs = []
     for split in ("train", "validation", "test"):
         # 12-14 örnek çıkarabilmek için uzun dokümanlar (arXiv özetleri doğası gereği kısa: >= 1000)
         docs += [d for d in read_jsonl(p("final") / f"{split}.jsonl")
-                 if d["char_count"] >= (1000 if d["source"] == "arxiv_astro_ph" else 3000)]
-    r = rng(10)
+                 if d["char_count"] >= (1000 if d["source"] == "arxiv_astro_ph" else 3000)
+                 and d["document_id"] not in exclude_docs]
+    r = rng(seed_offset)
     by_src = defaultdict(list)
     for d in docs:
         by_src[d["source"]].append(d)
@@ -132,8 +154,14 @@ def build_doc_jobs(quota: dict[str, int]) -> list[dict]:
     share = {"openstax_astronomy_2e": 0.22, "nasa_science": 0.26, "wikipedia_en": 0.22, "wikipedia_tr": 0.12,
              "nasa_apod": 0.10, "arxiv_astro_ph": 0.08}
     total_examples = sum(quota.values())
-    per_doc_avg = 12  # uzun dokümanlarda 14, orta 10, arXiv 5 -> ortalama
-    n_docs = int(total_examples / per_doc_avg) + 1
+    # Aday doküman sayısı bilerek fazla tutulur (ortalama ~11,7 örnek/doküman yerine 8 varsayılır): işler
+    # sırayla oluşturulur ve görev türü kotaları dolunca kalan adaylar iş almaz. İlk sürüm 12 varsayınca
+    # kotanın 369 örneği karşılanamıyordu (23.10.2026).
+    n_docs = int(total_examples / 8) + 1
+    per_doc = per_type_cap * len(quota)  # tek türlü pakette doküman başına en fazla per_type_cap örnek çıkar
+    if per_doc <= 8:
+        # APOD'da uzun doküman yok ve kaynak payları aşağı yuvarlanıyor: aday sayısı %50 fazla tutulur (ek2, 24.10.2026)
+        n_docs = int(total_examples / per_doc * 1.5) + 1
     chosen = []
     for src, sh in share.items():
         pool = by_src.get(src, [])
@@ -162,7 +190,7 @@ def build_doc_jobs(quota: dict[str, int]) -> list[dict]:
             n = ep["arxiv"]
         types = []
         for _ in range(n):
-            avail = {t: c for t, c in remaining.items() if c > 0 and types.count(t) < 3}
+            avail = {t: c for t, c in remaining.items() if c > 0 and types.count(t) < per_type_cap}
             if d["source"] == "arxiv_astro_ph":  # özetler kısa: anlatım/özet/neden-sonuç/ileri tanım
                 avail = {t: c for t, c in avail.items() if t in ("tanim_aciklama", "seviyeli_anlatim", "ozetleme",
                                                                  "neden_sonuc", "coktan_secmeli_soru_uretimi")}
@@ -182,7 +210,8 @@ def build_doc_jobs(quota: dict[str, int]) -> list[dict]:
         jobs.append({"job_id": f"JOB_DOC_{d['document_id']}", "kind": "doc", "source_document": d["document_id"],
                      "source_url": d["url"], "source_name": d["source"], "language": d["language"],
                      "split": d["split"], "title": d["title"], "subtopic": d["subtopic"],
-                     "task_types": types, "levels": levels, "includes_text_types": sorted(set(types) & text_types)})
+                     "task_types": types, "levels": levels, "includes_text_types": sorted(set(types) & text_types),
+                     **({"batch": batch} if batch else {})})
     log.info(f"Doküman işleri: {len(jobs)} doküman, {sum(len(j['task_types']) for j in jobs)} örnek; "
              f"karşılanamayan kota: { {k: v for k, v in remaining.items() if v > 0} }")
     return jobs
@@ -209,8 +238,16 @@ def quotas() -> tuple[dict, int, int]:
 
 def write_summary(jobs: list[dict], removed: RemovalLog) -> None:
     reasons = Counter(x["reason"] for x in removed.rows if x["stage"] == "source")
+    if not reasons and removed.path.exists():
+        # doc / doc_supplement çalıştırmalarında "source" kayıtları bellekte yoktur (RemovalLog kendi aşamasını
+        # yeniden yazmak için dışarıda bırakır); özet dosyadaki kayıtlardan hesaplanır. İlk sürüm burada {} yazıyordu.
+        with open(removed.path, encoding="utf-8") as f:
+            reasons = Counter(r["reason"] for r in csv.DictReader(f) if r["stage"] == "source")
+    se_file = ROOT / "data/raw/stackexchange_space_qa/data/stackexchange_space_qa.parquet"
+    se_total = pq.ParquetFile(se_file).metadata.num_rows if se_file.exists() else None
     doc_jobs = [j for j in jobs if j["kind"] == "doc"]
     (p("reports") / "instruction_sources_summary.json").write_text(json.dumps({
+        "stackexchange_total": se_total,
         "stackexchange_candidates_selected": sum(len(j["items"]) for j in jobs if j["kind"] == "se"),
         "stackexchange_removed": dict(reasons),
         "doc_jobs": len(doc_jobs), "doc_examples_planned": sum(len(j["task_types"]) for j in doc_jobs),
@@ -229,7 +266,7 @@ def main() -> None:
     import argparse
 
     ap = argparse.ArgumentParser()
-    ap.add_argument("--part", choices=["se_ref", "doc"], required=True)
+    ap.add_argument("--part", choices=["se_ref", "doc", "doc_supplement"], required=True)
     a = ap.parse_args()
     jobs_file = p("interim") / "instruction_jobs.jsonl"
     jobs = list(read_jsonl(jobs_file))
@@ -252,6 +289,24 @@ def main() -> None:
             new.append({"job_id": f"JOB_REF_{i:03d}", "kind": "refusal", "themes": r.sample(REFUSAL_THEMES, 3),
                         "n": per})
         removed.save()
+    elif a.part == "doc_supplement":
+        # Ek doküman işleri (config: instruction.supplement). Yalnız henüz işi olmayan dokümanlar kullanılır;
+        # var olan işler değişmez. Aynı paket ikinci kez eklenmez.
+        sups = I["supplement"] if isinstance(I["supplement"], list) else [I["supplement"]]
+        new = []
+        for k, sup in enumerate(sups):  # paketler sırayla; seed her pakette farklı (ek1: 12, ek2: 13)
+            if any(j.get("batch") == sup["name"] for j in jobs + new):
+                log.info(f"'{sup['name']}' ek paketi zaten var; değiştirilmedi")
+                continue
+            used = frozenset(j["source_document"] for j in jobs + new if j["kind"] == "doc")
+            add = build_doc_jobs(dict(sup["quota"]), exclude_docs=used, per_type_cap=sup["per_type_cap"],
+                                 seed_offset=12 + k, batch=sup["name"])
+            clash = {j["job_id"] for j in add} & {j["job_id"] for j in jobs + new}
+            if clash:
+                raise SystemExit(f"İş kimliği çakışması: {sorted(clash)[:5]}")
+            new += add
+        if not new:
+            return
     else:
         if "doc" in kinds:
             log.info("Doküman işleri zaten var; değiştirilmedi")
@@ -260,7 +315,10 @@ def main() -> None:
             raise SystemExit("Corpus v1.0 (data/final/train.jsonl) yok; önce 01-08 çalıştırılmalı")
         new = build_doc_jobs(quota)  # target_total zaten eleme payını içeriyor
     jobs += new
-    write_jsonl(jobs_file, jobs)
+    # Üretim döngüsü dosyayı okurken yarım dosya görmesin: önce geçici dosyaya yaz, sonra tek adımda değiştir
+    tmp = jobs_file.with_suffix(".jsonl.tmp")
+    write_jsonl(tmp, jobs)
+    tmp.replace(jobs_file)
     write_summary(jobs, removed)
     log.info(f"{len(new)} yeni iş eklendi; toplam: " + ", ".join(f"{k}={v}" for k, v in
                                                                  Counter(j["kind"] for j in jobs).items()))

@@ -2,7 +2,7 @@
 
 1) Kural tabanlı otomatik kontroller
    llm_skipped, length, task_type_mismatch, wrong_language, references_unseen_text, invalid_mcq_json,
-   contains_url, duplicate, near_duplicate, eval_overlap
+   mcq_answer_in_instruction (soru/şık/cevap talimatta verilmiş), response_references_unseen_text, contains_url, duplicate, near_duplicate, eval_overlap
 2) LLM yargıç (Gemini, sıcaklık 0, ayrı çağrı): her örnek KAYNAĞIYLA birlikte değerlendirilir
    supported / correct / follows_instruction / instruction_clear / fluent_turkish -> pass/fail
    Kararlar data/interim/instruction_judgments.jsonl'de saklanır (kaldığı yerden devam).
@@ -20,13 +20,28 @@ from datasketch import MinHash, MinHashLSH
 from pydantic import BaseModel
 
 from common import CFG, ROOT, RemovalLog, append_jsonl, fill, get_logger, p, read_jsonl, write_jsonl
+from exponent_fix import fix_exponents
+from mcq_check import mcq_in_instruction
+from press_boilerplate import EMAIL, PHONE
+from turkish_check import missing_turkish_chars
 
 log = get_logger("11_verify_instructions")
 I = CFG["instruction"]
 PD = ROOT / CFG["paths"]["prompts"] / I["prompt_version"]
 TEXT_TYPES = {"ozetleme", "coktan_secmeli_soru_uretimi", "siniflandirma"}
+PASSAGE_MIN_CHARS = 300   # özetleme/çoktan seçmeli talimatlarının en kısası 206/282 karakter; sınıflandırmada pasaj
+
+
+def has_passage(ins: str) -> bool:
+    return len(ins) >= PASSAGE_MIN_CHARS
+
+
+def n_list_items(ins: str) -> int:
+    """Talimatta sayılan öğe ayırıcıları (virgül, 've', madde/numara satırı)."""
+    return len(re.findall(r",\s|\sve\s|\n\s*[-*•]|\n\s*\d+[.)]", ins))
 UNSEEN = re.compile(r"\b(metne göre|metinde|dokümanda|dokümana göre|kaynakta|kaynağa göre|yukarıdaki (metin|yazı)|"
-                    r"verilen metin|bu makalede|bu yazıda)\b", re.I)
+                    r"verilen metin|bu makalede|bu yazıda|kaynaktaki|metindeki|dokümandaki|kaynak metn\w*|"
+                    r"kaynak metin\w*)\b", re.I)  # "kaynaktan" alınmadı: çoğunlukla "ışık kaynağından" anlamında
 
 
 # LaTeX/MathJax artigi: icinde LaTeX karakteri (\x5c ^ _ { }) olan $...$ bloklari veya \x5ctimes, \x5crm ... komutlari
@@ -77,9 +92,17 @@ def rule_checks(rows: list[dict], removed: RemovalLog, det, grams: set) -> list[
     for r in rows:
         rid, t = r["raw_example_id"], r["task_type"]
         ins, resp = (r.get("instruction") or "").strip(), (r.get("response") or "").strip()
+        # seviye alanı normalleştirilir (bir lite çıktısında " ileri" gibi baş boşluğu görüldü)
+        r["level"] = (r.get("level") or "").strip().lower()
+        # 12 çoktan seçmeli talimatı sonda tek başına "{" ile bitiyordu (model JSON yazmaya başlamış): atılır
+        if re.search(r"\s[{\[]\s*$", ins):
+            ins = re.sub(r"\s*[{\[]\s*$", "", ins)
+            r["instruction"] = ins
         reason = None
         if r.get("skip"):
             reason = ("llm_skipped", r.get("skip_reason"))
+        elif r["level"] not in ("baslangic", "orta", "ileri"):
+            reason = ("invalid_level", r["level"][:30])
         elif len(ins) < 10 or not (I["min_response_chars"] <= len(resp) <= I["max_response_chars"]):
             reason = ("length", f"ins={len(ins)} resp={len(resp)}")
         elif r.get("planned_task_type") and t != r["planned_task_type"]:
@@ -87,12 +110,28 @@ def rule_checks(rows: list[dict], removed: RemovalLog, det, grams: set) -> list[
         elif det.detect_language_of(resp[:1500]) != Language.TURKISH or \
                 det.detect_language_of(re.split(r"[:\n]", ins)[0][:300] or ins[:300]) != Language.TURKISH:
             reason = ("wrong_language", "")
+        elif missing_turkish_chars(ins, resp):
+            reason = ("turkish_chars_missing", missing_turkish_chars(ins, resp))
+        elif fix_exponents(ins)[1] or fix_exponents(resp)[1]:
+            # kaybolmuş üs ("1.99 x 1030 kg"): kaynak metin üretim sırasında üssüz verilmişti (06b'de düzeltildi)
+            reason = ("exponent_loss", "")
         elif t not in TEXT_TYPES and UNSEEN.search(ins):
             reason = ("references_unseen_text", UNSEEN.search(ins).group(0))
+        elif t == "siniflandirma" and not has_passage(ins) and UNSEEN.search(ins) and n_list_items(ins) < 3:
+            # "Metinde geçen molekülleri sınıflandır": talimatta ne metin ne öğe listesi var (24.10.2026, 39 örnek)
+            reason = ("references_unseen_text", "siniflandirma_ogeleri_yok:" + UNSEEN.search(ins).group(0))
+        elif (t not in TEXT_TYPES or (t == "siniflandirma" and not has_passage(ins))) and UNSEEN.search(resp):
+            # Kullanıcı metin vermediği hâlde cevap "kaynakta verilen bilgiye göre" diyor: model görünmeyen bir
+            # kaynağa atıf yapmayı öğrenir (24.10.2026: 52 + 37 örnek; prompt v1.2 kural 11)
+            reason = ("response_references_unseen_text", UNSEEN.search(resp).group(0))
         elif t == "coktan_secmeli_soru_uretimi" and (check_mcq(resp) or len(ins) < 250):
             reason = ("invalid_mcq_json", check_mcq(resp) or "ogretim_metni_yok")
+        elif t == "coktan_secmeli_soru_uretimi" and mcq_in_instruction(ins, resp):
+            reason = ("mcq_answer_in_instruction", mcq_in_instruction(ins, resp))
         elif re.search(r"https?://|www\.", resp):
             reason = ("contains_url", "")
+        elif EMAIL.search(ins + " " + resp) or PHONE.search(ins + " " + resp):
+            reason = ("contains_pii", "")  # kişisel iletişim bilgisi (e-posta/telefon)
         elif LATEX.search(resp):
             reason = ("latex_artifact", LATEX.search(resp).group(0))
         elif ins.lower() in seen:
@@ -137,7 +176,9 @@ def source_for(job_rows: list[dict], docs: dict, se_items: dict) -> str:
 
 
 def _w5(text: str) -> list[tuple]:
-    w = re.findall(r"\w+", text.lower())
+    # "^" yok sayılır: corpus'ta üsler sonradan geri yazıldı ("108" -> "10^8", 06b); üretim sırasında modele
+    # eski metin verildiği için alıntılarda "108" kalmış olabilir. İkisi de "108" olarak karşılaştırılır.
+    w = re.findall(r"\w+", text.replace("^", "").lower())
     return [tuple(w[i:i + 5]) for i in range(len(w) - 4)]
 
 

@@ -24,6 +24,50 @@ INS_FIELDS = ["id", "source_document", "task_type", "level", "messages", "instru
               "generation_method", "generator_model", "auto_verified", "human_verified", "split"]
 
 
+def eval_contamination(docs: list[dict], n: int, min_shared: int = 3) -> int:
+    """Corpus ile en az min_shared kelime n-gram'ı paylaşan değerlendirme sorularını listeler.
+    Final dönemi karşılaştırmasında (hazır model / CPT / CPT+SFT) bu sorular ayrıca raporlanabilsin diye."""
+    import csv
+    import glob
+    from collections import defaultdict
+
+    import pandas as pd
+
+    b9 = importlib.import_module("09_build_instruction_sources")
+    index, rows = defaultdict(set), {}
+    for f in glob.glob(str(p("eval_reference") / "**" / "*"), recursive=True):
+        if not f.endswith((".parquet", ".csv")):
+            continue
+        df = pd.read_parquet(f) if f.endswith(".parquet") else pd.read_csv(f)
+        name = f.split("eval_reference")[1].strip("\\/").split("\\")[0].split("/")[0]
+        cols = [c for c in df.columns if c not in b9.EVAL_ID_COLS | b9.EVAL_CONTEXT_COLS
+                and (pd.api.types.is_object_dtype(df[c]) or pd.api.types.is_string_dtype(df[c]))]
+        qcol = "question" if "question" in df.columns else cols[0]
+        for i, row in df.iterrows():
+            key = (name, f.rsplit("\\", 1)[-1].rsplit("/", 1)[-1], int(i))
+            rows[key] = str(row[qcol])[:200]
+            for c in cols:
+                w = re.findall(r"\w+", str(row[c]).lower())
+                for k in range(len(w) - n + 1):
+                    index[tuple(w[k:k + n])].add(key)
+    shared, where = defaultdict(set), defaultdict(set)
+    for d in docs:
+        w = re.findall(r"\w+", d["text"].lower())
+        for k in range(len(w) - n + 1):
+            g = tuple(w[k:k + n])
+            if g in index:
+                for key in index[g]:
+                    shared[key].add(g)
+                    where[key].add(d["document_id"])
+    hit = sorted((k for k, v in shared.items() if len(v) >= min_shared), key=lambda k: -len(shared[k]))
+    with open(p("reports") / "eval_contamination.csv", "w", encoding="utf-8-sig", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["eval_set", "file", "row", "question", "shared_8grams", "corpus_documents"])
+        for k in hit:
+            w.writerow([k[0], k[1], k[2], rows[k], len(shared[k]), " ".join(sorted(where[k])[:10])])
+    return len(hit)
+
+
 def main() -> int:
     errors, lines = [], ["# Veri seti doğrulama raporu", ""]
 
@@ -99,7 +143,10 @@ def main() -> int:
         check("Instruction ↔ değerlendirme setleri 8-gram örtüşmesi = 0", hit == 0, f"örtüşen={hit}")
     hitd = [d["document_id"] for d in alld if b9.overlaps(d["text"], grams, n) >= 3]
     lines.append(f"- [i] Corpus'ta değerlendirme setleriyle ≥3 adet 8-gram paylaşan doküman: {len(hitd)} "
-                 f"(bilgi amaçlı; final değerlendirmesinde bu sorular ayrıca işaretlenecek)")
+                 f"(bilgi amaçlı; çoğu genel ifade, ör. \"the big bang theory of the origin of the universe\")")
+    flagged = eval_contamination(alld, n)
+    lines.append(f"- [i] Corpus ile ≥3 adet 8-gram paylaşan değerlendirme sorusu: {flagged} "
+                 f"(liste: reports/eval_contamination.csv; final dönemi karşılaştırmasında ayrıca raporlanacak)")
     (p("reports") / "validation_report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     for ln in lines:
         log.info(ln)

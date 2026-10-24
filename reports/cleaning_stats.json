@@ -1,0 +1,68 @@
+{
+  "per_source": {
+    "nasa_science": {
+      "docs": 3068,
+      "chars_before": 13834165,
+      "chars_after": 12350811,
+      "removed_ratio": 0.1072,
+      "boilerplate_lines": 19
+    },
+    "nasa_apod": {
+      "docs": 2717,
+      "chars_before": 2498790,
+      "chars_after": 2359168,
+      "removed_ratio": 0.0559,
+      "boilerplate_lines": 3
+    },
+    "openstax": {
+      "docs": 242,
+      "chars_before": 2505866,
+      "chars_after": 2346107,
+      "removed_ratio": 0.0638,
+      "boilerplate_lines": 0
+    },
+    "arxiv_astro_ph": {
+      "docs": 6000,
+      "chars_before": 9176505,
+      "chars_after": 9176505,
+      "removed_ratio": 0.0,
+      "boilerplate_lines": 0
+    },
+    "wikipedia_en": {
+      "docs": 3575,
+      "chars_before": 49168159,
+      "chars_after": 40347366,
+      "removed_ratio": 0.1794,
+      "boilerplate_lines": 0
+    },
+    "wikipedia_tr": {
+      "docs": 1732,
+      "chars_before": 10367405,
+      "chars_after": 8832932,
+      "removed_ratio": 0.148,
+      "boilerplate_lines": 0
+    }
+  },
+  "rule_hits": {
+    "superscript_to_caret": 261,
+    "html_heading_kept": 7421,
+    "bibliography_entry_line": 5522,
+    "glossary_alpha_index": 20,
+    "short_lone_line": 179452,
+    "html_boilerplate_line": 2260,
+    "html_truncated_teaser": 892,
+    "html_repeated_paragraph": 627,
+    "glossary_terms_kept": 26,
+    "apod_credit_footer": 50,
+    "pdf_header_footer": 1388,
+    "pdf_running_header": 345,
+    "figure_credit_parenthetical": 416,
+    "pdf_dehyphenate": 123,
+    "pdf_heading_detected": 1643,
+    "pdf_page_break_join": 756,
+    "pdf_link_to_learning_paragraph": 175,
+    "pdf_box_label": 436,
+    "wiki_drop_section": 14217,
+    "wiki_empty_heading": 801
+  }
+}
