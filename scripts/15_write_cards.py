@@ -9,7 +9,7 @@ import csv
 import json
 from collections import Counter
 
-from common import CFG, ROOT, get_logger, p, read_jsonl, tr_ek
+from common import CFG, ROOT, get_logger, p, read_jsonl, tr_ek, tr_num
 
 log = get_logger("15_write_cards")
 R = p("reports")
@@ -151,9 +151,9 @@ def dataset_card() -> None:
            "## Veri toplama",
            f"Dokümanlar {dates[0] if dates else '-'} – {dates[-1] if dates else '-'} tarihleri arasında "
            "`scripts/01_download.py` ile indirildi. science.nasa.gov `robots.txt` kurallarına uyuldu (istekler arası "
-           f"{CFG['http']['delay_seconds']} sn); Wikipedia isteklerinde iletişim bilgili User-Agent kullanıldı ve "
+           f"{tr_num(CFG['http']['delay_seconds'])} sn); Wikipedia isteklerinde iletişim bilgili User-Agent kullanıldı ve "
            "Wikimedia hız sınırlarına uyuldu; arXiv OAI-PMH'de istekler arası "
-           f"{CFG['http']['arxiv_delay_seconds']} sn beklendi. Ham dosyalar `data/raw/` altında değiştirilmeden saklanır; "
+           f"{tr_num(CFG['http']['arxiv_delay_seconds'])} sn beklendi. Ham dosyalar `data/raw/` altında değiştirilmeden saklanır; "
            "her dosya için URL, SHA-256, erişim zamanı ve lisans `manifest.jsonl` dosyalarında kayıtlıdır.", "",
            "NASA Science'ta tek bir görevin (ör. Hubble, Cassini) corpus'u domine etmemesi için görev/bölüm başına en "
            f"fazla {CFG['sources']['nasa_science']['max_per_group']} sayfa alındı; APOD'dan 1995–2026 arasında her yıldan "
@@ -192,7 +192,7 @@ def dataset_card() -> None:
            "(kalibrasyonu: [experiments.md](experiments.md)).",
            f"- **Deduplication:** exact duplicate SHA-256 ile ({n(ded.get('exact_duplicates', 0))} doküman), near "
            f"duplicate MinHash LSH (kelime {ded.get('shingle_words')}-gram, {ded.get('num_perm')} permütasyon) + Jaccard ≥ "
-           f"{ded.get('threshold')} ile ({n(ded.get('near_duplicates', 0))} doküman). " + near_dup_sentence(qc) +
+           f"{tr_num(ded.get('threshold'))} ile ({n(ded.get('near_duplicates', 0))} doküman). " + near_dup_sentence(qc) +
            (f" Eşik incelemesi, APOD'un aynı açıklamayı yıllar sonra küçük düzeltmelerle yeniden yayımladığı "
             f"sayfaları kaçırdığını gösterdi; ikinci bir geçişte (`scripts/06b_repost_dedup.py`: kelime Jaccard ≥ 0,5 "
             f"ve karakter dizisi benzerliği ≥ 0,85) {n(d2.get('repost_removed', 0))} yeniden yayın tekrarı çıkarıldı "
@@ -214,7 +214,7 @@ def dataset_card() -> None:
            f"| Final doküman sayısı | {n(len(docs))} |",
            f"| Toplam kelime | {n(sum(d['word_count'] for d in docs))} |",
            f"| Toplam token ({CFG['tokenizer']['name']} tokenizer) | {n(total_tok)} ({mtok(total_tok)}) |",
-           f"| Ortalama doküman uzunluğu | {n(int(td.get('mean', 0)))} token |",
+           f"| Ortalama doküman uzunluğu | {n(round(td.get('mean', 0)))} token |",
            f"| Medyan doküman uzunluğu | {n(td.get('median', 0))} token |",
            f"| 95. yüzdelik / en uzun | {n(td.get('p95', 0))} / {n(td.get('max', 0))} token |",
            f"| İngilizce / Türkçe (token) | {pc(lang_tok.get('en', 0), total_tok)} / {pc(lang_tok.get('tr', 0), total_tok)} |",
@@ -328,6 +328,12 @@ def instruction_card() -> None:
     gm = Counter(x["generator_model"] for x in ins)
     lite = [x for x in ins if "lite" in (x.get("generator_model") or "")]
     flash = [x for x in ins if "lite" not in (x.get("generator_model") or "")]
+    pp_final = Counter(x.get("postprocess") for x in ins)
+
+    def fix_note(kind: str) -> str:
+        # Düzeltilen bir örnek sonradan (ör. kalite kontrolünde) elendiyse final setteki sayıyı ayrıca belirt
+        done, left = vs.get("rule_fixes", {}).get(kind, 0), pp_final.get(kind, 0)
+        return f"; {n(done - left)} tanesi sonradan elendiği için final sette {n(left)}" if left < done else ""
     lite_n = len(lite)
     lite_len = round(sum(len(x["response"]) for x in lite) / max(len(lite), 1))
     flash_len = round(sum(len(x["response"]) for x in flash) / max(len(flash), 1))
@@ -370,7 +376,7 @@ def instruction_card() -> None:
            "- **Model:** Google Gemini API (ücretsiz katman). Katmanın model başına günlük istek sınırı nedeniyle aynı "
            "aileden birden fazla Flash modeli havuz olarak kullanılmış, her örnekte gerçekte kullanılan model "
            "kaydedilmiştir: " + ", ".join(f"{k} ({n(v)})" for k, v in gm.most_common()) + ".",
-           f"- **Parametreler:** sıcaklık {I['temperature']}, düşünme seviyesi `{I.get('generator_thinking_budget')}`, "
+           f"- **Parametreler:** sıcaklık {tr_num(I['temperature'])}, düşünme seviyesi `{I.get('generator_thinking_budget')}`, "
            f"en fazla {n(I['max_output_tokens'])} çıktı token'ı. Prompt sürümleri (örnek sayısı): "
            + ", ".join(f"`{k}` ({n(v)})" for k, v in sorted(pv.items())) + ". Prompt metinleri: "
            + ", ".join(f"[prompts/{k}/](prompts/{k}/)" for k in sorted(pv)) + " (`system_generate.txt`, "
@@ -393,8 +399,9 @@ def instruction_card() -> None:
            f"Jaccard ≥ 0,8), değerlendirme setleriyle {I['decontam_ngram']}-gram örtüşmesi."
            + (f" Öğeleri talimatta sayılmış {n(vs['rule_fixes']['kaynak_atfi_silindi'])} sınıflandırma talimatının "
               "başındaki \"Metinde adı geçen\" gibi atıf ifadesi silindi (örnek elenmedi; `postprocess` alanında "
-              "işaretli)." if vs.get("rule_fixes", {}).get("kaynak_atfi_silindi") else "")
-           + (f" {n(vs['rule_fixes']['adim_yazimi_duzeltildi'])} cevapta \"Adim\" yazımı \"Adım\" olarak düzeltildi."
+              "işaretli)" + fix_note("kaynak_atfi_silindi") + "." if vs.get("rule_fixes", {}).get("kaynak_atfi_silindi") else "")
+           + (f" {n(vs['rule_fixes']['adim_yazimi_duzeltildi'])} cevapta \"Adim\" yazımı \"Adım\" olarak düzeltildi"
+              + fix_note("adim_yazimi_duzeltildi") + "."
               if vs.get("rule_fixes", {}).get("adim_yazimi_duzeltildi") else ""),
            f"2. **Kanıt kontrolü** (kaynağı olan tüm örnekler): `supporting_evidence` alıntısının kelime 5-gram'larının en "
            f"az {tr_ek('%' + str(int(100 * I['evidence_min_overlap'])))} kaynak metinde bulunmalıdır; bulunmayan örnek uydurma kaynak "

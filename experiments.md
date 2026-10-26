@@ -609,3 +609,12 @@ Corpus, instruction, kod ve belgeler gereksinim listesiyle karşılaştırıldı
 - Ek yargıç modu (`--extended`, varsayılan kapalı) yazıldı ve sahte yargıçla test edildi: örneklem dışındaki 290
   lite işini değerlendirir, örneklem istatistiklerini değiştirmez, elenenleri `judge_ext_fail` ile ayrı kaydeder.
   Final dönemi öncesi v1.1 için çalıştırılacak.
+- **Son denetim (26.10.2026 öğleden sonra), yalnız raporlama düzeltmeleri; veri dosyaları değişmedi (SHA-256 aynı):**
+  (1) Kalite kontrol raporunun otomatik kontrol tablosu, 24 örnek çıkarılmadan önceki seti (3.412 örnek, 455 çoktan
+  seçmeli) sayıyordu; artık final set üzerinde (3.388, 451/451) ve elenme tablosu `qc_fail(insan)` 24 satırı ve
+  toplam 574 ile 3.962 = 3.388 + 574 mutabakatını gösteriyor. (2) Kart, "Adim" düzeltmesi yapılan 20 örnekten
+  birinin sonradan incelemede elendiğini (final sette 19) belirtiyor. (3) Ortalama doküman uzunluğu 996,8 kırpılıp
+  996 yazılıyordu, 997'ye yuvarlandı; istatistik raporundaki ondalıklar Türkçe biçimde ("996.8" → "996,8"; nokta
+  binlik ayırıcı olduğu için yanlış okunabiliyordu), metindeki eşik ve parametreler de virgülle (0,85; 0,7).
+  (4) Sunum 13. slayt: corpus incelemesindeki 12 sorunun 6'sı yalnız alt konu etiketi (önce yanlışlıkla 7 yazılmıştı;
+  7, alt konu hatası geçen doküman sayısıydı, biri ayrıca formül kalıntısı taşıyor).

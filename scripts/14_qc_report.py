@@ -16,7 +16,7 @@ import json
 import re
 from collections import Counter
 
-from common import CFG, RemovalLog, get_logger, p, read_jsonl, tr_ek, write_jsonl
+from common import CFG, RemovalLog, get_logger, p, read_jsonl, tr_ek, tr_num, write_jsonl
 
 log = get_logger("14_qc_report")
 R = p("reports")
@@ -131,31 +131,59 @@ def main() -> None:
     removed_ins = read_csv(R / "removed_instructions.csv")
     vsum = json.loads((R / "instruction_verification_summary.json").read_text(encoding="utf-8")) \
         if (R / "instruction_verification_summary.json").exists() else {}
+
+    # Elle incelemede (nihai karar, yoksa ön inceleme) 'sorunlu' bulunan örnekler. Otomatik kontroller bunlar
+    # çıkarıldıktan sonraki FİNAL set üzerinde raporlanır; çıkarma işlemi aşağıda B bölümünden sonra yapılır.
+    # Eşleştirme raw_example_id ile yapılır: INS_ numaraları doğrulanmış küme değişince (yargıç, yeni örnek)
+    # kayabilir, raw_example_id kaymaz. Eski tablolarda bu sütun yoksa id -> raw_example_id eşlemesi kullanılır.
+    irow = read_csv(p("qc") / "instruction_review.csv")
+    id2raw = {x["id"]: x["raw_example_id"] for x in ins}
+
+    def rkey(r):
+        return (r.get("raw_example_id") or "").strip() or id2raw.get(r["id"], r["id"])
+
+    drop = {}
+    for r in irow:
+        dec = norm(r.get("son_karar"))
+        src = "insan"
+        if dec is None:
+            dec, src = norm(r.get("claude_karar")), "claude_on_inceleme"
+        if dec == "bad":
+            drop[rkey(r)] = (src, r.get("son_hata_turu") or r.get("claude_hata_turu") or "")
+    reviewed = {rkey(r): r for r in irow}
+    ins_final = [x for x in ins if x["raw_example_id"] not in drop]
+
     if ins:
         v11 = importlib.import_module("11_verify_instructions")
-        mcq = [x for x in ins if x["task_type"] == "coktan_secmeli_soru_uretimi"]
+        mcq = [x for x in ins_final if x["task_type"] == "coktan_secmeli_soru_uretimi"]
         own = {}
         clash = 0
-        for x in ins:
+        for x in ins_final:
             if own.setdefault(x["source_document"], x["split"]) != x["split"]:
                 clash += 1
         auto_i = {
-            "Örnek sayısı": len(ins),
-            "Benzersiz id": "evet" if len({x["id"] for x in ins}) == len(ins) else "HAYIR",
-            "messages biçimi hatalı": sum(1 for x in ins if not (len(x["messages"]) == 2
+            "Örnek sayısı (final)": len(ins_final),
+            "Benzersiz id": "evet" if len({x["id"] for x in ins_final}) == len(ins_final) else "HAYIR",
+            "messages biçimi hatalı": sum(1 for x in ins_final if not (len(x["messages"]) == 2
                                                                and [m["role"] for m in x["messages"]] == ["user", "assistant"]
                                                                and all(m["content"].strip() for m in x["messages"]))),
-            "Kaynak bilgisi eksik": sum(1 for x in ins if not x.get("source_document")),
+            "Kaynak bilgisi eksik": sum(1 for x in ins_final if not x.get("source_document")),
             "Çoktan seçmeli JSON geçerli": f"{sum(1 for x in mcq if v11.check_mcq(x['response']) is None)}/{len(mcq)}",
             "Aynı kaynak doküman birden fazla kümede": clash,
             "LLM yargıç örneklemi (örnek)": vsum.get("judged_examples"),
             "LLM yargıç başarısızlık oranı (tahmini hata oranı)": pct(vsum.get("judge_fail", 0), vsum.get("judged_examples") or 0),
         }
-        md += ["## A. Otomatik kontroller — Instruction Dataset v1.0", "", "| Kontrol | Sonuç |", "| --- | --- |"]
+        md += ["## A. Otomatik kontroller — Instruction Dataset v1.0", "",
+               "Elle incelemede sorunlu bulunan örnekler çıkarıldıktan sonraki final set üzerinde.", "",
+               "| Kontrol | Sonuç |", "| --- | --- |"]
         md += [f"| {k} | {fmt(v)} |" for k, v in auto_i.items()] + [""]
-        reasons = Counter(r["reason"].split(":")[0] for r in removed_ins if r["stage"] in ("verify", "qc"))
-        md += ["Doğrulama ve kalite kontrolünde elenme nedenleri:", "", "| Neden | Adet |", "| --- | --- |"]
-        md += [f"| {k} | {v} |" for k, v in reasons.most_common()] + [""]
+        reasons = Counter(r["reason"].split(":")[0] for r in removed_ins if r["stage"] == "verify")
+        for s, _ in drop.values():
+            reasons[f"qc_fail({s})"] += 1
+        md += ["Doğrulama ve kalite kontrolünde elenme nedenleri (`qc_fail(insan)` = elle incelemede sorunlu):", "",
+               "| Neden | Adet |", "| --- | --- |"]
+        md += [f"| {k} | {v} |" for k, v in reasons.most_common()]
+        md += [f"| **Toplam** | **{sum(reasons.values())}** |", ""]
         if vsum.get("judge_fail_by_criterion"):
             md += ["LLM yargıcın başarısız bulduğu ölçütler: " + ", ".join(
                 f"{k}={v}" for k, v in vsum["judge_fail_by_criterion"].items()), ""]
@@ -169,29 +197,12 @@ def main() -> None:
     sec, s_c = review_section(crow, CORPUS_CRIT, "Domain Corpus")
     md += sec
     summary["corpus_review"] = s_c
-    irow = read_csv(p("qc") / "instruction_review.csv")
     sec, s_i = review_section(irow, INS_CRIT, "Instruction Dataset")
     md += sec
     summary["instruction_review"] = s_i
 
-    # nihai kararı (yoksa ön incelemesi) 'sorunlu' olan instruction örneklerini çıkar
+    # nihai kararı (yoksa ön incelemesi) 'sorunlu' olan instruction örneklerini çıkar (drop yukarıda hesaplandı)
     if ins and irow:
-        # Eşleştirme raw_example_id ile yapılır: INS_ numaraları doğrulanmış küme değişince (yargıç, yeni örnek)
-        # kayabilir, raw_example_id kaymaz. Eski tablolarda bu sütun yoksa id -> raw_example_id eşlemesi kullanılır.
-        id2raw = {x["id"]: x["raw_example_id"] for x in ins}
-
-        def rkey(r):
-            return (r.get("raw_example_id") or "").strip() or id2raw.get(r["id"], r["id"])
-
-        drop = {}
-        for r in irow:
-            dec = norm(r.get("son_karar"))
-            src = "insan"
-            if dec is None:
-                dec, src = norm(r.get("claude_karar")), "claude_on_inceleme"
-            if dec == "bad":
-                drop[rkey(r)] = (src, r.get("son_hata_turu") or r.get("claude_hata_turu") or "")
-        reviewed = {rkey(r): r for r in irow}
         rm = RemovalLog(R / "removed_instructions.csv", "qc", reset=False)
         kept = []
         for x in ins:
@@ -242,7 +253,7 @@ def main() -> None:
                                       "false_removals": fp, "missed": fn}
     if nd_md:
         md += ["### Near-duplicate eşiğinin doğrulanması", "",
-               f"{len(nd)} aday çift (yarısı Jaccard ≥ {thr}, yarısı altı) incelendi. 'Eşik hatalı eledi' = eşik "
+               f"{len(nd)} aday çift (yarısı Jaccard ≥ {tr_num(thr)}, yarısı altı) incelendi. 'Eşik hatalı eledi' = eşik "
                f"üstü ama gerçekte tekrar değil; 'eşik kaçırdı' = eşik altı ama gerçekte tekrar.", "",
                "| İnceleme | Çift | Eşikle uyum | Eşik hatalı eledi | Eşik kaçırdı |", "| --- | --- | --- | --- | --- |",
                *nd_md, ""]

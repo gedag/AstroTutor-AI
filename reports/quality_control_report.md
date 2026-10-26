@@ -18,18 +18,20 @@ Bu rapor `scripts/14_qc_report.py` tarafından üretilir.
 
 ## A. Otomatik kontroller — Instruction Dataset v1.0
 
+Elle incelemede sorunlu bulunan örnekler çıkarıldıktan sonraki final set üzerinde.
+
 | Kontrol | Sonuç |
 | --- | --- |
-| Örnek sayısı | 3.412 |
+| Örnek sayısı (final) | 3.388 |
 | Benzersiz id | evet |
 | messages biçimi hatalı | 0 |
 | Kaynak bilgisi eksik | 0 |
-| Çoktan seçmeli JSON geçerli | 455/455 |
+| Çoktan seçmeli JSON geçerli | 451/451 |
 | Aynı kaynak doküman birden fazla kümede | 0 |
 | LLM yargıç örneklemi (örnek) | 348 |
 | LLM yargıç başarısızlık oranı (tahmini hata oranı) | %11,5 |
 
-Doğrulama ve kalite kontrolünde elenme nedenleri:
+Doğrulama ve kalite kontrolünde elenme nedenleri (`qc_fail(insan)` = elle incelemede sorunlu):
 
 | Neden | Adet |
 | --- | --- |
@@ -40,6 +42,7 @@ Doğrulama ve kalite kontrolünde elenme nedenleri:
 | turkish_chars_missing | 64 |
 | judge_fail | 40 |
 | evidence_not_in_source | 34 |
+| qc_fail(insan) | 24 |
 | length | 8 |
 | llm_skipped | 5 |
 | wrong_language | 5 |
@@ -49,6 +52,7 @@ Doğrulama ve kalite kontrolünde elenme nedenleri:
 | duplicate | 3 |
 | exponent_loss | 2 |
 | task_type_mismatch | 1 |
+| **Toplam** | **574** |
 
 LLM yargıcın başarısız bulduğu ölçütler: correct=7, fluent_turkish=12, supported=12, follows_instruction=6, instruction_clear=3
 
@@ -135,7 +139,7 @@ Nihai kararların 150/150'si grup üyesinin ön inceleme kararlarını onaylamas
 
 ### Near-duplicate eşiğinin doğrulanması
 
-50 aday çift (yarısı Jaccard ≥ 0.85, yarısı altı) incelendi. 'Eşik hatalı eledi' = eşik üstü ama gerçekte tekrar değil; 'eşik kaçırdı' = eşik altı ama gerçekte tekrar.
+50 aday çift (yarısı Jaccard ≥ 0,85, yarısı altı) incelendi. 'Eşik hatalı eledi' = eşik üstü ama gerçekte tekrar değil; 'eşik kaçırdı' = eşik altı ama gerçekte tekrar.
 
 | İnceleme | Çift | Eşikle uyum | Eşik hatalı eledi | Eşik kaçırdı |
 | --- | --- | --- | --- | --- |

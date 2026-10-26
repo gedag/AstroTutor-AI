@@ -94,6 +94,11 @@ def _last_word(num: str) -> str:
     return "milyon"
 
 
+def tr_num(x) -> str:
+    """Metin içindeki ondalık parametreyi Türkçe yazar (0.85 -> 0,85); tam sayıya dokunmaz."""
+    return str(x).replace(".", ",") if isinstance(x, float) else str(x)
+
+
 def tr_ek(num: str, form: str = "iyelik") -> str:
     """Sayıya kesme işaretiyle doğru Türkçe eki ekler.
     form: 'iyelik' (25'i, %36,6'sı, 100'ü), 'belirtme' (%15'i, %2'yi), 'iyelik_belirtme' (%16,9'unu, %2'sini)."""

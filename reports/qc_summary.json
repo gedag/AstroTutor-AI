@@ -11,11 +11,11 @@
     "Aynı grup birden fazla kümede": 0
   },
   "instruction_auto": {
-    "Örnek sayısı": 3412,
+    "Örnek sayısı (final)": 3388,
     "Benzersiz id": "evet",
     "messages biçimi hatalı": 0,
     "Kaynak bilgisi eksik": 0,
-    "Çoktan seçmeli JSON geçerli": "455/455",
+    "Çoktan seçmeli JSON geçerli": "451/451",
     "Aynı kaynak doküman birden fazla kümede": 0,
     "LLM yargıç örneklemi (örnek)": 348,
     "LLM yargıç başarısızlık oranı (tahmini hata oranı)": "%11,5"

@@ -73,7 +73,7 @@ log yazar ve sonunda kaç dokümanın işlendiğini özetler. Rastgelelik içere
 | `02_extract.py` | HTML: Trafilatura; PDF: PyMuPDF (blok sıralı); XML/JSON alanları | `data/extracted/`, `reports/extraction_failures.csv` |
 | `03_clean.py` | HTML kalıntısı, NFKC (üs korumalı), header/footer, menü, kesik tanıtım, kaynakça girdisi satırları, kısa satır temizliği | `data/cleaned/`, `reports/cleaning_examples.md`, `reports/cleaning_rules.md` |
 | `04_filter.py` | too_short, reference_list, garbled, wrong_language, out_of_domain, out_of_domain_category (Wikipedia kategorileri) | `data/interim/filtered.jsonl`, `reports/removed_documents.csv` |
-| `05_deduplicate.py` | SHA-256 exact + MinHash/Jaccard ≥ 0.85 near duplicate, metadata | `data/interim/corpus_v0.9.jsonl` |
+| `05_deduplicate.py` | SHA-256 exact + MinHash/Jaccard ≥ 0,85 near duplicate, metadata | `data/interim/corpus_v0.9.jsonl` |
 | `06_split.py` | Doküman (grup) düzeyinde %90/5/5, kaynak bazında tabakalı | `data/final/{train,validation,test}.jsonl` |
 | `06b_repost_dedup.py` | İkinci geçiş (kalite kontrolünde bulunanlar): kaybolmuş üsler, NASA künye/kişisel veri, APOD duyuru satırları, yeniden yayın tekrarları, arXiv alt konuları; kimlik ve kümeler korunur | `data/final/*.jsonl`, `reports/dedup2_summary.json` |
 | `07_token_count.py` | Qwen2.5 tokenizer ile token sayımı + split sonrası paragraf sınırında chunk (chunk metni dokümanın birebir alt dizisi, `char_start`/`char_end`) | `reports/token_stats.json`, `data/final/chunks/` |

@@ -9,7 +9,7 @@ import csv
 import json
 from collections import Counter, defaultdict
 
-from common import CFG, get_logger, p, read_jsonl
+from common import CFG, get_logger, p, read_jsonl, tr_num
 
 log = get_logger("08_statistics")
 R = p("reports")
@@ -26,6 +26,11 @@ def j(name: str) -> dict:
 
 def fmt(n) -> str:
     return f"{n:,}".replace(",", ".") if isinstance(n, int) else str(n)
+
+
+def dec(x) -> str:
+    """Ondalıklı sayı Türkçe biçimde: binlik ayırıcı nokta, ondalık virgül (996.8 -> 996,8; 1009.5 -> 1.009,5)."""
+    return f"{x:,.1f}".replace(",", "_").replace(".", ",").replace("_", ".")
 
 
 def pct(a, b) -> str:
@@ -97,7 +102,7 @@ def main() -> None:
           f"({pct(n_ext_fail, n_raw)}) |",
           f"| Filtering sonrası | {fmt(n_filtered)} |",
           f"| Exact duplicate | {fmt(ded.get('exact_duplicates', 0))} |",
-          f"| Near duplicate (Jaccard ≥ {ded.get('threshold')}) | {fmt(ded.get('near_duplicates', 0))} |",
+          f"| Near duplicate (Jaccard ≥ {tr_num(ded.get('threshold'))}) | {fmt(ded.get('near_duplicates', 0))} |",
           f"| Yeniden yayın tekrarı (06b; APOD ve NASA Science, kimlik ve kümeler korunarak) | "
           f"{fmt(d2.get('repost_removed', 0))} |",
           f"| İletişim sayfası, kurgu/eser maddesi, temizlik sonrası çok kısa (06b) | "
@@ -185,10 +190,10 @@ def main() -> None:
            "| --- | --- | --- | --- | --- | --- | --- | --- |"]
     for name, st in [("Tümü", td), *tok.get("per_split", {}).items()]:
         md.append(f"| {name} | {fmt(st['count'])} | {fmt(st['total'])} | {fmt(st['min'])} | {fmt(st['median'])} | "
-                  f"{st['mean']} | {fmt(st['p95'])} | {fmt(st['max'])} |")
+                  f"{dec(st['mean'])} | {fmt(st['p95'])} | {fmt(st['max'])} |")
     md += ["", "| Kaynak | Min | Medyan | Ortalama | p95 | Maks |", "| --- | --- | --- | --- | --- | --- |"]
     for s, st in tok.get("per_source", {}).items():
-        md.append(f"| {s} | {fmt(st['min'])} | {fmt(st['median'])} | {st['mean']} | {fmt(st['p95'])} | {fmt(st['max'])} |")
+        md.append(f"| {s} | {fmt(st['min'])} | {fmt(st['median'])} | {dec(st['mean'])} | {fmt(st['p95'])} | {fmt(st['max'])} |")
     ch = tok.get("chunks", {})
     if ch:
         md += ["", f"Chunk'lar (en fazla {ch['max_tokens']} token, paragraf/başlık sınırında): {fmt(ch['count'])} chunk, "

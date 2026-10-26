@@ -12,7 +12,7 @@ Bu rapor `scripts/08_statistics.py` tarafından üretilir; elle düzenlenmez.
 | Extraction başarısız (indirme hatası + boş/kısa çıktı + içerik dışı PDF bölümü) | 186 (%1,1) |
 | Filtering sonrası | 16.572 |
 | Exact duplicate | 46 |
-| Near duplicate (Jaccard ≥ 0.85) | 90 |
+| Near duplicate (Jaccard ≥ 0,85) | 90 |
 | Yeniden yayın tekrarı (06b; APOD ve NASA Science, kimlik ve kümeler korunarak) | 140 |
 | İletişim sayfası, kurgu/eser maddesi, temizlik sonrası çok kısa (06b) | 12 |
 | Final doküman | 16.284 |
@@ -109,19 +109,19 @@ En büyük kaynağın doküman payı: %36,6 (tek kaynak baskın değil).
 
 | Küme | Doküman | Toplam token | Min | Medyan | Ortalama | p95 | Maks |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Tümü | 16.284 | 16.231.969 | 53 | 391 | 996.8 | 3.978 | 57.979 |
-| train | 14.660 | 14.798.649 | 53 | 391 | 1009.5 | 4.039 | 57.979 |
-| validation | 819 | 737.348 | 65 | 393 | 900.3 | 3.342 | 11.538 |
-| test | 805 | 695.972 | 58 | 396 | 864.6 | 3.299 | 15.770 |
+| Tümü | 16.284 | 16.231.969 | 53 | 391 | 996,8 | 3.978 | 57.979 |
+| train | 14.660 | 14.798.649 | 53 | 391 | 1.009,5 | 4.039 | 57.979 |
+| validation | 819 | 737.348 | 65 | 393 | 900,3 | 3.342 | 11.538 |
+| test | 805 | 695.972 | 58 | 396 | 864,6 | 3.299 | 15.770 |
 
 | Kaynak | Min | Medyan | Ortalama | p95 | Maks |
 | --- | --- | --- | --- | --- | --- |
-| arxiv_astro_ph | 53 | 343 | 337.2 | 493 | 703 |
-| nasa_apod | 73 | 187 | 189.4 | 257 | 348 |
-| nasa_science | 55 | 700 | 930.7 | 2.280 | 57.979 |
-| openstax_astronomy_2e | 73 | 1.800 | 2096.4 | 5.219 | 6.747 |
-| wikipedia_en | 70 | 1.566 | 2430.1 | 7.640 | 27.769 |
-| wikipedia_tr | 91 | 722 | 1756.8 | 7.055 | 25.286 |
+| arxiv_astro_ph | 53 | 343 | 337,2 | 493 | 703 |
+| nasa_apod | 73 | 187 | 189,4 | 257 | 348 |
+| nasa_science | 55 | 700 | 930,7 | 2.280 | 57.979 |
+| openstax_astronomy_2e | 73 | 1.800 | 2.096,4 | 5.219 | 6.747 |
+| wikipedia_en | 70 | 1.566 | 2.430,1 | 7.640 | 27.769 |
+| wikipedia_tr | 91 | 722 | 1.756,8 | 7.055 | 25.286 |
 
 Chunk'lar (en fazla 1024 token, paragraf/başlık sınırında): 33.997 chunk, medyan 396, p95 982 token.
 
