@@ -95,6 +95,10 @@ kota/yoğunluk yönetimi), `check_gemini.py` (anahtarı ve model erişimini test
 `press_boilerplate.py` (NASA basın künyesi ve kişisel iletişim bilgisi temizliği). Kural modüllerinin her biri
 doğrudan çalıştırıldığında kendi testlerini çalıştırır (ör. `python scripts/exponent_fix.py`).
 
+### Ek LLM yargıcı (Instruction v1.1 hazırlığı)
+
+`python run_extended_judge.py` örneklem dışındaki lite üretimi işleri, v1.0 dosyalarına dokunmadan `data/interim/extended_judge/` altında değerlendirir (kota dolunca bekleyip devam eder). Bitince kararlar `data/interim/` altına kopyalanıp 11 → 12 → 14 → 08 → 15 → 16 → `validate_datasets.py` çalıştırılarak v1.1 üretilir.
+
 ### Instruction üretimini arka planda sürdürme (Windows)
 
 Ücretsiz Gemini katmanında üretim birkaç güne yayıldığı için `run_instruction_loop.py` kota/yoğunluk
@@ -123,7 +127,8 @@ Unregister-ScheduledTask -TaskName "AstroTutorInstructionLoop" -Confirm:$false
 - [reports/cleaning_rules.md](reports/cleaning_rules.md), [reports/cleaning_examples.md](reports/cleaning_examples.md) — temizleme kuralları ve öncesi/sonrası
 - [reports/extraction_tool_comparison.md](reports/extraction_tool_comparison.md) — PyMuPDF / pdfplumber karşılaştırması
 - [reports/instruction_taxonomy.md](reports/instruction_taxonomy.md) — görev türü taksonomisi
-- [reports/sunum_taslagi.md](reports/sunum_taslagi.md) — vize sunumu taslağı
+- [reports/AstroTutor_AI_Vize_Sunumu.pptx](reports/AstroTutor_AI_Vize_Sunumu.pptx) — vize sunumu (16 slayt, konuşma notları slayt notlarında)
+- [reports/sunum_taslagi.md](reports/sunum_taslagi.md) — sunum taslağı ve "neden?" sorularına hazırlık
 - [experiments.md](experiments.md) — karar günlüğü
 
 ## Lisans ve etik
