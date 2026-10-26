@@ -41,7 +41,13 @@ experiments.md    tarihli deney ve karar günlüğü
 ```
 
 Büyük veri dosyaları depoya konmaz. Ham veri ve üretilen veri setleri yerelde `data/` altında durur ve pipeline ile
-yeniden üretilebilir; teslim kopyası ayrıca paylaşılır (bkz. `data/samples/` içindeki örnekler).
+yeniden üretilebilir. Küçük örnekler depoda `data/samples/` altındadır.
+
+**Veri setlerinin teslim kopyası (Google Drive):**
+[AstroTutor_AI_veri_v1.0.zip](https://drive.google.com/file/d/1XFhiMaWvBgCL82-XzocDW-9LbvpNTjwW/view?usp=sharing)
+(53 MB; Domain Corpus v1.0, chunk'lar, Instruction Dataset v1.0, iki kart ve `SHA256SUMS.txt`). Açtıktan sonra
+bütünlük kontrolü: `sha256sum -c SHA256SUMS.txt`. Zip dosyasının kendi SHA-256 değeri:
+`7ccd8e93c1cd970d51f82219fd36470ac700b2765d80d9987f8c7a3da44d360b`.
 
 ## Kurulum
 
