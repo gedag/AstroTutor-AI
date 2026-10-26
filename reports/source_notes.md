@@ -47,5 +47,5 @@ Doküman sayıları ve erişim tarihleri `reports/source_inventory.csv` dosyası
 - Yapılandırılmış ve sürekli güncellenen tablo verisi (ps, pscomppars, toi). Tasarım raporuna göre bu tür güncel sayısal bilgiler model ağırlıklarına ezberletilmeyecek, RAG katmanında tutulacak. Kullanımda Archive'a ve ilgili yayınlara atıf yapılacak.
 
 ## Değerlendirme setleri — eğitime GİRMEZ
-- patrickfleith/Astro-mcqa (CC BY 4.0), patrickfleith/astro-mcq (CC BY 4.0), patrickfleith/HubbleSpaceTelescope-MCQ, AstroMLab/Astrobench_MCQ_v1_Public.
-- Yalnızca `data/eval_reference/` altına indirilir ve instruction verisiyle 8-gram örtüşmesi olan örneklerin elenmesi için kullanılır.
+- patrickfleith/Astro-mcqa (200 soru, CC BY 4.0), patrickfleith/astro-mcq (579 soru, CC BY 4.0), patrickfleith/HubbleSpaceTelescope-MCQ (1.052 soru; veri kartında lisans belirtilmemiş), AstroMLab/Astrobench_MCQ_v1_Public (3.846 soru, MIT).
+- Yalnızca `data/eval_reference/` altına indirilir (dağıtılmaz) ve instruction verisiyle 8-gram örtüşmesi olan örneklerin elenmesi için kullanılır; corpus ile örtüşen sorular `reports/eval_contamination.csv` dosyasında listelenir. Final döneminde modellerin karşılaştırılmasında kullanılacaktır.

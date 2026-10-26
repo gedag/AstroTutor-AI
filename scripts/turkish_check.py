@@ -31,19 +31,45 @@ def tr_char_ratio(text: str) -> tuple[float, int]:
     return sum(c in TR_CHARS for c in letters) / max(len(letters), 1), len(letters)
 
 
+# Büyük harfle başlayan kelimeler ("Asagidaki", "Gokadalar") de yakalansın diye yalnız ASCII büyük harfler küçültülür.
+# re.I KULLANILMAZ: Python'da "i" ile "ı" büyük-küçük harf eşdeğeri sayılır ve doğru "yıldız" da eşleşirdi (26.10.2026).
+_ASCII_LOWER = str.maketrans("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz")
+
+
+def _folded(text: str) -> list[str]:
+    return FOLDED.findall(text.translate(_ASCII_LOWER))
+
+
 def missing_turkish_chars(instruction: str, response: str) -> str | None:
     """Kusur varsa kısa açıklama, yoksa None. Talimatın yalnız ilk 300 karakterine bakılır: özetleme
     talimatları İngilizce kaynak metin içerebilir (İngilizce kelimeler FOLDED listesine uymaz)."""
     ratio, n = tr_char_ratio(response)
     if n >= MIN_LETTERS and ratio < MIN_TR_RATIO:
         return f"yanit_tr_harf_orani={ratio:.3f}"
-    fr = FOLDED.findall(JSON_KEYS.sub("", response))
+    fr = _folded(JSON_KEYS.sub("", response))
     if len(fr) >= 2:
         return f"yanit_ascii_kelime={','.join(fr[:3])}"
-    fi = FOLDED.findall(instruction[:300])
+    fi = _folded(instruction[:300])
     if fi:
         return f"talimat_ascii_kelime={','.join(fi[:3])}"
     return None
+
+
+DOTLESS_MIN_LETTERS = 200
+_SENT = re.compile(r"(?<=[.!?:])\s+|\n+")
+
+
+def dotless_i_missing(text: str, is_turkish) -> str | None:
+    """Yalnız "ı" harfi düşürülmüş metin ("yakin kizilötesi", "kaynaklarinin sayisini"): FOLDED listesi ve harf oranı
+    bunu kaçırıyordu (25.10.2026, LLM yargıç örnekleminden sonra yapılan taramada). Metnin Türkçe cümleleri (İngilizce
+    pasajlar `is_turkish` ile ayıklanır) en az 200 harf içerip hiç "ı" yoksa kusurlu sayılır. Doğal Türkçede "ı"
+    oranı ~%5; doğrulanmış 3.653 metinde ölçüt yalnız 3 kusurlu örneği yakaladı, yanlış alarm 0."""
+    body = JSON_KEYS.sub("", text)
+    if "ı" in body:
+        return None
+    tr = " ".join(s for s in _SENT.split(body) if s.strip() and is_turkish(s))
+    n = sum(c.isalpha() for c in tr)
+    return f"ı_harfi_yok({n}_harf)" if n >= DOTLESS_MIN_LETTERS else None
 
 
 def job_defect_ratio(rows: list[dict]) -> float:
@@ -69,4 +95,25 @@ if __name__ == "__main__":
         got = bool(missing_turkish_chars(ins, resp))
         bad += got != want
         print("tamam" if got == want else "HATA", want, missing_turkish_chars(ins, resp), "|", ins[:50])
+    # "ı" harfi düşmüş metin (25.10.2026, JOB_DOC_DOC_011178_02); dil tespiti yerine basit bir yaklaşık işlev
+    def tr_like(s):
+        return any(w in s.lower() for w in (" ve ", " bir ", " bu ", "dir", "dır", "maktadır", "mektedir", "dalga", "teleskob"))
+    folded = ("Nancy Grace Roman Uzay Teleskobu yakin kizilötesi dalga boyunda derin ve yüksek kaliteli görüntüler sunacak "
+              "ve bu da üst üste binen gökada kaynaklarinin sayisini artiracaktir. Bu durum fotometri ve gökada biçimbilimi "
+              "gibi önemli bilimsel çikarimlari olumsuz etkilemektedir. Bu sorunu çözmek için bilgisayarli görü "
+              "teknolojisinden yararlanan açik kaynakli bir çerçeve geliştirilmektedir.")
+    proper = folded.replace("yakin kizil", "yakın kızıl").replace("larinin sayisini artiracaktir",
+                                                                "larının sayısını artıracaktır")
+    english = ("Roman will provide deep near infrared images which will increase the number of overlapping sources and "
+               "this affects photometry and morphology measurements in many important ways for science.") * 2
+    # büyük harfle başlayan ASCII'leşmiş kelime (26.10.2026) ve doğru yazılmış "Yıldız" (yanlış alarm olmamalı)
+    for ins, resp, want in (("Asagidaki metne dayanarak soru üret.", "Güneş en büyük yıldızımızdır ve ışık saçar.", True),
+                            ("Yıldızların evrimini anlat.", "Yıldız, kendi ışığını üreten bir gök cismidir; Güneş de bir yıldızdır.", False)):
+        got = missing_turkish_chars(ins, resp) is not None
+        bad += got != want
+        print("tamam" if got == want else "HATA", "büyük harf", want, got)
+    for text, want in ((folded, True), (proper, False), (english, False)):
+        got = dotless_i_missing(text, tr_like) is not None
+        bad += got != want
+        print("tamam" if got == want else "HATA", "ı yok", want, got)
     print("hata:", bad)

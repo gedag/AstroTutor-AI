@@ -509,3 +509,103 @@ Corpus, instruction, kod ve belgeler gereksinim listesiyle karşılaştırıldı
   URL'leri eşzamanlı indirdi); 265 satırda hash dosya yazılmadan alınmış (boş dosya hash'i). Her `raw_id`'nin son
   başarılı kaydı dosyayla eşleşiyor ve 02 bu kaydı kullanıyor; veri akışı etkilenmedi. Ham kayıtlar değiştirilmedi,
   durum `data/raw/README.md`'ye yazıldı.
+
+## 24.10.2026 — Akşam denetimi: otomatik adımların takılma riskleri ve belge düzeltmeleri
+- **Yargıç döngüsü bitmeyebilirdi:** 11, yargıç örneklemindeki bir iş için model eksik index'li veya bozuk JSON
+  döndürürse o işi "bekliyor" sayıyor, döngü de 11'i her saat yeniden çalıştırıyordu; 12 ve 13'e hiç
+  geçilemeyebilirdi. Artık her yargıç denemesi `data/interim/instruction_judge_attempts.jsonl`'e yazılıyor; kota dışı
+  nedenle (bozuk JSON, eksik index) tamamlanamayan iş en fazla 2 kez deneniyor, değerlendirilemeyen örnekler
+  `llm_judged=false` olarak sette kalıyor ve sayıları özete ve karta yazılıyor. Geçici yoğunluk (503) deneme
+  sayılmıyor; üst üste 3 kez olursa kota yanmasın diye çalıştırma durup sonra devam ediyor. Gerçek veri kopyası ve
+  sahte yargıçla (API çağrısız) test edildi: hatalı/eksik işler 2 denemede bırakıldı, döngü 0 koduyla bitti.
+  Yargıç kararındaki `verdict` alanı küçük harfe çevriliyor ("Pass" yanlışlıkla başarısız sayılmasın).
+- **Örneklem 150'nin altına düşebilirdi:** 13'te görev türü payları ayrı ayrı yuvarlanıyordu; toplam n'nin altında
+  kalırsa tablo 149 örnekle çıkabilirdi (Rehber alt sınırı 150). Eksik kalırsa en büyük küsuratlı türlerden
+  tamamlanıyor. Toplam zaten n olduğunda hiçbir şey değişmiyor: onaylanmış corpus örneklemi (100) birebir aynı.
+- **Türkçe ekler:** otomatik belgelerde sayıya eklenen ekler sabit "'i" idi ("%16,9'ini", "%36,6'i", "%60'i",
+  "100/100'i"). `common.tr_ek` sayının okunuşuna göre eki seçiyor ("%16,9'unu", "%36,6'sı", "%60'ı", "100/100'ü").
+- **Kaynak envanteri:** sızıntı kontrolünde kullanılan 4 değerlendirme seti envantere eklendi (soru sayısı, erişim
+  tarihi, lisans: Astro-mcqa ve astro-mcq CC BY 4.0, Astrobench MIT, HubbleSpaceTelescope-MCQ kartında lisans yok;
+  hepsi "eğitime girmez, dağıtılmaz").
+- **Çıktı kararlılığı:** `eval_contamination.csv`'de eşit puanlı satırların sırası Python'un küme sırasına bağlıydı
+  (çalıştırmadan çalıştırmaya değişiyordu); sıralama sabitlendi, iki farklı `PYTHONHASHSEED` ile çıktı birebir aynı.
+- **Küçük düzeltmeler:** kullanılmayan import/değişkenler temizlendi (pyflakes temiz); QC raporunda sayılar binlik
+  ayraçla; kartta seviye adları Türkçe; alt konu etiketi hatası (100'de 7) kartın bilinen problemlerine eklendi;
+  `run_pipeline.py` kota nedeniyle duran adımı "hata" değil "kota" olarak bildiriyor; README'de prompt sürümleri ve
+  `check_gemini.py`. Sunum taslağındaki hata türü satırı kalite raporuyla birebir eşitlendi.
+- Yeniden üretilen belgeler: kartlar, QC raporu, kaynak envanteri; `statistics.md` ve `data/samples/` değişmedi.
+  `validate_datasets.py`: tüm kontroller geçti.
+
+## 25.10.2026 — Cevapsız kalan Gemini isteği döngüyü durdurdu (zaman aşımı eklendi)
+- Bilgisayar 24.10 akşamı kapandığı için döngü gece çalışmadı; 25.10 08:18'de oturum açılınca kendiliğinden başladı.
+  08:24'te 2 iş (15 örnek) üretildi, Flash kotaları yine doldu. 24.10'daki Flash kullanımı 09:35–11:51 arasında
+  olduğundan (kota kayan 24 saat penceresi), boşa 503 almamak için döngü durdurulup 11:24'te tek seferlik görevle
+  yeniden başlatıldı. 11:24–11:37 arasında 11 işin 10'u tamamlandı (1'i üçüncü kez çoktan seçmeli sızıntısı
+  verdiği için kural gereği atlandı), 102 örnek üretildi.
+- **Sorun:** son iş gemini-3.8-flash'a gönderildikten sonra istek 80 dakika cevapsız kaldı; `google-genai`
+  istemcisinin varsayılan zaman aşımı sınırsız olduğu için 10 sonsuza kadar bekledi.
+- **Çözüm:** `llm.py` istemcisine zaman aşımı eklendi (`config.yaml` → `request_timeout_seconds: 600`; normal çağrı
+  1–3 dk). Süresi dolan istek bağlantı hatası sayılır, sıradaki modele geçilir; iş kalıcı hata sayılmaz. Takılan
+  süreç sonlandırıldı (henüz bir şey yazmamıştı, veri kaybı yok); döngü 10'u yeni kodla yeniden başlattı.
+- 24.10'daki sahte yargıç testinin (API çağrısız) satırları gerçek `logs/11_verify_instructions.log` dosyasına
+  yazılmıştı; karışıklık olmasın diye `logs/11_verify_instructions.TEST_sahte_yargic_24-10.log` dosyasına taşındı.
+  Test yalnız geçici klasöre veri yazmıştı; proje verisi etkilenmedi.
+
+## 25.10.2026 — LLM yargıç sonuçlarının denetimi ve üç kural açığının kapatılması
+- **Yargıç (ilk tur):** 37 işlik örneklemin 15'i (150 örnek) değerlendirildi, Flash kotaları dolunca kalan 22 iş
+  ertesi güne kaldı (aynı modellerle sürdürülecek; yöntem tutarlı kalsın diye lite yargıç kullanılmadı). Başarısız:
+  22/150 (%14,7); 22'sinin hepsi gemini-3.5-flash-lite üretimi. Hiçbir örnek kendi üreticisiyle değerlendirilmedi.
+- **Başarısız kararların elle kontrolü (22/22 doğru):** kaynakla çelişen bilgi (Adams 1843, Halley/Newton,
+  meteor-asteroit karışıklığı, H2O4), çeviri/kelime hatası ("bulge" → "bulgur", "parlarını"), İngilizce kalan
+  açıklama, yazım/dil bilgisi bozukluğu, istenen cümle sayısına uymama, problem içermeyen "adım adım" örnekleri,
+  talimatta olmayan metne atıf. 2–3 karar katı (genel doğru bilgi ama kaynakta yok) ama güvenli yönde.
+- **Geçen kararların elle kontrolü:** rastgele 12 örneğin 12'si kaynakla tutarlı; 1'inde küçük yazım eksiği
+  ("13,8 milyar önce").
+- **Yargıcın gösterdiği kural açıkları, bütün sette tarandı:**
+  1. Çoktan seçmeli talimatta öğretim metni yok ("Kaynak metne dayanarak ... soru hazırla"): uzunluk ≥ 250 olduğu
+     için geçiyordu. Yeni ölçüt: istek cümleleri ve JSON şablonu dışındaki metin < 100 karakter → `invalid_mcq_json`
+     / `ogretim_metni_yok`. 4 örnek; metni olan en kısa talimatta değer 117 (yanlış alarm 0).
+  2. Öğrenciye sorulacak soru talimatta hazır ("... Bu metne göre, ... kimdir?"): `mcq_check.py`'ye eklendi
+     (`icerik_sorusu_talimatta`, istek cümleleri "soru hazırlar mısın?" sayılmaz). 7 örnek, 7'si gerçek kusur.
+  3. Yalnız "ı" harfi düşmüş metin ("yakin kizilötesi", "kaynaklarinin"): kelime listesi ve harf oranı kaçırıyordu.
+     Türkçe cümleler ≥ 200 harf içerip hiç "ı" yoksa `turkish_chars_missing`. Doğrulanmış 3.653 metinde 3 örnek,
+     yanlış alarm 0 (doğal Türkçede "ı" oranı medyan %4,8).
+- **Düzeltme (eleme değil):** öğeleri talimatta sayılmış 35 sınıflandırma talimatının başındaki "Metinde adı geçen",
+  "Kaynak metinde bahsedilen" gibi atıf ifadesi silindi (35'i de okundu, hepsi doğal; öğesiz talimatlar
+  düzeltilmez, eskisi gibi elenir). Görev türü alanına "karsilastirma, level=ileri" yazılmış 2 örnekte tür
+  düzeltildi (yazım hatalı "sviyeli_anlatim" elenmeye devam eder). Düzeltilen örnekler `postprocess` alanında.
+- **Yargıç örneklemi sabitlendi:** 2 işin bütün örnekleri yeni kurallarla elendiği için iş listesi kısalıyor ve
+  rastgele seçim baştan değişiyordu (değerlendirilmiş 15 iş örneklemden çıkabilirdi). İlk turdaki 37 işlik örneklem
+  birebir yeniden kuruldu (değerlendirilmiş 15 işin hepsi içinde; elenen 2 iş örneklemde değil) ve
+  `data/interim/instruction_judge_sample.json`'a yazıldı; 11 artık bu dosyayı kullanıyor.
+- Sonuç (yargıcın ilk turu dahil): 3.962 üretilen = **3.435 doğrulanan** + 527 elenen. Yeni kurallar 14 örnek eledi,
+  2 örneği geri kazandırdı. Değişiklikler önce veri kopyasında (yargıçsız, loglar ayrı) denendi.
+
+## 26.10.2026 — Yargıç örnekleminin tamamlanması, ek kurallar ve 150 örneklik inceleme (Instruction v1.0 kesinleşti)
+- Bilgisayar 10:05'te kapalı olduğu için döngü 10:49'da oturum açılınca başladı; Flash kotaları açıktı (Google'ın
+  belgelediği Pasifik gece yarısı = TR 10:00 sıfırlaması ile tutarlı). Yargıç kalan 22 işi 11:46'da bitirdi:
+  örneklem 37 iş / 348 örnek, başarısız 40 (%11,5). Üreticiye göre: lite 40/318 (%12,6), Flash 0/30. Hiçbir örnek
+  kendi üreticisiyle değerlendirilmedi; bugünkü 7 başarısız kararın 7'si elle kontrol edildi, yerinde (yazım
+  hatası, mantık hatası, kaynakta olmayan ekleme, görev türüne uymama, bağlamsız talimat).
+- Döngü 12 ve 13'ü çalıştırıp bitti (`instruction_loop.DONE`); Görev Zamanlayıcı görevleri kaldırıldı.
+- **İnceleme sırasında bulunan iki kural açığı:** (1) 20 cevapta "Adım" yerine "Adim" (lite); Türkçe karakter
+  kontrolünün kelime listesi yalnız küçük harfli yazımları yakalıyordu. "Adim" kesin ve tek kelimelik olduğu için
+  düzeltildi (`postprocess: adim_yazimi_duzeltildi`), örnek elenmedi. (2) Büyük harfle başlayan ASCII'leşmiş
+  kelimeler ("Asagidaki", "Gokadalar"): kontrol artık yalnız ASCII büyük harfleri küçültüp arıyor (`re.I`
+  kullanılmadı: Python'da "i" ile "ı" eşdeğer sayılıyor, doğru "yıldız" da eşleşiyordu); 5 örnek elendi. Kurallar
+  değişince 150'lik tablo henüz doldurulmamışken yeniden çekildi (ilk çekim `logs/` altında saklı).
+- **150 örneklik inceleme** (görev türü oranında tabakalı, her örnek kaynak metniyle karşılaştırıldı; yapay zekâ
+  destekli ön inceleme, nihai karar grup üyesinin onayıyla): uygun 126 (%84,0), sorunlu 24. Ölçütler: talimat
+  anlaşılır 149, kaynakla tutarlı 141, talimatı karşılıyor 142, görev türü doğru 147, Türkçe akıcı 146. Hata
+  türleri: dil 4, talimata uymama 4, kaynaktan gelen olgusal hata 4 (TR Wikipedia'da "1921'de Birleşmiş Milletler
+  Radyum Kurumu", Büyük Patlama'nın "milimetrelik noktadan patlama" diye anlatılması, eksik Stack Exchange
+  açıklamaları), kaynakta olmayan iddia 3, olgusal 3 (ör. karanlık uçuş hızı, varsayımsal krater çapının kesin
+  bilgi gibi verilmesi), görev türü 3, alan dışı 2 (Sufi kozmolojisi, ekosistem standartları), diğer 3.
+  En zayıf tür `adim_adim_problem_cozme` (11'in 5'i): bilgiler adım gibi sıralanmış, hesap/süreç yok.
+  "Adım adım" kararları tutarlı olsun diye tanıma (hesap veya bir sürecin/gözlemin adımları) göre verildi.
+- 24 sorunlu örnek çıkarıldı (14). **Instruction v1.0: 3.388 örnek** (train 3.078, validation 146, test 164);
+  3.962 üretilen = 3.388 + 574 elenen (kesişim 0). `validate_datasets.py`: tüm kontroller geçti (chat template
+  hatası 0, maks 971 token, değerlendirme setleriyle örtüşme 0).
+- Ek yargıç modu (`--extended`, varsayılan kapalı) yazıldı ve sahte yargıçla test edildi: örneklem dışındaki 290
+  lite işini değerlendirir, örneklem istatistiklerini değiştirmez, elenenleri `judge_ext_fail` ile ayrı kaydeder.
+  Final dönemi öncesi v1.1 için çalıştırılacak.

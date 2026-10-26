@@ -12,7 +12,6 @@ import json
 import re
 import unicodedata
 from collections import Counter
-from pathlib import Path
 
 from common import CFG, get_logger, p, read_jsonl, rng, write_jsonl
 from html_residue import strip_html_residue

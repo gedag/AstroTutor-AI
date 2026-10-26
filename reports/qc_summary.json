@@ -11,14 +11,14 @@
     "Aynı grup birden fazla kümede": 0
   },
   "instruction_auto": {
-    "Örnek sayısı": 3340,
+    "Örnek sayısı": 3412,
     "Benzersiz id": "evet",
     "messages biçimi hatalı": 0,
     "Kaynak bilgisi eksik": 0,
-    "Çoktan seçmeli JSON geçerli": "451/451",
+    "Çoktan seçmeli JSON geçerli": "455/455",
     "Aynı kaynak doküman birden fazla kümede": 0,
-    "LLM yargıç örneklemi (örnek)": 0,
-    "LLM yargıç başarısızlık oranı (tahmini hata oranı)": "-"
+    "LLM yargıç örneklemi (örnek)": 348,
+    "LLM yargıç başarısızlık oranı (tahmini hata oranı)": "%11,5"
   },
   "corpus_review": {
     "sample": 100,
@@ -43,10 +43,32 @@
     }
   },
   "instruction_review": {
-    "sample": 0,
-    "pre_reviewed": 0,
-    "human_reviewed": 0
+    "sample": 150,
+    "pre_reviewed": 150,
+    "human_reviewed": 150,
+    "pre_talimat_anlasilir": 0.9933,
+    "pre_kaynakla_tutarli": 0.94,
+    "pre_talimati_karsiliyor": 0.9467,
+    "pre_gorev_turu_dogru": 0.98,
+    "pre_turkce_akici": 0.9733,
+    "pre_pass_rate": 0.84,
+    "human_pass_rate": 0.84,
+    "human_approved_pre": 150,
+    "error_types": {
+      "kaynakta_olmayan_iddia": 3,
+      "olgusal_hata": 3,
+      "dil_hatasi": 4,
+      "alan_disi": 2,
+      "talimat_belirsiz": 1,
+      "talimata_uymuyor": 4,
+      "kaynakta_olgusal_hata": 4,
+      "gorev_turu_hatali": 3,
+      "sayisal_hata": 1,
+      "yaniltici_cevap": 1
+    }
   },
+  "instruction_removed_in_qc": 24,
+  "instruction_final_count": 3388,
   "near_dup_threshold_agreement_pre": 0.64,
   "near_dup_pre": {
     "pairs": 50,

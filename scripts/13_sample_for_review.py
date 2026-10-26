@@ -30,10 +30,17 @@ def stratified(rows: list[dict], key: str, n: int, seed_off: int) -> list[dict]:
     by = defaultdict(list)
     for x in rows:
         by[x[key]].append(x)
+    keys = sorted(by)
+    take = {k: max(1, round(n * len(by[k]) / len(rows))) for k in keys}
+    # Yuvarlamalar toplamı n'nin altına düşürürse en büyük küsuratlı türlerden tamamlanır (örneklem tam n olsun).
+    # Toplam zaten n veya üstündeyse hiçbir şey değişmez (corpus örneklemi bu yüzden aynı kalır).
+    short = n - sum(take.values())
+    for k in sorted(keys, key=lambda k: -(n * len(by[k]) / len(rows) - take[k]))[: max(0, short)]:
+        take[k] += 1
     out = []
-    for k in sorted(by):
+    for k in keys:
         r.shuffle(by[k])
-        out += by[k][: max(1, round(n * len(by[k]) / len(rows)))]
+        out += by[k][: take[k]]
     r.shuffle(out)
     return out[:n]
 

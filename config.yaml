@@ -206,6 +206,7 @@ instruction:
   max_output_tokens: 16384     # 14 ornek/cagri icin
   requests_per_minute: 8
   quota_recheck_minutes: 30   # kotasi dolan model bu sure sonra yeniden denenir (kayan 24 saat penceresi)
+  request_timeout_seconds: 600  # tek Gemini istegi icin ust sinir (normal cagri 1-3 dk; 25.10'da cevapsiz kalan istek donguyu durdurdu)
   # 23.10.2026: kural+kanit dogrulamasindan sonra tahmini toplam ~3.190 (yargic ve insan kontrolunden once);
   # coktan secmeli sorularda lite bozuk JSON uretiyor (verim %74). 3.000 alt sinirinin guvenle asilmasi ve
   # tur dagiliminin hedefe yaklasmasi icin henuz kullanilmamis dokumanlardan ek paket (bkz. experiments.md).

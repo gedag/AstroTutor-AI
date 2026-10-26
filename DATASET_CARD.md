@@ -24,7 +24,7 @@ Bu veri seti, uzay ve astronomi eğitiminde kullanıcının seviyesine göre Tü
 
 Kaynakların neden seçildiği, lisans ayrıntıları ve kullanılmayan kaynaklar (NASA Exoplanet Archive: final dönemde RAG; Stack Exchange: yalnız instruction verisi) için: [reports/source_notes.md](reports/source_notes.md), [reports/source_inventory.csv](reports/source_inventory.csv).
 
-İngilizce kaynaklar bilinçli olarak çoğunluktadır: alanın güvenilir ve açık lisanslı birincil kaynakları (NASA, ders kitabı, makale özetleri) İngilizcedir. Türkçe Wikipedia, modelin Türkçe astronomi terminolojisini görmesi için eklenmiştir ve token'ların %16,9'ini oluşturur.
+İngilizce kaynaklar bilinçli olarak çoğunluktadır: alanın güvenilir ve açık lisanslı birincil kaynakları (NASA, ders kitabı, makale özetleri) İngilizcedir. Türkçe Wikipedia, modelin Türkçe astronomi terminolojisini görmesi için eklenmiştir ve token'ların %16,9'unu oluşturur.
 
 ## Veri toplama
 Dokümanlar 2026-10-22 – 2026-10-23 tarihleri arasında `scripts/01_download.py` ile indirildi. science.nasa.gov `robots.txt` kurallarına uyuldu (istekler arası 1.2 sn); Wikipedia isteklerinde iletişim bilgili User-Agent kullanıldı ve Wikimedia hız sınırlarına uyuldu; arXiv OAI-PMH'de istekler arası 4.0 sn beklendi. Ham dosyalar `data/raw/` altında değiştirilmeden saklanır; her dosya için URL, SHA-256, erişim zamanı ve lisans `manifest.jsonl` dosyalarında kayıtlıdır.
@@ -68,12 +68,12 @@ Rastgele 100 doküman (kaynak oranında tabakalı) incelendi: yapay zekâ destek
 Veri seti yalnızca açık erişimli veya açık lisanslı kaynaklardan oluşur; her dokümanın lisansı `license` alanındadır. **Akademik ve ticari olmayan** amaçla hazırlanmıştır. OpenStax Astronomy 2e (CC BY-NC-SA 4.0) ve Wikipedia (CC BY-SA 4.0) türevleri aynı koşullarla paylaşılmalıdır. **Kişisel veri:** arXiv yazar adları saklanmadı, APOD görsel kredi satırları temizlendi. NASA basın bültenlerinde kamuya açık basın iletişim bilgileri (ad, e-posta, telefon) bulundu ve silindi (NASA kaynaklarında kalan e-posta/telefon: 0). Metinlerde bilimcilerin ve kamusal kişilerin adları, ansiklopedik/haber içeriğinin parçası olarak geçer. NASA içeriği NASA'nın onayını ima edecek biçimde kullanılmaz.
 
 ## Bilinen problemler
-- Kaynak dağılımı dengesizdir: dokümanların %36,6'i arXiv astro-ph (başlık + özet) kaynağından, token'ların en büyük payı Wikipedia (İngilizce) kaynağından gelir.
+- Kaynak dağılımı dengesizdir: dokümanların %36,6'sı arXiv astro-ph (başlık + özet) kaynağından, token'ların en büyük payı Wikipedia (İngilizce) kaynağından gelir.
 - Corpus büyük ölçüde İngilizcedir (token'ların %83,1'i); hedef kullanıcı Türkçe konuştuğu için Türkçe davranış ağırlıklı olarak Instruction Dataset ile kazandırılacaktır.
 - PDF'teki matematiksel ifadeler görsel/MathML olarak gömülü olduğu için bazı formüller metne çıkmadı (ör. "the force would be , or as large"). Tablolar düz metne dönüştüğünde sütun yapısı kaybolur.
 - Wikipedia ikincil kaynaktır; güncel sayısal bilgilerde (ör. ötegezegen sayısı) zamanla eskiyebilir. Bu tür bilgiler final döneminde RAG katmanından (NASA Exoplanet Archive) sağlanacaktır.
 - arXiv özetleri araştırma dilindedir ve başlangıç seviyesindeki kullanıcı için ağırdır; ileri seviye terminoloji için tutulmuştur.
-- Alt konu etiketleri anahtar kelime ve kaynak kategorisine dayalı kural tabanlı bir yöntemle atanmıştır; birden fazla konuyu kapsayan dokümanlarda tek etiket yetersiz kalabilir (ör. yöntem/yazılım makalelerine sık sık `observatories_telescopes` atanır).
+- Alt konu etiketleri anahtar kelime ve kaynak kategorisine dayalı kural tabanlı bir yöntemle atanmıştır; birden fazla konuyu kapsayan dokümanlarda tek etiket yetersiz kalabilir (ör. yöntem/yazılım makalelerine sık sık `observatories_telescopes` atanır). Elle incelenen 100 dokümanın 7 tanesinde etiket hatalı bulundu (ör. ötegezegen sayfasına `stars_stellar_evolution`); bu dokümanların çoğunda metnin kendisi sorunsuzdu. Etiket yalnız dağılım analizinde ve instruction kaynak dokümanlarının alt konuya göre dengeli seçiminde kullanılır; eğitim metnini değiştirmez.
 - Wikipedia düz metin servisi tabloları çıkarmaz; bazı maddelerde "aşağıda listelenmektedir" gibi var olmayan bir listeye atıf kalır. Wikipedia formülleri `{\displaystyle ...}` biçiminde LaTeX olarak korunur.
 - Kaybolan üslerin yalnız belirsizliği olmayan kalıpları düzeltildi; işaretsiz kalanlar (ör. "(1031 erg/s)") olduğu gibi duruyor.
 - Birkaç APOD sayfasında bağlantı metninden kaynaklanan kelime birleşmeleri vardır ("Galacticwar", "PerseidMeteorShower").

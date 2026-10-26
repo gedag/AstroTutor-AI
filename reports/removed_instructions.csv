@@ -23025,18 +23025,18 @@ JOB_DOC_DOC_014346_02,verify,mcq_answer_in_instruction,wikipedia_en,cevap_talima
 JOB_DOC_DOC_014346_11,verify,mcq_answer_in_instruction,wikipedia_en,cevap_talimatta
 JOB_DOC_DOC_011630_13,verify,response_references_unseen_text,openstax_astronomy_2e,Kaynaktaki
 JOB_DOC_DOC_009131_02,verify,mcq_answer_in_instruction,nasa_science,secenekler_talimatta
-JOB_DOC_DOC_011112_06,verify,turkish_chars_missing,nasa_science,"talimat_ascii_kelime=gore,icin,cok"
-JOB_DOC_DOC_011112_11,verify,turkish_chars_missing,nasa_science,"talimat_ascii_kelime=gore,baslangic"
-JOB_DOC_DOC_011112_13,verify,turkish_chars_missing,nasa_science,talimat_ascii_kelime=olustur
-JOB_DOC_DOC_009478_06,verify,turkish_chars_missing,nasa_science,yanit_tr_harf_orani=0.000
+JOB_DOC_DOC_011112_06,verify,turkish_chars_missing,nasa_science,"talimat_ascii_kelime=asagidaki,gore,icin"
+JOB_DOC_DOC_011112_11,verify,turkish_chars_missing,nasa_science,"talimat_ascii_kelime=asagidaki,gore,baslangic"
+JOB_DOC_DOC_011112_13,verify,turkish_chars_missing,nasa_science,"talimat_ascii_kelime=asagidaki,olustur"
+JOB_DOC_DOC_009478_06,verify,turkish_chars_missing,nasa_science,"yanit_ascii_kelime=yildizin,baslangic,sonuc"
 JOB_DOC_DOC_009478_12,verify,references_unseen_text,nasa_science,Metinde
 JOB_DOC_DOC_011591_07,verify,response_references_unseen_text,openstax_astronomy_2e,kaynakta
 JOB_DOC_DOC_011591_13,verify,response_references_unseen_text,openstax_astronomy_2e,Kaynağa göre
 JOB_DOC_DOC_014828_03,verify,length,wikipedia_en,ins=524 resp=21
 JOB_DOC_DOC_010479_03,verify,response_references_unseen_text,nasa_science,Kaynak metne
 JOB_DOC_DOC_010479_05,verify,response_references_unseen_text,nasa_science,Kaynak metne
-JOB_DOC_DOC_015466_01,verify,turkish_chars_missing,wikipedia_tr,talimat_ascii_kelime=gore
-JOB_DOC_DOC_015466_11,verify,turkish_chars_missing,wikipedia_tr,talimat_ascii_kelime=gore
+JOB_DOC_DOC_015466_01,verify,turkish_chars_missing,wikipedia_tr,"talimat_ascii_kelime=asagidaki,gore"
+JOB_DOC_DOC_015466_11,verify,turkish_chars_missing,wikipedia_tr,"talimat_ascii_kelime=asagidaki,gore"
 JOB_DOC_DOC_016415_00,verify,response_references_unseen_text,wikipedia_tr,Kaynak metinde
 JOB_DOC_DOC_016415_06,verify,invalid_mcq_json,wikipedia_tr,ogretim_metni_yok
 JOB_DOC_DOC_016415_12,verify,invalid_mcq_json,wikipedia_tr,ogretim_metni_yok
@@ -23080,8 +23080,10 @@ JOB_DOC_DOC_015940_09,verify,mcq_answer_in_instruction,wikipedia_tr,secenekler_t
 JOB_DOC_DOC_011467_01,verify,mcq_answer_in_instruction,openstax_astronomy_2e,cevap_talimatta
 JOB_DOC_DOC_011467_03,verify,mcq_answer_in_instruction,openstax_astronomy_2e,cevap_talimatta
 JOB_DOC_DOC_011467_05,verify,mcq_answer_in_instruction,openstax_astronomy_2e,cevap_talimatta
+JOB_DOC_DOC_011810_02,verify,turkish_chars_missing,wikipedia_en,talimat_ascii_kelime=asagidaki
 JOB_DOC_DOC_011810_05,verify,turkish_chars_missing,wikipedia_en,"yanit_ascii_kelime=tarafindan,tarafindan"
 JOB_DOC_DOC_011810_06,verify,response_references_unseen_text,wikipedia_en,Kaynak metinde
+JOB_DOC_DOC_011810_13,verify,turkish_chars_missing,wikipedia_en,talimat_ascii_kelime=asagidaki
 JOB_DOC_DOC_015929_09,verify,response_references_unseen_text,wikipedia_tr,Kaynak metinde
 JOB_DOC_DOC_011612_00,verify,mcq_answer_in_instruction,openstax_astronomy_2e,soru_talimatta
 JOB_DOC_DOC_011612_02,verify,response_references_unseen_text,openstax_astronomy_2e,Kaynak metne
@@ -23102,6 +23104,8 @@ JOB_DOC_DOC_011555_03,verify,turkish_chars_missing,openstax_astronomy_2e,yanit_t
 JOB_DOC_DOC_011555_07,verify,turkish_chars_missing,openstax_astronomy_2e,yanit_tr_harf_orani=0.000
 JOB_DOC_DOC_011618_01,verify,turkish_chars_missing,openstax_astronomy_2e,yanit_tr_harf_orani=0.000
 JOB_DOC_DOC_011618_03,verify,turkish_chars_missing,openstax_astronomy_2e,yanit_tr_harf_orani=0.000
+JOB_DOC_DOC_011618_04,verify,turkish_chars_missing,openstax_astronomy_2e,talimat_ascii_kelime=gokadalar
+JOB_DOC_DOC_011618_05,verify,turkish_chars_missing,openstax_astronomy_2e,talimat_ascii_kelime=kutlecekim
 JOB_DOC_DOC_011618_12,verify,turkish_chars_missing,openstax_astronomy_2e,yanit_tr_harf_orani=0.000
 JOB_DOC_DOC_008568_07,verify,references_unseen_text,nasa_science,siniflandirma_ogeleri_yok:Metinde
 JOB_DOC_DOC_015311_02,verify,response_references_unseen_text,wikipedia_tr,kaynak metne
@@ -23117,7 +23121,7 @@ JOB_DOC_DOC_013911_03,verify,references_unseen_text,wikipedia_en,siniflandirma_o
 JOB_DOC_DOC_008841_05,verify,turkish_chars_missing,nasa_science,yanit_tr_harf_orani=0.000
 JOB_DOC_DOC_008841_08,verify,turkish_chars_missing,nasa_science,yanit_tr_harf_orani=0.000
 JOB_DOC_DOC_008841_10,verify,turkish_chars_missing,nasa_science,yanit_tr_harf_orani=0.000
-JOB_DOC_DOC_008841_13,verify,turkish_chars_missing,nasa_science,yanit_tr_harf_orani=0.000
+JOB_DOC_DOC_008841_13,verify,turkish_chars_missing,nasa_science,yanit_tr_harf_orani=0.011
 JOB_DOC_DOC_011086_00,verify,mcq_answer_in_instruction,nasa_science,soru_talimatta
 JOB_DOC_DOC_011086_02,verify,mcq_answer_in_instruction,nasa_science,soru_talimatta
 JOB_DOC_DOC_011086_06,verify,mcq_answer_in_instruction,nasa_science,soru_talimatta
@@ -23150,12 +23154,14 @@ JOB_DOC_DOC_014197_08,verify,response_references_unseen_text,wikipedia_en,Kaynak
 JOB_DOC_DOC_014197_12,verify,references_unseen_text,wikipedia_en,siniflandirma_ogeleri_yok:Kaynak metne
 JOB_DOC_DOC_010295_04,verify,response_references_unseen_text,nasa_science,Kaynak metne
 JOB_DOC_DOC_010769_12,verify,invalid_mcq_json,nasa_science,json_parse
+JOB_DOC_DOC_011473_05,verify,turkish_chars_missing,openstax_astronomy_2e,talimat_ascii_kelime=asagidaki
 JOB_DOC_DOC_012572_02,verify,mcq_answer_in_instruction,wikipedia_en,cevap_talimatta
 JOB_DOC_DOC_012572_09,verify,mcq_answer_in_instruction,wikipedia_en,cevap_talimatta
 JOB_DOC_DOC_011419_00,verify,response_references_unseen_text,openstax_astronomy_2e,Metne göre
 JOB_DOC_DOC_011419_02,verify,response_references_unseen_text,openstax_astronomy_2e,Metne göre
 JOB_DOC_DOC_011419_06,verify,response_references_unseen_text,openstax_astronomy_2e,Metne göre
 JOB_DOC_DOC_011419_08,verify,response_references_unseen_text,openstax_astronomy_2e,Metinde
+JOB_DOC_DOC_012128_01,verify,turkish_chars_missing,wikipedia_en,talimat_ascii_kelime=asagidaki
 JOB_DOC_DOC_012128_13,verify,invalid_mcq_json,wikipedia_en,ogretim_metni_yok
 JOB_DOC_DOC_009852_04,verify,turkish_chars_missing,nasa_science,yanit_tr_harf_orani=0.000
 JOB_DOC_DOC_013393_00,verify,mcq_answer_in_instruction,wikipedia_en,secenekler_talimatta
@@ -23210,14 +23216,14 @@ JOB_DOC_DOC_009254_03,verify,mcq_answer_in_instruction,nasa_science,soru_talimat
 JOB_DOC_DOC_009254_05,verify,mcq_answer_in_instruction,nasa_science,soru_talimatta
 JOB_DOC_DOC_009254_09,verify,eval_overlap,nasa_science,
 JOB_DOC_DOC_003543_02,verify,invalid_mcq_json,arxiv_astro_ph,json_parse
-JOB_DOC_DOC_013210_05,verify,mcq_answer_in_instruction,wikipedia_en,cevaplatan_talimat
+JOB_DOC_DOC_013210_05,verify,turkish_chars_missing,wikipedia_en,talimat_ascii_kelime=asagidaki
 JOB_DOC_DOC_015359_01,verify,references_unseen_text,wikipedia_tr,siniflandirma_ogeleri_yok:Dokümanda
 JOB_DOC_DOC_015359_03,verify,mcq_answer_in_instruction,wikipedia_tr,soru_talimatta
 JOB_DOC_DOC_015359_05,verify,mcq_answer_in_instruction,wikipedia_tr,soru_talimatta
 JOB_DOC_DOC_015359_07,verify,mcq_answer_in_instruction,wikipedia_tr,soru_talimatta
-JOB_DOC_DOC_012168_01,verify,turkish_chars_missing,wikipedia_en,talimat_ascii_kelime=gore
-JOB_DOC_DOC_012168_03,verify,turkish_chars_missing,wikipedia_en,talimat_ascii_kelime=gore
-JOB_DOC_DOC_012168_11,verify,turkish_chars_missing,wikipedia_en,talimat_ascii_kelime=gore
+JOB_DOC_DOC_012168_01,verify,turkish_chars_missing,wikipedia_en,"talimat_ascii_kelime=asagidaki,gore"
+JOB_DOC_DOC_012168_03,verify,turkish_chars_missing,wikipedia_en,"talimat_ascii_kelime=asagidaki,gore"
+JOB_DOC_DOC_012168_11,verify,turkish_chars_missing,wikipedia_en,"talimat_ascii_kelime=asagidaki,gore"
 JOB_DOC_DOC_012168_13,verify,eval_overlap,wikipedia_en,
 JOB_DOC_DOC_011415_00,verify,mcq_answer_in_instruction,openstax_astronomy_2e,soru_talimatta
 JOB_DOC_DOC_011415_01,verify,mcq_answer_in_instruction,openstax_astronomy_2e,soru_talimatta
@@ -23239,7 +23245,7 @@ JOB_DOC_DOC_015671_07,verify,wrong_language,wikipedia_tr,
 JOB_DOC_DOC_011979_00,verify,references_unseen_text,wikipedia_en,kaynakta
 JOB_DOC_DOC_011979_01,verify,turkish_chars_missing,wikipedia_en,yanit_tr_harf_orani=0.000
 JOB_DOC_DOC_011979_05,verify,response_references_unseen_text,wikipedia_en,Kaynak metne
-JOB_DOC_DOC_011979_06,verify,turkish_chars_missing,wikipedia_en,talimat_ascii_kelime=gore
+JOB_DOC_DOC_011979_06,verify,turkish_chars_missing,wikipedia_en,"talimat_ascii_kelime=asagidaki,gore"
 JOB_DOC_DOC_011979_09,verify,turkish_chars_missing,wikipedia_en,yanit_tr_harf_orani=0.000
 JOB_DOC_DOC_011508_03,verify,exponent_loss,openstax_astronomy_2e,
 JOB_DOC_DOC_011508_05,verify,invalid_mcq_json,openstax_astronomy_2e,ogretim_metni_yok
@@ -23252,6 +23258,8 @@ JOB_DOC_DOC_011426_08,verify,invalid_mcq_json,openstax_astronomy_2e,ogretim_metn
 JOB_DOC_DOC_011426_11,verify,invalid_mcq_json,openstax_astronomy_2e,ogretim_metni_yok
 JOB_DOC_DOC_010804_00,verify,invalid_mcq_json,nasa_science,json_parse
 JOB_DOC_DOC_010804_01,verify,response_references_unseen_text,nasa_science,Kaynak metne
+JOB_DOC_DOC_012418_05,verify,mcq_answer_in_instruction,wikipedia_en,icerik_sorusu_talimatta
+JOB_DOC_DOC_012418_06,verify,mcq_answer_in_instruction,wikipedia_en,icerik_sorusu_talimatta
 JOB_DOC_DOC_012418_08,verify,invalid_mcq_json,wikipedia_en,ogretim_metni_yok
 JOB_DOC_DOC_015177_02,verify,mcq_answer_in_instruction,wikipedia_tr,cevaplatan_talimat
 JOB_DOC_DOC_015177_10,verify,mcq_answer_in_instruction,wikipedia_tr,cevaplatan_talimat
@@ -23268,7 +23276,7 @@ JOB_DOC_DOC_011458_12,verify,mcq_answer_in_instruction,openstax_astronomy_2e,sec
 JOB_DOC_DOC_009341_07,verify,references_unseen_text,nasa_science,kaynak metne
 JOB_DOC_DOC_009341_08,verify,references_unseen_text,nasa_science,kaynakta
 JOB_DOC_DOC_011636_03,verify,references_unseen_text,wikipedia_en,kaynaktaki
-JOB_DOC_DOC_011636_06,verify,turkish_chars_missing,wikipedia_en,talimat_ascii_kelime=gore
+JOB_DOC_DOC_011636_06,verify,turkish_chars_missing,wikipedia_en,"talimat_ascii_kelime=asagidaki,gore"
 JOB_DOC_DOC_009294_00,verify,response_references_unseen_text,nasa_science,Kaynak metne
 JOB_DOC_DOC_009294_04,verify,references_unseen_text,nasa_science,Kaynak metne
 JOB_DOC_DOC_009294_11,verify,invalid_mcq_json,nasa_science,json_parse
@@ -23278,7 +23286,7 @@ JOB_DOC_DOC_010313_01,verify,turkish_chars_missing,nasa_science,yanit_tr_harf_or
 JOB_DOC_DOC_010313_02,verify,turkish_chars_missing,nasa_science,yanit_tr_harf_orani=0.000
 JOB_DOC_DOC_010313_03,verify,references_unseen_text,nasa_science,kaynak metne
 JOB_DOC_DOC_013328_09,verify,turkish_chars_missing,wikipedia_en,yanit_tr_harf_orani=0.000
-JOB_DOC_DOC_013328_11,verify,turkish_chars_missing,wikipedia_en,"talimat_ascii_kelime=baslangic,ogrenciler,icin"
+JOB_DOC_DOC_013328_11,verify,turkish_chars_missing,wikipedia_en,"talimat_ascii_kelime=asagidaki,baslangic,ogrenciler"
 JOB_DOC_DOC_013328_13,verify,turkish_chars_missing,wikipedia_en,yanit_tr_harf_orani=0.000
 JOB_DOC_DOC_011441_00,verify,mcq_answer_in_instruction,openstax_astronomy_2e,soru_talimatta
 JOB_DOC_DOC_011441_10,verify,mcq_answer_in_instruction,openstax_astronomy_2e,soru_talimatta
@@ -23294,6 +23302,7 @@ JOB_DOC_DOC_011568_07,verify,response_references_unseen_text,openstax_astronomy_
 JOB_DOC_DOC_011568_09,verify,mcq_answer_in_instruction,openstax_astronomy_2e,soru_talimatta
 JOB_DOC_DOC_011568_11,verify,mcq_answer_in_instruction,openstax_astronomy_2e,soru_talimatta
 JOB_DOC_DOC_011568_13,verify,response_references_unseen_text,openstax_astronomy_2e,Kaynaktaki
+JOB_DOC_DOC_014300_06,verify,mcq_answer_in_instruction,wikipedia_en,icerik_sorusu_talimatta
 JOB_DOC_DOC_014300_09,verify,response_references_unseen_text,wikipedia_en,Kaynağa göre
 JOB_DOC_DOC_012119_02,verify,turkish_chars_missing,wikipedia_en,yanit_tr_harf_orani=0.000
 JOB_DOC_DOC_012119_09,verify,turkish_chars_missing,wikipedia_en,yanit_tr_harf_orani=0.010
@@ -23325,7 +23334,11 @@ JOB_DOC_DOC_016221_00,verify,mcq_answer_in_instruction,wikipedia_tr,secenekler_t
 JOB_DOC_DOC_016221_01,verify,mcq_answer_in_instruction,wikipedia_tr,secenekler_talimatta
 JOB_DOC_DOC_016221_02,verify,mcq_answer_in_instruction,wikipedia_tr,secenekler_talimatta
 JOB_DOC_DOC_016221_03,verify,mcq_answer_in_instruction,wikipedia_tr,secenekler_talimatta
+JOB_DOC_DOC_005174_00,verify,mcq_answer_in_instruction,arxiv_astro_ph,icerik_sorusu_talimatta
+JOB_DOC_DOC_005174_01,verify,invalid_mcq_json,arxiv_astro_ph,ogretim_metni_yok
+JOB_DOC_DOC_005174_02,verify,invalid_mcq_json,arxiv_astro_ph,ogretim_metni_yok
 JOB_DOC_DOC_005174_03,verify,response_references_unseen_text,arxiv_astro_ph,Kaynak metne
+JOB_DOC_DOC_005174_04,verify,invalid_mcq_json,arxiv_astro_ph,ogretim_metni_yok
 JOB_DOC_DOC_011599_00,verify,response_references_unseen_text,openstax_astronomy_2e,metne göre
 JOB_DOC_DOC_011599_02,verify,mcq_answer_in_instruction,openstax_astronomy_2e,secenekler_talimatta
 JOB_DOC_DOC_011599_04,verify,mcq_answer_in_instruction,openstax_astronomy_2e,secenekler_talimatta
@@ -23343,6 +23356,7 @@ JOB_DOC_DOC_012292_05,verify,invalid_mcq_json,wikipedia_en,ogretim_metni_yok
 JOB_DOC_DOC_012387_00,verify,mcq_answer_in_instruction,wikipedia_en,soru_talimatta
 JOB_DOC_DOC_012387_01,verify,mcq_answer_in_instruction,wikipedia_en,cevaplatan_talimat
 JOB_DOC_DOC_012387_03,verify,mcq_answer_in_instruction,wikipedia_en,cevaplatan_talimat
+JOB_DOC_DOC_012387_04,verify,mcq_answer_in_instruction,wikipedia_en,icerik_sorusu_talimatta
 JOB_DOC_DOC_009073_00,verify,mcq_answer_in_instruction,nasa_science,cevaplatan_talimat
 JOB_DOC_DOC_009073_01,verify,invalid_mcq_json,nasa_science,json_parse
 JOB_DOC_DOC_009073_02,verify,invalid_mcq_json,nasa_science,json_parse
@@ -23364,7 +23378,9 @@ JOB_DOC_DOC_011427_01,verify,mcq_answer_in_instruction,openstax_astronomy_2e,sor
 JOB_DOC_DOC_011427_02,verify,mcq_answer_in_instruction,openstax_astronomy_2e,soru_talimatta
 JOB_DOC_DOC_011427_03,verify,mcq_answer_in_instruction,openstax_astronomy_2e,soru_talimatta
 JOB_DOC_DOC_012776_00,verify,mcq_answer_in_instruction,wikipedia_en,cevaplatan_talimat
+JOB_DOC_DOC_009301_00,verify,mcq_answer_in_instruction,nasa_science,icerik_sorusu_talimatta
 JOB_DOC_DOC_009301_01,verify,mcq_answer_in_instruction,nasa_science,soru_talimatta
+JOB_DOC_DOC_009301_02,verify,mcq_answer_in_instruction,nasa_science,icerik_sorusu_talimatta
 JOB_DOC_DOC_009301_03,verify,mcq_answer_in_instruction,nasa_science,soru_talimatta
 JOB_DOC_DOC_015193_00,verify,invalid_mcq_json,wikipedia_tr,ogretim_metni_yok
 JOB_DOC_DOC_015193_01,verify,invalid_mcq_json,wikipedia_tr,ogretim_metni_yok
@@ -23378,6 +23394,8 @@ JOB_DOC_DOC_014415_00,verify,mcq_answer_in_instruction,wikipedia_en,cevaplatan_t
 JOB_DOC_DOC_014415_01,verify,mcq_answer_in_instruction,wikipedia_en,cevaplatan_talimat
 JOB_DOC_DOC_014415_02,verify,mcq_answer_in_instruction,wikipedia_en,cevaplatan_talimat
 JOB_DOC_DOC_014415_03,verify,mcq_answer_in_instruction,wikipedia_en,cevaplatan_talimat
+JOB_DOC_DOC_011178_02,verify,turkish_chars_missing,nasa_science,ı_harfi_yok(527_harf)
+JOB_DOC_DOC_011178_03,verify,turkish_chars_missing,nasa_science,ı_harfi_yok(464_harf)
 JOB_DOC_DOC_011178_04,verify,turkish_chars_missing,nasa_science,"yanit_ascii_kelime=arasinda,oldugu"
 JOB_DOC_DOC_011178_07,verify,turkish_chars_missing,nasa_science,talimat_ascii_kelime=saglam
 JOB_DOC_DOC_010277_03,verify,response_references_unseen_text,nasa_science,metinde
@@ -23391,7 +23409,7 @@ JOB_DOC_DOC_011443_02,verify,mcq_answer_in_instruction,openstax_astronomy_2e,sor
 JOB_DOC_DOC_011443_03,verify,wrong_language,openstax_astronomy_2e,
 JOB_DOC_DOC_011443_04,verify,mcq_answer_in_instruction,openstax_astronomy_2e,soru_talimatta
 JOB_DOC_DOC_011443_05,verify,mcq_answer_in_instruction,openstax_astronomy_2e,soru_talimatta
-JOB_DOC_DOC_011444_01,verify,turkish_chars_missing,openstax_astronomy_2e,talimat_ascii_kelime=gore
+JOB_DOC_DOC_011444_01,verify,turkish_chars_missing,openstax_astronomy_2e,"talimat_ascii_kelime=asagidaki,gore"
 JOB_DOC_DOC_011444_06,verify,response_references_unseen_text,openstax_astronomy_2e,Kaynak metne
 JOB_DOC_DOC_011444_13,verify,references_unseen_text,openstax_astronomy_2e,kaynak metne
 JOB_SE_0043_06,verify,latex_artifact,stackexchange_space_qa,$1/r^2$
@@ -23411,9 +23429,9 @@ JOB_DOC_DOC_011699_13,verify,response_references_unseen_text,wikipedia_en,Doküm
 JOB_DOC_DOC_011445_06,verify,mcq_answer_in_instruction,openstax_astronomy_2e,cevaplatan_talimat
 JOB_DOC_DOC_010272_07,verify,mcq_answer_in_instruction,nasa_science,secenekler_talimatta
 JOB_DOC_DOC_015241_01,verify,response_references_unseen_text,wikipedia_tr,Metne göre
-JOB_DOC_DOC_011459_02,verify,task_type_mismatch,openstax_astronomy_2e,"karsilastirma, level=ileri!=karsilastirma"
 JOB_DOC_DOC_010892_09,verify,references_unseen_text,nasa_science,Kaynakta
 JOB_DOC_DOC_012650_01,verify,invalid_mcq_json,wikipedia_en,ogretim_metni_yok
+JOB_DOC_DOC_009693_01,verify,invalid_mcq_json,nasa_science,ogretim_metni_yok
 JOB_DOC_DOC_009693_02,verify,invalid_mcq_json,nasa_science,ogretim_metni_yok
 JOB_DOC_DOC_009693_03,verify,invalid_mcq_json,nasa_science,ogretim_metni_yok
 JOB_DOC_DOC_009693_04,verify,invalid_mcq_json,nasa_science,ogretim_metni_yok
@@ -23431,6 +23449,7 @@ JOB_DOC_DOC_011523_03,verify,invalid_mcq_json,openstax_astronomy_2e,ogretim_metn
 JOB_DOC_DOC_011523_04,verify,invalid_mcq_json,openstax_astronomy_2e,ogretim_metni_yok
 JOB_DOC_DOC_008684_04,verify,mcq_answer_in_instruction,nasa_science,cevaplatan_talimat
 JOB_DOC_DOC_008901_00,verify,response_references_unseen_text,nasa_science,dokümanda
+JOB_DOC_DOC_011089_09,verify,invalid_mcq_json,nasa_science,json_parse
 JOB_DOC_DOC_011412_12,verify,near_duplicate,openstax_astronomy_2e,
 JOB_DOC_DOC_002585_01,verify,near_duplicate,arxiv_astro_ph,
 JOB_DOC_DOC_002585_03,verify,near_duplicate,arxiv_astro_ph,
@@ -23469,3 +23488,67 @@ JOB_DOC_DOC_011493_02,verify,evidence_not_in_source,openstax_astronomy_2e,alinti
 JOB_DOC_DOC_011493_03,verify,evidence_not_in_source,openstax_astronomy_2e,alinti_yok_veya_cok_kisa
 JOB_DOC_DOC_015249_03,verify,evidence_not_in_source,wikipedia_tr,alinti_yok_veya_cok_kisa
 JOB_DOC_DOC_012940_00,verify,evidence_not_in_source,wikipedia_en,alinti_yok_veya_cok_kisa
+JOB_SE_0037_02,verify,judge_fail:correct,stackexchange_space_qa,Cevapta 'declination' (deklinasyon/diklik açısı) terimi hatalı bir şekilde 'dikiz açısı' olarak çevrilmiştir ve kavramsal/dil bilgisi açısından anlamsızdır.
+JOB_DOC_DOC_016313_04,verify,judge_fail:fluent_turkish,wikipedia_tr,"Cevapta 'fırlatıldıktan birkaç sonra' ifadesinde 'ay' sözcüğü unutulmuştur, akıcılık ve anlatım bozukluğu içermektedir."
+JOB_DOC_DOC_016313_10,verify,judge_fail:correct,wikipedia_tr,"Talimat oran hesaplamasının açıklanmasını isterken cevaptaki adımlarda herhangi bir oran veya hesaplama açıklanmamış, sadece kaynaktaki iki farklı sayı adımlar halinde listelenmiştir."
+JOB_DOC_DOC_010457_00,verify,judge_fail:supported,nasa_science,Metindeki 'bulge' (şişkinlik/merkez) terimi cevapta yanlışlıkla 'bulgur' olarak çevrilmiştir.
+JOB_DOC_DOC_012031_03,verify,judge_fail:supported,wikipedia_en,"Kaynakta 'Samanyolu' ifadesi bulunmamaktadır. Ayrıca metindeki 'Solar System formation' Güneş Sistemi'nin oluşumu iken, cevapta yanıltıcı ve hatalı bir biçimde 'Samanyolu'ndaki bazı güneş sistemi oluşum teorilerine' şeklinde aktarılmıştır."
+JOB_DOC_DOC_011416_02,verify,judge_fail:supported,openstax_astronomy_2e,Kaynak metinde uyduların yörüngedeki davranışları açısından hiçbir fark olmadığı ('its behavior is no different from that of a natural satellite') açıkça belirtilmiştir. Ayrıca doğal uyduların gök cisimlerinin kendi doğal süreçleriyle oluştuğu bilgisi kaynakta yer almamaktadır (kaynak dışı ekleme) v
+JOB_SE_0010_03,verify,judge_fail:fluent_turkish,stackexchange_space_qa,Cevapta 'sönerleşirler' şeklinde Türkçe dil bilgisine aykırı ve uydurma bir kelime kullanılmıştır.
+JOB_SE_0041_00,verify,judge_fail:fluent_turkish,stackexchange_space_qa,Cevapta göze çarpan bir yazım hatası bulunmaktadır: 'Sığınapı'ndaki' yerine 'Sığınağı'ndaki' yazılmalıdır.
+JOB_DOC_DOC_015929_03,verify,judge_fail:fluent_turkish,wikipedia_tr,Cevaptaki 'bulunamayığı' kelimesinde yazım/imla hatası bulunmaktadır.
+JOB_DOC_DOC_011496_00,verify,judge_fail:fluent_turkish,openstax_astronomy_2e,Cevapta 'Hollandalı' kelimesi 'Hollandkı' şeklinde yazım hatası içeriyor.
+JOB_DOC_DOC_011147_00,verify,judge_fail:correct,nasa_science,Cevapta 'pillerini' veya 'bataryalarını' yerine anlamsız 'parlarını' kelimesi kullanılmıştır; bu durum doğruluğu ve akıcılığı bozmaktadır.
+JOB_DOC_DOC_011147_07,verify,judge_fail:fluent_turkish,nasa_science,Çoktan seçmeli sorunun açıklama (aciklama) alanı Türkçe yerine İngilizce kaynak metinden doğrudan kopyalanmıştır.
+JOB_DOC_DOC_008571_09,verify,judge_fail:follows_instruction,nasa_science,Görev türü 'adim_adim_problem_cozme' olarak belirtilmiş ancak ne talimatta ne de cevapta çözülecek bir problem veya mantıksal/matematiksel problem çözme süreci bulunmaktadır; yalnızca basit bir olgusal bilgi sıralanmıştır.
+JOB_DOC_DOC_008571_13,verify,judge_fail:follows_instruction,nasa_science,"Görev türü 'adim_adim_problem_cozme' olarak etiketlenmiş olmasına rağmen içerik bir problem çözümü içermemekte, sadece doğrudan metinden alınan bilgilerin maddelenmesinden ibarettir."
+JOB_DOC_DOC_008769_09,verify,judge_fail:supported,nasa_science,Son cümlede dil bilgisi hatası mevcuttur ('uzaktaki nesnelere... çekerler' ifadesi bozuktur; 'nesneleri çekerler' veya 'nesnelere çekim uygularlar' olmalıdır). Ayrıca 'çevrelerine zarar vermezler' yargısı kaynak metinde yer almamaktadır.
+JOB_DOC_DOC_011417_02,verify,judge_fail:supported,openstax_astronomy_2e,Metinde Adams'ın Cambridge'deki eğitimini yeni tamamlayıp analize 1843'te başladığı belirtilmektedir; cevaptaki 'çalışmalarını 1843 yılında tamamlamış' ifadesi olgusal olarak yanlıştır.
+JOB_DOC_DOC_011417_03,verify,judge_fail:follows_instruction,openstax_astronomy_2e,Talimatta özetin 3-4 cümle olması istenmiş ancak cevap 2 cümleden oluşmaktadır.
+JOB_DOC_DOC_011417_04,verify,judge_fail:fluent_turkish,openstax_astronomy_2e,'Gök Cismigözlemcileri' şeklinde bitişik yazım hatası bulunmaktadır ve talimatta sorulmayan George Airy de listeye eklenmiştir.
+JOB_DOC_DOC_011417_10,verify,judge_fail:fluent_turkish,openstax_astronomy_2e,1. Adımdaki 'pertürbasyon etkileri hesaba katsa dahi' ve 'yörüngesi ile ... örtüşmediği' ifadeleri dil bilgisi ve anlatım bozukluğu içermektedir.
+JOB_DOC_DOC_011473_03,verify,judge_fail:supported,openstax_astronomy_2e,Cevapta sülfürik asidin kimyasal formülü hatalı olarak 'H2O4' şeklinde yazılmıştır; kaynakta ve bilimsel olarak doğru formül H2SO4'tür.
+JOB_DOC_DOC_011587_07,verify,judge_fail:follows_instruction,openstax_astronomy_2e,"Cevap, talimatta istenen 'hale' (halo) yapısının özelliklerini açıklamamaktadır."
+JOB_DOC_DOC_011587_09,verify,judge_fail:fluent_turkish,openstax_astronomy_2e,Cevapta 'kolaylaştırırıdı' şeklinde yazım hatası bulunmaktadır.
+JOB_DOC_DOC_013923_07,verify,judge_fail:correct,wikipedia_en,Adım 2 cümlesinde 'Astronomik Birim (1 AU)' ifadesinin önündeki '1' sayısı eksik bırakılmış ve çift boşluk oluşarak anlatım bozukluğu meydana gelmiştir.
+JOB_DOC_DOC_015818_05,verify,judge_fail:correct,wikipedia_tr,Cevapta 'Biz dünyaya baktığımızda' şeklinde yanlış bir ifade kullanılmıştır; doğrusu 'Biz Dünya'dan baktığımızda' olmalıdır.
+JOB_DOC_DOC_011426_03,verify,judge_fail:correct,openstax_astronomy_2e,Görev türü 'adim_adim_problem_cozme' olarak belirtilmiş ancak ortada çözülen bir problem bulunmamaktadır; yalnızca olgular adımlandırılmıştır. Ayrıca talimatta Darwin'in hesaplamaları sorulmasına rağmen 2. adımda Darwin'in Ay'ın spiral çizerek uzaklaşacağı ve gün/ay sürelerinin eşitleneceği yönündek
+JOB_DOC_DOC_011426_07,verify,judge_fail:follows_instruction,openstax_astronomy_2e,Görev türü ve talimat 'sınıflandırma' talep etmesine rağmen cevap kişileri belirli sınıflar/kategoriler altında gruplamak yerine yalnızca maddeler halinde tek tek sıralayıp tanımlamıştır.
+JOB_DOC_DOC_015161_03,verify,judge_fail:fluent_turkish,wikipedia_tr,Cevap metnindeki soru cümlesinde 'γ nur' şeklinde anlamı bozan bir dizgisel yazım hatası bulunmaktadır.
+JOB_DOC_DOC_015161_07,verify,judge_fail:fluent_turkish,wikipedia_tr,Cevabın son kelimesinde 'ulaşı lır' şeklinde hatalı boşluk/yazım hatası bulunmaktadır.
+JOB_DOC_DOC_012092_01,verify,judge_fail:instruction_clear,wikipedia_en,"Talimatta hangi gözlemevinden bahsedildiği açıkça belirtilmemiştir (""Gözlemevinin"" ifadesi bağlamsızdır ve kaynak metin olmadan tek başına anlaşılamaz)."
+JOB_DOC_DOC_012092_09,verify,judge_fail:follows_instruction,wikipedia_en,"Belirtilen görev türü ""karşılaştırma"" olmasına rağmen talimat ve cevap karşılaştırma içermemekte, yalnızca örnek verip genel süreci açıklamaktadır."
+JOB_DOC_DOC_012092_13,verify,judge_fail:supported,wikipedia_en,"Talimatta hangi gözlemevinden bahsedildiği açık değildir. Sınıflandırma görevinde kategoriler altında gruplandırma yapılmamış, kişiler düz liste halinde verilmiştir. Ayrıca John Welsh hakkında kaynakta süperintendentlik tarihi dışında bir bilgi yer almamasına karşın ""bilimsel çalışmalar"" iddiası ekl"
+JOB_DOC_DOC_011495_02,verify,judge_fail:supported,openstax_astronomy_2e,"Kuyruğun Güneş'ten değil, kuyrukluyıldızın ana gövdesinden uzandığı belirtilmelidir ('Güneş'ten milyonlarca kilometre uzanan' ifadesi olgusal olarak hatalıdır). Ayrıca metinde 'coma' terimi yer almamaktadır."
+JOB_DOC_DOC_011495_03,verify,judge_fail:supported,openstax_astronomy_2e,"Metne göre kuyrukluyıldızların aşırı basık elipsler üzerinde döndüğünü ilk öne süren kişi Halley değil, Isaac Newton'dır; Halley bu fikirleri geliştirmiştir."
+JOB_DOC_DOC_011495_07,verify,judge_fail:supported,openstax_astronomy_2e,"Metinde gökyüzünde haftalarca görünme karşılaştırması asteroitlerle değil, meteorlarla (kayan yıldızlarla) yapılmıştır. 'Asteroitlerden farklı olarak gökyüzünde haftalarca kalabilirler' iddiası kaynakta bulunmamaktadır ve olgusal olarak yanlıştır."
+JOB_DOC_DOC_011495_13,verify,judge_fail:supported,openstax_astronomy_2e,Benzerlikler kısmında asteroitlerin gökyüzünde yıldızlar arasında yavaşça hareket etmesi ve Güneş sisteminin üyesi olması gibi bilgiler kaynak metinde yer almamaktadır; metinde asteroitler yalnızca tek bir cümlede buzlu olmama yönüyle geçmektedir.
+JOB_DOC_DOC_011596_01,verify,judge_fail:fluent_turkish,openstax_astronomy_2e,Soru kökünde 'tartışıma' kelimesinde imla hatası bulunmaktadır.
+JOB_DOC_DOC_011596_02,verify,judge_fail:correct,openstax_astronomy_2e,"Mantıksal ve matematiksel hata bulunmaktadır. Günümüzdeki değer Hubble'ın ilk tahmininin iki katından fazlaysa, ilk tahmin günümüzdeki değerin yarısından azdır; yarısından fazla değildir."
+JOB_DOC_DOC_004080_00,verify,judge_fail:instruction_clear,arxiv_astro_ph,Talimatta 'yukarıdaki metinden hareketle' ifadesi kullanılmış ancak kaynak metin talimatın içine dahil edilmemiştir. Kaynak metni görmeyen bir kullanıcı için talimat tek başına eksiktir.
+JOB_DOC_DOC_004080_01,verify,judge_fail:instruction_clear,arxiv_astro_ph,Talimatta 'verilen bilgilere göre' ve 'metne dayalı' denmesine rağmen referans metin talimat metnine eklenmemiştir; kaynak metni görmeyen bir kullanıcı için talimat tek başına anlaşılamaz.
+JOB_DOC_DOC_013975_02,verify,judge_fail:supported,wikipedia_en,Kaynak metinde moleküller listelenmiş ancak hangi molekülün spesifik olarak 'İklim ve Atmosfer Kimyası' veya 'Olası Biyolojik Aktivite' kategorisine girdiği ayrıştırılmamıştır. Cevaptaki birebir eşleştirme kaynaktan doğrudan çıkarılamamaktadır.
+JOB_DOC_DOC_001399_02,qc,qc_fail(insan),,dil_hatasi
+JOB_DOC_DOC_003520_03,qc,qc_fail(insan),,talimat_belirsiz
+JOB_DOC_DOC_008718_00,qc,qc_fail(insan),,gorev_turu_hatali
+JOB_DOC_DOC_008721_00,qc,qc_fail(insan),,yaniltici_cevap
+JOB_DOC_DOC_009294_05,qc,qc_fail(insan),,gorev_turu_hatali
+JOB_DOC_DOC_009319_05,qc,qc_fail(insan),,talimata_uymuyor
+JOB_DOC_DOC_011112_08,qc,qc_fail(insan),,alan_disi
+JOB_DOC_DOC_011441_05,qc,qc_fail(insan),,dil_hatasi
+JOB_DOC_DOC_011445_02,qc,qc_fail(insan),,kaynakta_olmayan_iddia
+JOB_DOC_DOC_011472_04,qc,qc_fail(insan),,olgusal_hata
+JOB_DOC_DOC_011579_03,qc,qc_fail(insan),,kaynakta_olmayan_iddia;dil_hatasi
+JOB_DOC_DOC_012031_07,qc,qc_fail(insan),,gorev_turu_hatali
+JOB_DOC_DOC_012668_03,qc,qc_fail(insan),,kaynakta_olgusal_hata
+JOB_DOC_DOC_013045_03,qc,qc_fail(insan),,kaynakta_olmayan_iddia;dil_hatasi
+JOB_DOC_DOC_013047_07,qc,qc_fail(insan),,talimata_uymuyor
+JOB_DOC_DOC_015671_09,qc,qc_fail(insan),,talimata_uymuyor
+JOB_DOC_DOC_015741_04,qc,qc_fail(insan),,sayisal_hata
+JOB_DOC_DOC_015869_01,qc,qc_fail(insan),,kaynakta_olgusal_hata
+JOB_DOC_DOC_016078_03,qc,qc_fail(insan),,olgusal_hata
+JOB_DOC_DOC_016221_04,qc,qc_fail(insan),,alan_disi
+JOB_DOC_DOC_016234_05,qc,qc_fail(insan),,talimata_uymuyor
+JOB_SE_0010_09,qc,qc_fail(insan),,kaynakta_olgusal_hata
+JOB_SE_0021_02,qc,qc_fail(insan),,kaynakta_olgusal_hata
+JOB_SE_0042_03,qc,qc_fail(insan),,olgusal_hata

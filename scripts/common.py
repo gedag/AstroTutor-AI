@@ -14,6 +14,7 @@ import hashlib
 import json
 import logging
 import random
+import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -68,6 +69,47 @@ def now_iso() -> str:
 
 def today() -> str:
     return datetime.now().strftime("%Y-%m-%d")
+
+
+_ONES = ["sıfır", "bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz"]
+_TENS = ["", "on", "yirmi", "otuz", "kırk", "elli", "altmış", "yetmiş", "seksen", "doksan"]
+
+
+def _last_word(num: str) -> str:
+    """Sayının Türkçe okunuşundaki son kelime: '%16,9' -> dokuz, '100/100' -> yüz, '1.234' -> dört."""
+    s = re.sub(r"[^\d,]", "", num.split("/")[-1].replace(".", ""))
+    if "," in s:
+        s = s.split(",")[-1]
+    n = int(s or 0)
+    if n == 0:
+        return "sıfır"
+    if n % 10:
+        return _ONES[n % 10]
+    if n % 100:
+        return _TENS[(n % 100) // 10]
+    if n % 1000:
+        return "yüz"
+    if n % 1_000_000:
+        return "bin"
+    return "milyon"
+
+
+def tr_ek(num: str, form: str = "iyelik") -> str:
+    """Sayıya kesme işaretiyle doğru Türkçe eki ekler.
+    form: 'iyelik' (25'i, %36,6'sı, 100'ü), 'belirtme' (%15'i, %2'yi), 'iyelik_belirtme' (%16,9'unu, %2'sini)."""
+    if not re.search(r"\d", num):  # ör. veri yokken "-"
+        return num
+    w = _last_word(num)
+    v = next(c for c in reversed(w) if c in "aeıioöuü")
+    h = {"a": "ı", "ı": "ı", "e": "i", "i": "i", "o": "u", "u": "u", "ö": "ü", "ü": "ü"}[v]
+    vowel_end = w[-1] in "aeıioöuü"
+    if form == "iyelik":
+        suf = ("s" if vowel_end else "") + h
+    elif form == "belirtme":
+        suf = ("y" if vowel_end else "") + h
+    else:
+        suf = ("s" if vowel_end else "") + h + "n" + h
+    return f"{num}'{suf}"
 
 
 def text_hash(text: str) -> str:

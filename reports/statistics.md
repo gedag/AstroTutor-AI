@@ -22,9 +22,9 @@ Bu rapor `scripts/08_statistics.py` tarafından üretilir; elle düzenlenmez.
 | Türkçe içerik (token) | %16,9 |
 | Manuel kontrol örneği (corpus) | 100 |
 | Manuel kalite başarısı (corpus) | %88,0 |
-| Instruction örneği | 3.340 |
-| Instruction kontrol örneği | - |
-| Instruction manuel kalite başarısı | - |
+| Instruction örneği | 3.388 |
+| Instruction kontrol örneği | 150 |
+| Instruction manuel kalite başarısı | %84,0 |
 
 ## 2. Verinin aşamalar boyunca erimesi
 

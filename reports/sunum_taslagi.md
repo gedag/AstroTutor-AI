@@ -120,13 +120,35 @@ kaldı (video/sosyal medya sayfaları; kartta "bilinen problem").
 sürümleri (aynı Wikidata kimliği) aynı kümede; chunk'lar bölmeden **sonra** üretildi. Kümeler arası grup çakışması: 0.
 
 ## 9. Instruction Dataset — örnekler
-⟨Üretim ve doğrulama bitince doldurulacak: toplam örnek, görev dağılımı, train/val/test, model dağılımı.⟩
+**3.388 Türkçe örnek** · train 3.078 / validation 146 / test 164 · 10 görev türü (hedef oranlara ±0,7 puan) ·
+seviye: başlangıç %35,1, orta %33,3, ileri %31,6.
+Kaynak: corpus'un yalnız **train** dokümanları (320 doküman, 2.840 örnek), Stack Exchange (401), kapsam dışı (147).
+Üretim: Gemini (ücretsiz katman; 4 Flash + 2 lite model havuzu, her örnekte gerçek model ve prompt sürümü kayıtlı).
 
-Örnek 1 — `coktan_secmeli_soru_uretimi`: ⟨final setten seçilecek⟩
-Örnek 2 — `seviyeli_anlatim` (başlangıç): ⟨final setten seçilecek⟩
-Örnek 3 — `bilgi_yetersizligi_kapsam_disi`: "Bugün hava durumu nasıl olacak, pikniğe gidebilir miyim?" →
-"Meteorolojik tahminler ve günlük hava durumu verilerine erişimim yoktur ... Gökyüzü gözlemi yapmak istiyorsanız
-yıldızlı geceler için astronomik koşullar hakkında konuşabiliriz."
+| Görev türü | Örnek | Oran (hedef) |
+| --- | --- | --- |
+| Tanım-açıklama | 538 | %15,9 (%16) |
+| Seviyeli anlatım | 507 | %15,0 (%15) |
+| Çoktan seçmeli soru üretimi (JSON) | 451 | %13,3 (%14) |
+| Soru-cevap (Stack Exchange) | 401 | %11,8 (%12) |
+| Neden-sonuç | 344 | %10,2 (%10) |
+| Karşılaştırma | 333 | %9,8 (%10) |
+| Özetleme | 267 | %7,9 (%8) |
+| Adım adım problem çözme | 248 | %7,3 (%7) |
+| Sınıflandırma | 152 | %4,5 (%4) |
+| Bilgi yetersizliği / kapsam dışı | 147 | %4,3 (%4) |
+
+Örnek 1 — `coktan_secmeli_soru_uretimi` (INS_00871): Talimat öğretim metnini içerir ("Pioneer 10, 1976 yılının
+Şubat ayında Satürn'ün yörüngesini geçti … Jüpiter'in yaklaşık 800 milyon kilometre uzunluğundaki manyetik
+kuyruğu …") → cevap JSON: soru "Pioneer 10'un Satürn yörüngesini geçerken elde ettiği veriler Jüpiter hakkında
+hangi şaşırtıcı bilgiyi ortaya çıkarmıştır?", 4 şık, `"dogru_cevap": "B"`, açıklama.
+Örnek 2 — `seviyeli_anlatim` (başlangıç, INS_01575): "Başlangıç seviyesindeki bir öğrenciye evrenin genişlemesi
+fikrinin nasıl keşfedildiğini anlat." → "… Vesto M. Slipher … 40'tan fazla galaksinin … ışık çizgilerinin
+kırmızıya kaydığını görmüştür. Bu durum, galaksilerin bizden büyük bir hızla uzaklaştığını gösterir. Daha sonra
+Edwin Hubble …"
+Örnek 3 — `bilgi_yetersizligi_kapsam_disi` (INS_02874): "Bugün hava durumu nasıl olacak, pikniğe gidebilir
+miyim?" → "Meteorolojik tahminler ve günlük hava durumu verilerine erişimim yoktur … Gökyüzü gözlemi yapmak
+istiyorsanız yıldızlı geceler için astronomik koşullar hakkında konuşabiliriz."
 
 **Neden bu kategoriler?** Tasarım raporundaki iki ana davranıştan türetildi: seviyeye göre anlatım (`seviyeli_anlatim`)
 ve anlatılan içerikten JSON biçiminde soru üretme (`coktan_secmeli_soru_uretimi`; quiz modülü ve REST şeması).
@@ -144,12 +166,31 @@ Türkçe kullanıcıya aktarmayı (final dönemindeki RAG senaryosu) öğretir.
 | bozuk karakter yok | 100/100 |
 | metadata doğru | 93/100 |
 | **genel uygun** | **88/100** |
-Hata türleri: alt konu etiketi 7, formül kalıntısı 2, alan dışı 2, SSS kalıntısı 1, tablo eksik 1.
+Hata türleri (bir dokümanda birden fazla olabilir): alt konu etiketi 7, extraction eksik 2 (SSS sayfası, sözlük),
+alan dışı 2, formül kalıntısı 2, liste sayfası 1, tablo eksik 1.
+12 sorunlu dokümanın 6'sında sorun yalnız alt konu etiketi (metin temiz); metnin kendisinde sorun olan doküman 6/100.
+Rehber'deki örnek oranlar "yalnızca biçimi göstermek için" verilmiştir; bizim ölçütlerimiz 3/4'ünde örneğin üzerinde.
 Yöntem: yapay zekâ destekli ön inceleme ölçüt bazında yapıldı, nihai kararı ben verdim.
 
-**Instruction:** ⟨150 örnek incelemesi ve LLM yargıç sonuçları — doldurulacak⟩
+**Instruction:** 3.962 üretilen → **3.388** (574 elendi, her biri nedeniyle `removed_instructions.csv`'de).
 - Doğrulama dört katmanlı: kural kontrolleri → kaynakta kanıt kontrolü (alıntının kelime 5-gram'ları kaynakta
   aranır) → %10 LLM yargıç (üreten modelden farklı model) → 150 örneklik elle inceleme.
+- **LLM yargıç** (37 iş, 348 örnek): başarısız %11,5 → elendi. Lite üretimlerinde %12,6, Flash'ta %0.
+- **150 örneklik inceleme** (kaynakla karşılaştırarak):
+| Kontrol | Başarılı |
+| --- | --- |
+| talimat anlaşılır | 149/150 |
+| kaynakla tutarlı | 141/150 |
+| talimatı karşılıyor | 142/150 |
+| görev türü doğru | 147/150 |
+| Türkçe akıcı | 146/150 |
+| **genel uygun** | **126/150 (%84)** |
+Hata türleri: dil 4, talimata uymama 4, kaynaktan gelen hata 4 (ör. Türkçe Wikipedia'da "1921'de Birleşmiş
+Milletler Radyum Kurumu"), kaynakta olmayan iddia 3, olgusal 3, görev türü 3, alan dışı 2, diğer 3. Sorunlu 24 örnek
+setten çıkarıldı. En zayıf tür: adım adım problem çözme (11'in 5'i; hesap/süreç yerine sıralanmış bilgiler).
+- Yöntem: yapay zekâ destekli ön inceleme ölçüt bazında yapıldı, nihai kararı ben verdim.
+- İnceleme sırasında bulunan kural açıkları **bütün sette** kapatıldı: "Adim" yazımı (20 düzeltme), büyük harfli
+  ASCII kelimeler (5 eleme), metinsiz çoktan seçmeli (4), talimatta hazır soru (7), "ı" harfi düşmüş metin (3).
 
 ## 11. Karşılaşılan problemler ve çözümler
 | Problem | Nasıl fark edildi | Çözüm |
@@ -164,6 +205,8 @@ Yöntem: yapay zekâ destekli ön inceleme ölçüt bazında yapıldı, nihai ka
 | Lite modelde Türkçe karakter kaybı ("Asagidaki metne gore") | Rastgele örnek okunurken | Türkçe karakter kontrolü; iş düzeyinde ret ve yeniden üretim |
 | Çoktan seçmeli talimatta sorunun/cevabın verilmesi | Sunum için örnek seçerken | Kural + prompt v1.1 + iş düzeyinde ret |
 | Kaynağı görmeyen kullanıcıya "metne göre" diyen cevaplar | Görev türü taraması | Kural + prompt v1.2 |
+| Cevapsız kalan bir Gemini isteği döngüyü 80 dk durdurdu | Log'da ilerleme yoktu | İstek başına 10 dk zaman aşımı; süre dolarsa sıradaki model |
+| Yeni kural iki işi tamamen eleyince yargıç örneklemi değişiyordu | Örneklem karşılaştırması | Örneklem ilk çalıştırmada dosyaya sabitlendi |
 
 ## 12. Final dönemi planı
 1. Qwen2.5-7B base üzerinde Domain Corpus ile CPT/DAPT (QLoRA).
@@ -191,7 +234,13 @@ Yöntem: yapay zekâ destekli ön inceleme ölçüt bazında yapıldı, nihai ka
   devam; ikinci geçiş (06b) işlenmiş veriye tekrar uygulanmaz.
 - **Bilinen eksikler?** Kartlardaki "Bilinen problemler" bölümü: kaynak dengesizliği (Wikipedia EN token'ların
   %48,5'i), corpus'un çoğunlukla İngilizce olması, alt konu etiketlerinde anahtar kelime yöntemi hataları (~%7),
-  instruction örneklerinin çoğunun lite modelle üretilmiş olması.
+  instruction örneklerinin çoğunun lite modelle üretilmiş olması. Plan: final eğitiminden önce yargıcı bütün lite
+  üretimlerine genişletip (`--extended`) Instruction v1.1 çıkarmak; örneklem hatası lite'ta %12,6, Flash'ta %0.
+- **Neden yargıç yalnız %10?** Ücretsiz katmanda model başına günde 20 istek var; tüm set ~290 ek çağrı (4–5 gün)
+  demek. Vize için rastgele örneklem hata oranını ölçmeye yeter (Rehber örneklem ve hata oranı istiyor); tam
+  temizlik v1.1'de. Örneklem tabakalı ve sabit seed'li, sonradan değişmesin diye dosyaya sabitlendi.
+- **Final dönemi için eğitim notu:** corpus 16,2 M token ve %83'ü İngilizce; CPT'de düşük öğrenme hızı ve genel
+  Türkçe metinle karıştırma, modelin genel yeteneklerini korumak için planlanacak.
 - **Bu veri finalde gerçekten kullanılabilir mi?** `scripts/validate_datasets.py`: şema, kimlik benzersizliği,
   kümeler arası sızıntı 0, Hugging Face `datasets` ile yükleme ve Qwen chat template'ine uygulanma testi.
 - **Yapay zekâ araçlarını nasıl kullandın?** Kod geliştirmede ve kalite kontrol ön incelemesinde yapay zekâ desteği

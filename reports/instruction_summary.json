@@ -1,73 +1,73 @@
 {
-  "total": 3340,
+  "total": 3412,
   "splits": {
-    "test": 154,
-    "train": 3027,
-    "validation": 159
+    "test": 167,
+    "train": 3096,
+    "validation": 149
   },
   "task_types": {
-    "ozetleme": 260,
-    "neden_sonuc": 336,
-    "coktan_secmeli_soru_uretimi": 451,
-    "tanim_aciklama": 520,
-    "seviyeli_anlatim": 497,
-    "adim_adim_problem_cozme": 247,
-    "karsilastirma": 324,
-    "siniflandirma": 151,
+    "ozetleme": 268,
+    "neden_sonuc": 345,
+    "coktan_secmeli_soru_uretimi": 455,
+    "tanim_aciklama": 542,
+    "seviyeli_anlatim": 510,
+    "adim_adim_problem_cozme": 253,
+    "karsilastirma": 335,
+    "siniflandirma": 153,
     "bilgi_yetersizligi_kapsam_disi": 147,
-    "soru_cevap": 407
+    "soru_cevap": 404
   },
   "levels": {
-    "ileri": 1049,
-    "orta": 1110,
-    "baslangic": 1181
+    "ileri": 1077,
+    "orta": 1136,
+    "baslangic": 1199
   },
   "sources": {
-    "arxiv_astro_ph": 113,
-    "nasa_science": 777,
-    "openstax_astronomy_2e": 773,
-    "wikipedia_en": 759,
-    "wikipedia_tr": 364,
+    "arxiv_astro_ph": 112,
+    "nasa_science": 829,
+    "openstax_astronomy_2e": 782,
+    "wikipedia_en": 760,
+    "wikipedia_tr": 378,
     "none": 147,
-    "stackexchange_space_qa": 407
+    "stackexchange_space_qa": 404
   },
   "methods": {
-    "llm_sentetik_kaynak_dokumandan": 2786,
+    "llm_sentetik_kaynak_dokumandan": 2861,
     "llm_sentetik_kapsam_disi": 147,
-    "llm_ceviri_duzenleme_stackexchange": 407
+    "llm_ceviri_duzenleme_stackexchange": 404
   },
   "task_type_by_split": {
     "test": {
-      "ozetleme": 11,
-      "neden_sonuc": 14,
-      "coktan_secmeli_soru_uretimi": 21,
-      "seviyeli_anlatim": 22,
-      "siniflandirma": 10,
-      "tanim_aciklama": 21,
-      "adim_adim_problem_cozme": 16,
-      "karsilastirma": 12,
+      "ozetleme": 12,
+      "neden_sonuc": 16,
+      "coktan_secmeli_soru_uretimi": 24,
+      "seviyeli_anlatim": 23,
+      "siniflandirma": 11,
+      "tanim_aciklama": 22,
+      "adim_adim_problem_cozme": 17,
+      "karsilastirma": 15,
       "bilgi_yetersizligi_kapsam_disi": 6,
       "soru_cevap": 21
     },
     "train": {
-      "tanim_aciklama": 483,
-      "coktan_secmeli_soru_uretimi": 396,
-      "seviyeli_anlatim": 450,
-      "ozetleme": 236,
-      "neden_sonuc": 304,
-      "adim_adim_problem_cozme": 229,
-      "karsilastirma": 297,
-      "siniflandirma": 138,
+      "tanim_aciklama": 505,
+      "coktan_secmeli_soru_uretimi": 400,
+      "seviyeli_anlatim": 465,
+      "ozetleme": 243,
+      "neden_sonuc": 313,
+      "adim_adim_problem_cozme": 234,
+      "karsilastirma": 306,
+      "siniflandirma": 139,
       "bilgi_yetersizligi_kapsam_disi": 128,
-      "soru_cevap": 366
+      "soru_cevap": 363
     },
     "validation": {
-      "neden_sonuc": 18,
+      "neden_sonuc": 16,
       "ozetleme": 13,
-      "tanim_aciklama": 16,
-      "coktan_secmeli_soru_uretimi": 34,
-      "seviyeli_anlatim": 25,
-      "karsilastirma": 15,
+      "tanim_aciklama": 15,
+      "coktan_secmeli_soru_uretimi": 31,
+      "karsilastirma": 14,
+      "seviyeli_anlatim": 22,
       "siniflandirma": 3,
       "adim_adim_problem_cozme": 2,
       "bilgi_yetersizligi_kapsam_disi": 13,

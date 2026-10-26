@@ -66,7 +66,9 @@ def main() -> None:
             "judge_model": (x.get("judge") or {}).get("judge_model"),
             "human_verified": None,  # 14_qc_report.py incelenen örneklerde doldurur
             "verified_by": ("kural+kanit" + ("+llm_yargic" if x.get("llm_judged") else "")) if x.get("auto_verified") else None,
-            "license": lic, "split": split, "raw_example_id": x["raw_example_id"]})
+            "license": lic, "split": split, "raw_example_id": x["raw_example_id"],
+            # kural tabanlı metin düzeltmesi (ör. "kaynak_atfi_silindi"), yoksa None — bkz. 11_verify_instructions.py
+            "postprocess": x.get("postprocess")})
     write_jsonl(p("final") / "instruction_v1.0.jsonl", out)
     by = defaultdict(list)
     for x in out:

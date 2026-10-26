@@ -48,8 +48,11 @@ class Gemini:
 
         # SDK'nın kendi otomatik tekrar denemesi KAPALI: ücretsiz katmanda 503 alan her deneme de günlük
         # 20 istek hakkından düşüyor (22.10.2026'da gözlendi). Tekrar politikası aşağıda bizim kontrolümüzde.
+        # Zaman aşımı: kütüphanenin varsayılanı sınırsız. 25.10.2026'da gemini-3.8-flash isteği 80 dk cevapsız kaldı
+        # ve döngü durdu. Süresi dolan istek bağlantı hatası sayılır, sıradaki modele geçilir (iş atlanmaz).
         self.client = genai.Client(api_key=key, http_options=types.HttpOptions(
-            retry_options=types.HttpRetryOptions(attempts=1)))
+            retry_options=types.HttpRetryOptions(attempts=1),
+            timeout=1000 * CFG["instruction"].get("request_timeout_seconds", 600)))
         self.models = [models] if isinstance(models, str) else list(models)
         self.model = self.models[0]
         self.last_model = None

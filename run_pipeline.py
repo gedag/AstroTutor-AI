@@ -32,6 +32,9 @@ if __name__ == "__main__":
         print(f"\n===== {s} =====", flush=True)
         name, *args = s.split()
         r = subprocess.run([sys.executable, str(ROOT / "scripts" / name), *args], cwd=ROOT)
+        if r.returncode in (2, 3) and name in ("10_generate_instructions.py", "11_verify_instructions.py"):
+            sys.exit(f"{s} Gemini kotası/yoğunluğu nedeniyle durdu (çıkış kodu {r.returncode}); hata değildir. "
+                     "Kaldığı yerden devam için aynı komutu sonra yeniden çalıştırın veya run_instruction_loop.py kullanın.")
         if r.returncode != 0:
             sys.exit(f"{s} başarısız (çıkış kodu {r.returncode})")
         print(f"----- {s} tamam ({time.time() - t0:.0f} sn)")

@@ -1,9 +1,15 @@
 {
-  "verified": 3340,
-  "judged_examples": 0,
-  "judge_fail": 0,
-  "judge_fail_rate": null,
-  "judge_fail_by_criterion": {},
+  "verified": 3412,
+  "judged_examples": 348,
+  "judge_fail": 40,
+  "judge_fail_rate": 0.1149,
+  "judge_fail_by_criterion": {
+    "correct": 7,
+    "fluent_turkish": 12,
+    "supported": 12,
+    "follows_instruction": 6,
+    "instruction_clear": 3
+  },
   "removed_by_reason": {
     "latex_artifact": 4,
     "llm_skipped": 5,
@@ -12,14 +18,41 @@
     "eval_overlap": 4,
     "exponent_loss": 2,
     "length": 8,
-    "invalid_mcq_json": 64,
-    "mcq_answer_in_instruction": 154,
+    "invalid_mcq_json": 69,
+    "mcq_answer_in_instruction": 160,
     "references_unseen_text": 67,
-    "turkish_chars_missing": 55,
+    "turkish_chars_missing": 64,
     "wrong_language": 5,
-    "task_type_mismatch": 2,
+    "task_type_mismatch": 1,
     "near_duplicate": 4,
-    "evidence_not_in_source": 34
+    "evidence_not_in_source": 34,
+    "judge_fail:correct": 7,
+    "judge_fail:fluent_turkish": 12,
+    "judge_fail:supported": 12,
+    "judge_fail:follows_instruction": 6,
+    "judge_fail:instruction_clear": 3
   },
-  "sample_jobs": 36
+  "judge_by_generator": {
+    "lite": {
+      "judged": 318,
+      "fail": 40
+    },
+    "flash": {
+      "judged": 30,
+      "fail": 0
+    }
+  },
+  "rule_fixes": {
+    "adim_yazimi_duzeltildi": 20,
+    "kaynak_atfi_silindi": 35
+  },
+  "sample_jobs": 37,
+  "sample_jobs_planned": 37,
+  "judge_gave_up_jobs": 0,
+  "judge_unjudged_examples_in_sample": 0,
+  "extended_jobs_total": 290,
+  "extended_jobs_judged": 0,
+  "extended_judged_examples": 0,
+  "extended_judge_fail": 0,
+  "extended_judge_fail_by_criterion": {}
 }

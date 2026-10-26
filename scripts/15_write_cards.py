@@ -9,7 +9,7 @@ import csv
 import json
 from collections import Counter
 
-from common import CFG, ROOT, get_logger, p, read_jsonl
+from common import CFG, ROOT, get_logger, p, read_jsonl, tr_ek
 
 log = get_logger("15_write_cards")
 R = p("reports")
@@ -81,9 +81,9 @@ def near_dup_sentence(qc: dict) -> str:
         how = ("yapay zekâ destekli ön inceleme ve grup üyesinin onayıyla" if qc.get("near_dup_human_is_approval")
                else "grup üyesinin incelemesiyle" if qc.get("near_dup_human") else
                "yapay zekâ destekli ön incelemeyle (grup üyesi kontrolü henüz tamamlanmadı)")
-        return (f"Eşik, {c['pairs']} aday çift ({c['above']}'i Jaccard ≥ eşik, {c['below']}'i altı) {how} kontrol "
-                f"edildi ({link}): eşik üstü {c['above']} çiftin {c['above'] - c['false_removals']}'i gerçek tekrardı "
-                f"(hatalı eleme {c['false_removals']}); eşik altı {c['below']} çiftin {c['missed']}'i de tekrardı. "
+        return (f"Eşik, {c['pairs']} aday çift ({tr_ek(str(c['above']))} Jaccard ≥ eşik, {tr_ek(str(c['below']))} altı) {how} kontrol "
+                f"edildi ({link}): eşik üstü {c['above']} çiftin {tr_ek(str(c['above'] - c['false_removals']))} gerçek tekrardı "
+                f"(hatalı eleme {c['false_removals']}); eşik altı {c['below']} çiftin {tr_ek(str(c['missed']))} de tekrardı. "
                 "Yani eşik yanlış eleme yapmıyor ama kısa metinlerde dağınık küçük düzeltmeleri olan tekrarları kaçırıyor.")
     if hum is not None:
         s = f"Eşik, 50 aday çiftin incelenmesiyle doğrulandı ({link}): grup üyesinin kararıyla uyum %{100 * hum:.0f}"
@@ -99,8 +99,8 @@ def dataset_card() -> None:
     if not docs:
         log.warning("Corpus yok, DATASET_CARD atlandı")
         return
-    ext, flt, ded, tok, st = j("extraction_summary.json"), j("filter_summary.json"), j("dedup_summary.json"), \
-        j("token_stats.json"), j("statistics_summary.json")
+    ext, ded, tok, st = j("extraction_summary.json"), j("dedup_summary.json"), j("token_stats.json"), \
+        j("statistics_summary.json")
     qc = j("qc_summary.json")
     d2 = j("dedup2_summary.json")
     rem = removed_rows("removed_documents.csv") + removed_rows("extraction_failures.csv")
@@ -147,7 +147,7 @@ def dataset_card() -> None:
            "",
            f"İngilizce kaynaklar bilinçli olarak çoğunluktadır: alanın güvenilir ve açık lisanslı birincil kaynakları "
            f"(NASA, ders kitabı, makale özetleri) İngilizcedir. Türkçe Wikipedia, modelin Türkçe astronomi "
-           f"terminolojisini görmesi için eklenmiştir ve token'ların {pc(lang_tok.get('tr', 0), total_tok)}'ini oluşturur.", "",
+           f"terminolojisini görmesi için eklenmiştir ve token'ların {tr_ek(pc(lang_tok.get('tr', 0), total_tok), 'iyelik_belirtme')} oluşturur.", "",
            "## Veri toplama",
            f"Dokümanlar {dates[0] if dates else '-'} – {dates[-1] if dates else '-'} tarihleri arasında "
            "`scripts/01_download.py` ile indirildi. science.nasa.gov `robots.txt` kurallarına uyuldu (istekler arası "
@@ -182,7 +182,7 @@ def dataset_card() -> None:
             f"(3) NASA sözlük sayfalarında kısa satır kuralının sildiği terimler geri getirildi."
             if d2 else ""),
            f"- **Filtering:** {CFG['filtering']['min_chars']} karakterden kısa ({n(reasons.get('too_short', 0))}), bozuk "
-           f"karakter oranı %{int(100 * CFG['filtering']['max_garbled_ratio'])}'i aşan veya çoğu simgeden oluşan "
+           f"karakter oranı {tr_ek('%' + str(int(100 * CFG['filtering']['max_garbled_ratio'])), 'belirtme')} aşan veya çoğu simgeden oluşan "
            f"({n(reasons.get('garbled', 0))}), İngilizce/Türkçe dışındaki ({n(reasons.get('wrong_language', 0))}), "
            f"satırlarının yarısından fazlası kaynakça girdisi olan yayın listesi ({n(reasons.get('reference_list', 0))}) ve "
            f"alan dışı ({n(reasons.get('out_of_domain', 0))}) dokümanlar elendi. Alan tespiti astronomi terim sözlüğü "
@@ -248,9 +248,9 @@ def dataset_card() -> None:
            "bilimcilerin ve kamusal kişilerin adları, ansiklopedik/haber içeriğinin parçası olarak geçer. NASA içeriği "
            "NASA'nın onayını ima edecek biçimde kullanılmaz.", "",
            "## Bilinen problemler",
-           f"- Kaynak dağılımı dengesizdir: dokümanların {pc(top_n, len(docs))}'i {SRC[top_src][0]} kaynağından, "
+           f"- Kaynak dağılımı dengesizdir: dokümanların {tr_ek(pc(top_n, len(docs)))} {SRC[top_src][0]} kaynağından, "
            f"token'ların en büyük payı {SRC[top_tok_src][0]} kaynağından gelir.",
-           f"- Corpus büyük ölçüde İngilizcedir (token'ların {pc(lang_tok.get('en', 0), total_tok)}'i); hedef kullanıcı "
+           f"- Corpus büyük ölçüde İngilizcedir (token'ların {tr_ek(pc(lang_tok.get('en', 0), total_tok))}); hedef kullanıcı "
            "Türkçe konuştuğu için Türkçe davranış ağırlıklı olarak Instruction Dataset ile kazandırılacaktır.",
            "- PDF'teki matematiksel ifadeler görsel/MathML olarak gömülü olduğu için bazı formüller metne çıkmadı "
            "(ör. \"the force would be , or as large\"). Tablolar düz metne dönüştüğünde sütun yapısı kaybolur.",
@@ -260,7 +260,12 @@ def dataset_card() -> None:
            "terminoloji için tutulmuştur.",
            "- Alt konu etiketleri anahtar kelime ve kaynak kategorisine dayalı kural tabanlı bir yöntemle atanmıştır; "
            "birden fazla konuyu kapsayan dokümanlarda tek etiket yetersiz kalabilir (ör. yöntem/yazılım makalelerine "
-           "sık sık `observatories_telescopes` atanır).",
+           "sık sık `observatories_telescopes` atanır)."
+           + (f" Elle incelenen {cr['sample']} dokümanın {cr['error_types']['alt_konu_hatali']} tanesinde etiket hatalı "
+              "bulundu (ör. ötegezegen sayfasına `stars_stellar_evolution`); bu dokümanların çoğunda metnin kendisi "
+              "sorunsuzdu. Etiket yalnız dağılım analizinde ve instruction kaynak dokümanlarının alt konuya göre dengeli "
+              "seçiminde kullanılır; eğitim metnini değiştirmez."
+              if cr.get("error_types", {}).get("alt_konu_hatali") else ""),
            "- Wikipedia düz metin servisi tabloları çıkarmaz; bazı maddelerde \"aşağıda listelenmektedir\" gibi var olmayan "
            "bir listeye atıf kalır. Wikipedia formülleri `{\\displaystyle ...}` biçiminde LaTeX olarak korunur.",
            "- Kaybolan üslerin yalnız belirsizliği olmayan kalıpları düzeltildi; işaretsiz kalanlar (ör. \"(1031 erg/s)\") "
@@ -342,7 +347,7 @@ def instruction_card() -> None:
           "alanları: `id`, `source_document` (corpus `document_id`'si veya Stack Exchange soru kimliği), `source_url`, "
           "`task_type`, `level`, `supporting_evidence` (cevabı destekleyen kaynak alıntısı), `generation_method`, "
           "`generator_model`, `prompt_version`, `auto_verified`, `llm_judged`, `judge_model`, `human_verified`, "
-          "`verified_by`, `license`, `split`.", "",
+          "`verified_by`, `license`, `split`, `raw_example_id` (üretim kaydı), `postprocess` (kural tabanlı metin düzeltmesi, ör. `kaynak_atfi_silindi`; yoksa boş).", "",
           "Dosyalar: `data/final/instruction_v1.0.jsonl` (tamamı) ve `data/final/instruction/{train,validation,test}.jsonl`.", "",
           "## Görev türü dağılımı", "", "| Görev türü | Örnek | Oran | Hedef oran |", "| --- | --- | --- | --- |"]
     for t in target:
@@ -350,7 +355,9 @@ def instruction_card() -> None:
                   f"{pc(target[t], 1, 0)} |")
     md += [f"| **Toplam** | **{n(len(ins))}** | %100 | |", "",
            "Taksonominin gerekçesi ve her türden örnekler: [reports/instruction_taxonomy.md](reports/instruction_taxonomy.md).", "",
-           "Seviye dağılımı: " + ", ".join(f"{k} {n(v)} ({pc(v, len(ins), 0)})" for k, v in lv.most_common()) + ".", "",
+           "Seviye dağılımı: " + ", ".join(
+               f"{ {'baslangic': 'başlangıç', 'orta': 'orta', 'ileri': 'ileri'}.get(k, k)} (`{k}`) {n(v)} ({pc(v, len(ins), 1)})"
+               for k, v in lv.most_common()) + ".", "",
            "## Örneklerin üretimi",
            f"- **Kaynaklar:** Domain Corpus'tan {n(n_docs)} doküman ({n(srcn.get('openstax_astronomy_2e', 0) + srcn.get('nasa_science', 0) + srcn.get('wikipedia_en', 0) + srcn.get('wikipedia_tr', 0) + srcn.get('nasa_apod', 0) + srcn.get('arxiv_astro_ph', 0))} örnek), "
            f"Stack Exchange Space/Astronomy soru-cevapları ({n(srcn.get('stackexchange_space_qa', 0))} örnek; "
@@ -379,21 +386,40 @@ def instruction_card() -> None:
            "talimatta soru verilmesi) arşivlenip yeniden üretildi; üretim sırasında aynı nedenlerle reddedilen çıktılar "
            "hiç kaydedilmedi. Bir LLM'in ürettiği cevap doğru kabul edilmedi; dört aşamalı kontrol uygulandı:", "",
            "1. **Kural kontrolleri** (tüm örnekler): Türkçe dil tespiti, uzunluk sınırları, görev türü tutarlılığı, "
-           "çoktan seçmeli JSON şeması (4 seçenek, tek doğru cevap) ve talimatta sorunun, şıkların veya doğru cevabın "
-           "verilmemesi, Türkçe karakter eksikliği, kaybolmuş üs, kişisel iletişim bilgisi, LaTeX artığı, URL, kaynağı "
+           "çoktan seçmeli JSON şeması (4 seçenek, tek doğru cevap), talimatta öğretim metninin bulunması ve sorunun, "
+           "şıkların, doğru cevabın veya öğrenciye sorulacak sorunun verilmemesi, Türkçe karakter eksikliği ('ı' "
+           "harfinin düşmesi dahil), kaybolmuş üs, kişisel iletişim bilgisi, LaTeX artığı, URL, kaynağı "
            "görmeyen kullanıcıya talimatta veya cevapta 'metne göre' gibi atıf, birebir ve yakın tekrar (MinHash, "
-           f"Jaccard ≥ 0,8), değerlendirme setleriyle {I['decontam_ngram']}-gram örtüşmesi.",
+           f"Jaccard ≥ 0,8), değerlendirme setleriyle {I['decontam_ngram']}-gram örtüşmesi."
+           + (f" Öğeleri talimatta sayılmış {n(vs['rule_fixes']['kaynak_atfi_silindi'])} sınıflandırma talimatının "
+              "başındaki \"Metinde adı geçen\" gibi atıf ifadesi silindi (örnek elenmedi; `postprocess` alanında "
+              "işaretli)." if vs.get("rule_fixes", {}).get("kaynak_atfi_silindi") else "")
+           + (f" {n(vs['rule_fixes']['adim_yazimi_duzeltildi'])} cevapta \"Adim\" yazımı \"Adım\" olarak düzeltildi."
+              if vs.get("rule_fixes", {}).get("adim_yazimi_duzeltildi") else ""),
            f"2. **Kanıt kontrolü** (kaynağı olan tüm örnekler): `supporting_evidence` alıntısının kelime 5-gram'larının en "
-           f"az %{int(100 * I['evidence_min_overlap'])}'i kaynak metinde bulunmalıdır; bulunmayan örnek uydurma kaynak "
+           f"az {tr_ek('%' + str(int(100 * I['evidence_min_overlap'])))} kaynak metinde bulunmalıdır; bulunmayan örnek uydurma kaynak "
            "riski nedeniyle elenir.",
            f"3. **LLM yargıç** (işlerin %{int(100 * I['judge_sample_fraction'])}'luk tabakalı rastgele örneklemi, "
            f"{n(vs.get('judged_examples', 0))} örnek): örneği üreten modelden **farklı** bir model, sıcaklık 0 ile her "
            "örneği kaynağıyla birlikte desteklenme, doğruluk, talimata uyma, anlaşılırlık ve Türkçe akıcılık açısından "
            f"değerlendirdi. Başarısız oranı: **{pc(vs.get('judge_fail', 0), vs.get('judged_examples') or 0)}** "
            "(tüm set için tahmini hata oranı); başarısızlar elendi. Yargıç modelleri: "
-           + (", ".join(f"{k} ({n(v)})" for k, v in jm.most_common()) or "-") + ".",
+           + (", ".join(f"{k} ({n(v)})" for k, v in jm.most_common()) or "-") + "."
+           + (" Örneklem ilk çalıştırmada sabitlendi (sonradan eklenen kurallar örneklemi değiştirmesin diye)."
+              + "".join(f" {lab} üretimlerinde başarısız: {n(g['fail'])}/{n(g['judged'])}"
+                        f" ({pc(g['fail'], g['judged'])});" for lab, g in
+                        (("Lite", vs['judge_by_generator']['lite']), ("Flash", vs['judge_by_generator']['flash']))
+                        if g['judged']).rstrip(";") + "."
+              if vs.get("judge_by_generator") else "")
+           + (f" Örneklemdeki {n(vs['judge_gave_up_jobs'])} işte yargıç iki denemede tüm örnekleri değerlendiremedi; "
+              f"bu işlerin değerlendirilmeyen {n(vs.get('judge_unjudged_examples_in_sample', 0))} örneği yalnız kural ve "
+              "kanıt kontrolüyle sette kaldı (`llm_judged=false`)." if vs.get("judge_gave_up_jobs") else ""),
            "4. **Rastgele örneklem incelemesi:** "]
     ir = qc.get("instruction_review", {})
+    rev_f = p("qc") / "instruction_review.csv"
+    rev_rows = list(csv.DictReader(open(rev_f, encoding="utf-8-sig"))) if rev_f.exists() else []
+    adim = [r for r in rev_rows if r["task_type"] == "adim_adim_problem_cozme"]
+    adim_rev = (len(adim), sum(1 for r in adim if (r.get("son_karar") or r.get("claude_karar")) == "sorunlu"))
     if ir.get("pre_reviewed") or ir.get("human_reviewed"):
         md[-1] += (f"{ir.get('sample')} örnek (görev türü oranında tabakalı) kaynak metniyle karşılaştırılarak incelendi. "
                    f"Yapay zekâ destekli ön inceleme ölçüt bazında yapıldı; nihai kararı grup üyesi verdi. Ön incelemede "
@@ -436,8 +462,10 @@ def instruction_card() -> None:
            "## Sürüm geçmişi",
            "- v0.1 (22.10.2026): Pilot üretim (11 örnek, eski prompt; veri setine alınmadı).",
            "- v0.9 (23.10.2026): Stack Exchange, kapsam dışı ve doküman işleri; Türkçe karakter kontrolü.",
-           "- v1.0 (24–25.10.2026): ek paketler (ek1–ek3), prompt v1.1/v1.2, çoktan seçmeli sızıntı ve görünmeyen metne "
-           "atıf kuralları, LLM yargıç örneklemi, 150 örneklik inceleme.", "",
+           "- v1.0 (24–26.10.2026): ek paketler (ek1–ek3), prompt v1.1/v1.2, çoktan seçmeli sızıntı ve görünmeyen metne "
+           "atıf kuralları, LLM yargıç örneklemi, 150 örneklik inceleme.",
+           "- Planlanan v1.1 (final dönemi öncesi): yargıcın örneklem dışındaki bütün lite üretimi işlere genişletilmesi "
+           "(`11_verify_instructions.py --extended`); elenenler `judge_ext_fail` nedeniyle ayrı kaydedilir.", "",
            "## Lisans",
            "Her örnek kaynağının lisansını `license` alanında taşır. Stack Exchange türevleri CC BY-SA 4.0, OpenStax "
            "türevleri CC BY-NC-SA 4.0, Wikipedia türevleri CC BY-SA 4.0 koşullarına tabidir; veri seti akademik ve "
@@ -450,12 +478,25 @@ def instruction_card() -> None:
            "- Kanıt kontrolü cevabın tamamını değil, modelin gösterdiği alıntıyı doğrular; alıntı dışındaki bir cümlede "
            "hata kalma olasılığı LLM yargıç ve örneklem incelemesiyle ölçülmüştür, sıfır değildir.",
            "- Örnekler birden fazla Gemini modeliyle üretildiği için üslupta küçük farklılıklar olabilir. Ücretsiz "
-           f"katmanın Flash kotası yetmediği için örneklerin {pc(lite_n, len(ins))}'i lite modellerle üretildi; lite "
+           f"katmanın Flash kotası yetmediği için örneklerin {tr_ek(pc(lite_n, len(ins)))} lite modellerle üretildi; lite "
            f"cevaplar daha kısadır (ortalama {n(lite_len)} karakter, Flash {n(flash_len)}) ve Türkçe karakter kaybı, "
            "talimatta soru verme gibi kusurlar lite çıktılarında yoğunlaştı (bu kusurlu örnekler elendi).",
            "- Stack Exchange cevaplarının bir kısmı uzay mühendisliği ağırlıklıdır; kaynak verideki kaybolmuş üsler "
            "(\"× 1030 kg\") otomatik düzeltildi, ancak benzer biçim bozuklukları tamamen dışlanamaz.",
-           "- Kapsam dışı örnekler kaynak dokümansızdır; doğrulukları yalnız yargıç ve inceleme ile kontrol edildi.", "",
+           "- Kapsam dışı örnekler kaynak dokümansızdır; doğrulukları yalnız yargıç ve inceleme ile kontrol edildi.",
+           "- Örnekler kaynağa sadıktır; kaynaktaki hata da örneğe geçebilir. Örneklem incelemesinde bu türden bulunan "
+           "hatalar: Türkçe Wikipedia'daki \"1921'de Birleşmiş Milletler Radyum Kurumu\" (BM 1945'te kuruldu), Büyük "
+           "Patlama'nın \"birkaç milimetrelik bir noktadan patlama\" diye anlatılması, bilimsel olarak eksik bir Stack "
+           "Exchange cevabı (Titan atmosferi). Bu örnekler çıkarıldı; benzerleri yargıç ve incelemenin dışında kalan "
+           "örneklerde bulunabilir.",
+           (f"- `adim_adim_problem_cozme` türü en zayıf türdür: incelenen {n(adim_rev[0])} örneğin "
+            f"{n(adim_rev[1])} tanesi sorunluydu; çoğunda çözülecek bir hesap veya süreç yoktu, bilgiler adım gibi "
+            "sıralanmıştı (yargıç da bu örnekleri eledi)." if adim_rev[1] else
+            "- `adim_adim_problem_cozme` örneklerinde bilgilerin adım gibi sıralandığı, çözülecek hesap içermeyen "
+            "örnekler bulunabilir."),
+           "- Yargıç yalnız %10'luk örneklemde çalıştı; örneklem dışındaki lite üretimi örneklerin bir kısmında benzer "
+           "kusurlar kalmış olabilir (tahmini oran yukarıda). Final dönemi eğitiminden önce ek yargıçla temizlenmesi "
+           "planlanmıştır (v1.1).", "",
            "## Hazırlayan",
            "Eda Gögebakan (2211012069) — Süleyman Demirel Üniversitesi, Bilgisayar Mühendisliği. "
            "Danışman: Asim Sinan Yüksel."]
@@ -502,7 +543,32 @@ def source_inventory() -> None:
         w.writerow(["nasa_exoplanet_archive", "https://exoplanetarchive.ipac.caltech.edu/", "structured_data", "en",
                     "", 0, "", "", "Atıf gerekli",
                     "Corpus'a alınmadı; final dönemde RAG kaynağı (güncel, değişken tablo verisi)"])
+        for repo in CFG["sources"]["eval_reference"]:
+            w.writerow(eval_reference_row(repo))
     log.info("source_inventory.csv yazıldı")
+
+
+def eval_reference_row(repo: str) -> list:
+    """Değerlendirme seti satırı: soru sayısı, erişim tarihi ve lisans indirilen dosyalardan okunur."""
+    import glob
+    import re
+
+    import pandas as pd
+
+    d = p("eval_reference") / repo.replace("/", "__")
+    n_rows = 0
+    for f in glob.glob(str(d / "**" / "*"), recursive=True):
+        if f.endswith(".parquet"):
+            n_rows += len(pd.read_parquet(f))
+        elif f.endswith(".csv"):
+            n_rows += len(pd.read_csv(f))
+    man = d / "manifest.jsonl"
+    date = json.loads(man.read_text(encoding="utf-8").splitlines()[0])["retrieved_at"][:10] if man.exists() else ""
+    card = (d / "README.md").read_text(encoding="utf-8") if (d / "README.md").exists() else ""
+    m = re.search(r"^license:\s*(\S+)", card, re.M) or re.search(r"\*\*License\*\*:\s*([^\n]+)", card)
+    lic = m.group(1).strip().upper().replace("CC-BY-", "CC BY ") if m else "Veri kartında lisans belirtilmemiş"
+    return [repo.split("/")[-1], f"https://huggingface.co/datasets/{repo}", "dataset", "en", n_rows or "", 0, "", date,
+            lic, "Yalnız değerlendirme ve sızıntı (8-gram) kontrolü; eğitime girmez, dağıtılmaz"]
 
 
 if __name__ == "__main__":

@@ -5,5 +5,9 @@ openstax_astronomy_2e,https://openstax.org/details/books/astronomy-2e,PDF,en,243
 arxiv_astro_ph,https://arxiv.org/archive/astro-ph,XML,en,6000,5953,2007161,2026-10-23,CC0 1.0 (arXiv metadata),Domain Corpus: ileri seviye terminoloji; yalnız başlık+özet
 wikipedia_en,https://en.wikipedia.org/,HTML/API,en,3576,3238,7868683,2026-10-22,CC BY-SA 4.0,"Domain Corpus: ikincil, durağan ansiklopedik bilgi"
 wikipedia_tr,https://tr.wikipedia.org/,HTML/API,tr,1737,1561,2742435,2026-10-23,CC BY-SA 4.0,Domain Corpus: Türkçe astronomi terminolojisi
-stackexchange_space_qa,https://huggingface.co/datasets/juliensimon/stackexchange-space-qa,dataset,en,33519,407,,2026-10-22,CC BY-SA 4.0,"Yalnız Instruction Dataset (soru_cevap); raw = veri setindeki kayıt, document_count = final instruction örneği"
+stackexchange_space_qa,https://huggingface.co/datasets/juliensimon/stackexchange-space-qa,dataset,en,33519,401,,2026-10-22,CC BY-SA 4.0,"Yalnız Instruction Dataset (soru_cevap); raw = veri setindeki kayıt, document_count = final instruction örneği"
 nasa_exoplanet_archive,https://exoplanetarchive.ipac.caltech.edu/,structured_data,en,,0,,,Atıf gerekli,"Corpus'a alınmadı; final dönemde RAG kaynağı (güncel, değişken tablo verisi)"
+Astro-mcqa,https://huggingface.co/datasets/patrickfleith/Astro-mcqa,dataset,en,200,0,,2026-10-22,CC BY 4.0,"Yalnız değerlendirme ve sızıntı (8-gram) kontrolü; eğitime girmez, dağıtılmaz"
+astro-mcq,https://huggingface.co/datasets/patrickfleith/astro-mcq,dataset,en,579,0,,2026-10-22,CC BY 4.0,"Yalnız değerlendirme ve sızıntı (8-gram) kontrolü; eğitime girmez, dağıtılmaz"
+HubbleSpaceTelescope-MCQ,https://huggingface.co/datasets/patrickfleith/HubbleSpaceTelescope-MCQ,dataset,en,1052,0,,2026-10-22,Veri kartında lisans belirtilmemiş,"Yalnız değerlendirme ve sızıntı (8-gram) kontrolü; eğitime girmez, dağıtılmaz"
+Astrobench_MCQ_v1_Public,https://huggingface.co/datasets/AstroMLab/Astrobench_MCQ_v1_Public,dataset,en,3846,0,,2026-10-22,MIT,"Yalnız değerlendirme ve sızıntı (8-gram) kontrolü; eğitime girmez, dağıtılmaz"

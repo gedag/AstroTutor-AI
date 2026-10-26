@@ -59,7 +59,8 @@ def eval_contamination(docs: list[dict], n: int, min_shared: int = 3) -> int:
                 for key in index[g]:
                     shared[key].add(g)
                     where[key].add(d["document_id"])
-    hit = sorted((k for k, v in shared.items() if len(v) >= min_shared), key=lambda k: -len(shared[k]))
+    # eşit sayıda paylaşanlar (set, dosya, satır) sırasıyla: çıktı her çalıştırmada birebir aynı olsun
+    hit = sorted((k for k, v in shared.items() if len(v) >= min_shared), key=lambda k: (-len(shared[k]), k))
     with open(p("reports") / "eval_contamination.csv", "w", encoding="utf-8-sig", newline="") as f:
         w = csv.writer(f)
         w.writerow(["eval_set", "file", "row", "question", "shared_8grams", "corpus_documents"])

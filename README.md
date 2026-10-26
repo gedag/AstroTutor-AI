@@ -33,9 +33,9 @@ data/
   eval_reference/ değerlendirme setleri (yalnız sızıntı kontrolü)   [Git'e girmez]
   samples/        her veri setinden küçük örnekler                   [Git'te]
 scripts/          01_download.py … 16_make_samples.py, validate_datasets.py
-prompts/v1/       instruction üretimi ve LLM yargıç prompt'ları (sürümlü)
+prompts/          instruction üretimi ve LLM yargıç prompt'ları, sürümlü: v1/, v1.1/, v1.2/ (kullanılan: config.yaml → prompt_version)
 reports/          kaynak envanteri, istatistikler, kalite kontrol, temizleme örnekleri, grafikler
-notebooks/        keşifsel analiz
+notebooks/        keşifsel analiz defteri (gözle kontrol; Jupyter ile açılır, `pip install notebook`)
 config.yaml       tüm yollar, eşikler, seed ve model adları
 experiments.md    tarihli deney ve karar günlüğü
 ```
@@ -80,7 +80,7 @@ log yazar ve sonunda kaç dokümanın işlendiğini özetler. Rastgelelik içere
 | `08_statistics.py` | Sayısal özet, veri erimesi, dağılımlar, grafikler | `reports/statistics.md` |
 | `09_build_instruction_sources.py` | StackExchange temizliği, kaynak doküman seçimi, görev kotaları (`--part se_ref / doc / doc_supplement`) | `data/interim/instruction_jobs.jsonl` |
 | `10_generate_instructions.py` | Gemini ile Türkçe örnek üretimi; Türkçe karakteri eksik iş çıktısı reddedilir | `data/interim/instructions_raw.jsonl` |
-| `11_verify_instructions.py` | Kural kontrolleri + kanıt kontrolü + %10 LLM yargıç + sızıntı kontrolü | `data/interim/instructions_verified.jsonl` |
+| `11_verify_instructions.py` | Kural kontrolleri + kanıt kontrolü + %10 LLM yargıç (örneklem `instruction_judge_sample.json`'da sabit) + sızıntı kontrolü; `--extended`: örneklem dışındaki lite üretimlerini de değerlendirir (v1.1 için) | `data/interim/instructions_verified.jsonl` |
 | `12_split_instructions.py` | Kaynak dokümana göre gruplu ayrım | `data/final/instruction_v1.0.jsonl` |
 | `13_sample_for_review.py` | Manuel kontrol için 100 corpus + 150 instruction rastgele örnek | `reports/qc/*_review.csv` |
 | `14_qc_report.py` | Otomatik + manuel kalite raporu | `reports/quality_control_report.md` |
@@ -89,8 +89,8 @@ log yazar ve sonunda kaç dokümanın işlendiğini özetler. Rastgelelik içere
 | `validate_datasets.py` | Şema, sızıntı, HF yükleme, chat template testi, değerlendirme setleriyle örtüşme | `reports/validation_report.md`, `reports/eval_contamination.csv` |
 | `requeue_jobs.py` | Türkçe karakteri eksik (`--reason turkce`) veya çoktan seçmeli sorusu talimatta verilmiş (`--reason mcq`) işleri arşivleyip yeniden kuyruğa alır (bakım; döngü dururken) | `data/interim/archive/` |
 
-Yardımcı modüller: `common.py` (config, log, JSONL, RemovalLog), `llm.py` (Gemini istemcisi: model kademeleri,
-kota/yoğunluk yönetimi), `domain_lexicon.py` (alan terimleri, Wikipedia kategori kuralı), `turkish_check.py`
+Yardımcı modüller: `common.py` (config, log, JSONL, RemovalLog, Türkçe sayı ekleri), `llm.py` (Gemini istemcisi: model kademeleri,
+kota/yoğunluk yönetimi), `check_gemini.py` (anahtarı ve model erişimini test eder; anahtarı ekrana yazmaz), `domain_lexicon.py` (alan terimleri, Wikipedia kategori kuralı), `turkish_check.py`
 (Türkçe karakter kontrolü), `mcq_check.py` (çoktan seçmeli talimatta soru/şık/cevap sızıntısı), `exponent_fix.py` (kaybolmuş üsler), `html_residue.py` (HTML etiket/entity kalıntıları),
 `press_boilerplate.py` (NASA basın künyesi ve kişisel iletişim bilgisi temizliği). Kural modüllerinin her biri
 doğrudan çalıştırıldığında kendi testlerini çalıştırır (ör. `python scripts/exponent_fix.py`).

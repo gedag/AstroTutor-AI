@@ -16,7 +16,7 @@ import json
 import re
 from collections import Counter
 
-from common import CFG, RemovalLog, get_logger, p, read_jsonl, write_jsonl
+from common import CFG, RemovalLog, get_logger, p, read_jsonl, tr_ek, write_jsonl
 
 log = get_logger("14_qc_report")
 R = p("reports")
@@ -73,7 +73,7 @@ def review_section(rows: list[dict], crit: list[str], title: str) -> tuple[list[
         appr = sum(1 for r in hum if is_approval(r))
         summ["human_approved_pre"] = appr
         if appr:
-            md += [f"Nihai kararların {appr}/{len(hum)}'i grup üyesinin ön inceleme kararlarını onaylamasıyla "
+            md += [f"Nihai kararların {tr_ek(f'{appr}/{len(hum)}')} grup üyesinin ön inceleme kararlarını onaylamasıyla "
                    "verilmiştir.", ""]
         both = [r for r in hum if norm(r.get("claude_karar")) and not is_approval(r)]
         if both:  # yalnız ayrı verilmiş kararlar için anlamlı
@@ -98,6 +98,11 @@ def review_section(rows: list[dict], crit: list[str], title: str) -> tuple[list[
     return md, summ
 
 
+def fmt(v):
+    """Tam sayılar Türkçe binlik ayraçla (16.284); diğerleri olduğu gibi."""
+    return f"{v:,}".replace(",", ".") if isinstance(v, int) and not isinstance(v, bool) else v
+
+
 def main() -> None:
     docs = []
     for s in ("train", "validation", "test"):
@@ -120,7 +125,7 @@ def main() -> None:
     }
     md = ["# Kalite Kontrol Raporu", "", "Bu rapor `scripts/14_qc_report.py` tarafından üretilir.", "",
           "## A. Otomatik kontroller — Domain Corpus v1.0", "", "| Kontrol | Sonuç |", "| --- | --- |"]
-    md += [f"| {k} | {v} |" for k, v in auto_c.items()] + [""]
+    md += [f"| {k} | {fmt(v)} |" for k, v in auto_c.items()] + [""]
     summary["corpus_auto"] = auto_c
 
     removed_ins = read_csv(R / "removed_instructions.csv")
@@ -147,7 +152,7 @@ def main() -> None:
             "LLM yargıç başarısızlık oranı (tahmini hata oranı)": pct(vsum.get("judge_fail", 0), vsum.get("judged_examples") or 0),
         }
         md += ["## A. Otomatik kontroller — Instruction Dataset v1.0", "", "| Kontrol | Sonuç |", "| --- | --- |"]
-        md += [f"| {k} | {v} |" for k, v in auto_i.items()] + [""]
+        md += [f"| {k} | {fmt(v)} |" for k, v in auto_i.items()] + [""]
         reasons = Counter(r["reason"].split(":")[0] for r in removed_ins if r["stage"] in ("verify", "qc"))
         md += ["Doğrulama ve kalite kontrolünde elenme nedenleri:", "", "| Neden | Adet |", "| --- | --- |"]
         md += [f"| {k} | {v} |" for k, v in reasons.most_common()] + [""]

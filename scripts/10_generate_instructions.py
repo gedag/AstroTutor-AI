@@ -19,7 +19,6 @@ import json
 import sys
 import time
 from collections import Counter
-from typing import List
 
 from pydantic import BaseModel
 

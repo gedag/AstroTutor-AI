@@ -6,7 +6,7 @@ Bu rapor `scripts/14_qc_report.py` tarafından üretilir.
 
 | Kontrol | Sonuç |
 | --- | --- |
-| Doküman sayısı | 16284 |
+| Doküman sayısı | 16.284 |
 | Boş metin | 0 |
 | 300 karakterden kısa | 0 |
 | Benzersiz document_id | evet |
@@ -20,24 +20,25 @@ Bu rapor `scripts/14_qc_report.py` tarafından üretilir.
 
 | Kontrol | Sonuç |
 | --- | --- |
-| Örnek sayısı | 3340 |
+| Örnek sayısı | 3.412 |
 | Benzersiz id | evet |
 | messages biçimi hatalı | 0 |
 | Kaynak bilgisi eksik | 0 |
-| Çoktan seçmeli JSON geçerli | 451/451 |
+| Çoktan seçmeli JSON geçerli | 455/455 |
 | Aynı kaynak doküman birden fazla kümede | 0 |
-| LLM yargıç örneklemi (örnek) | 0 |
-| LLM yargıç başarısızlık oranı (tahmini hata oranı) | - |
+| LLM yargıç örneklemi (örnek) | 348 |
+| LLM yargıç başarısızlık oranı (tahmini hata oranı) | %11,5 |
 
 Doğrulama ve kalite kontrolünde elenme nedenleri:
 
 | Neden | Adet |
 | --- | --- |
-| mcq_answer_in_instruction | 154 |
+| mcq_answer_in_instruction | 160 |
 | response_references_unseen_text | 80 |
+| invalid_mcq_json | 69 |
 | references_unseen_text | 67 |
-| invalid_mcq_json | 64 |
-| turkish_chars_missing | 55 |
+| turkish_chars_missing | 64 |
+| judge_fail | 40 |
 | evidence_not_in_source | 34 |
 | length | 8 |
 | llm_skipped | 5 |
@@ -47,7 +48,9 @@ Doğrulama ve kalite kontrolünde elenme nedenleri:
 | near_duplicate | 4 |
 | duplicate | 3 |
 | exponent_loss | 2 |
-| task_type_mismatch | 2 |
+| task_type_mismatch | 1 |
+
+LLM yargıcın başarısız bulduğu ölçütler: correct=7, fluent_turkish=12, supported=12, follows_instruction=6, instruction_clear=3
 
 ## B. Rastgele örneklem incelemesi
 
@@ -76,7 +79,7 @@ Doğrulama ve kalite kontrolünde elenme nedenleri:
 | Uygun | 88 | %88,0 |
 | Sorunlu | 12 | %12,0 |
 
-Nihai kararların 100/100'i grup üyesinin ön inceleme kararlarını onaylamasıyla verilmiştir.
+Nihai kararların 100/100'ü grup üyesinin ön inceleme kararlarını onaylamasıyla verilmiştir.
 
 **Hata türleri** (nihai karar, yoksa ön inceleme):
 
@@ -91,9 +94,44 @@ Nihai kararların 100/100'i grup üyesinin ön inceleme kararlarını onaylamas�
 
 ### Instruction Dataset
 
-Örneklem: **0** · Claude ön incelemesi yapılan: 0 · grup üyesi nihai kararı verilen: **0**
+Örneklem: **150** · Claude ön incelemesi yapılan: 150 · grup üyesi nihai kararı verilen: **150**
 
-*Henüz inceleme yapılmadı.*
+**Ölçüt bazında sonuçlar (yapay zekâ destekli ön inceleme, Claude):**
+
+| Kontrol | Başarılı | Oran |
+| --- | --- | --- |
+| talimat_anlasilir | 149/150 | %99,3 |
+| kaynakla_tutarli | 141/150 | %94,0 |
+| talimati_karsiliyor | 142/150 | %94,7 |
+| gorev_turu_dogru | 147/150 | %98,0 |
+| turkce_akici | 146/150 | %97,3 |
+| **Ön incelemede uygun** | 126/150 | **%84,0** |
+
+**Nihai karar (grup üyesi):**
+
+| Sonuç | Adet | Oran |
+| --- | --- | --- |
+| Uygun | 126 | %84,0 |
+| Sorunlu | 24 | %16,0 |
+
+Nihai kararların 150/150'si grup üyesinin ön inceleme kararlarını onaylamasıyla verilmiştir.
+
+**Hata türleri** (nihai karar, yoksa ön inceleme):
+
+| Hata türü | Adet | Örneklemdeki oranı |
+| --- | --- | --- |
+| dil_hatasi | 4 | %2,7 |
+| talimata_uymuyor | 4 | %2,7 |
+| kaynakta_olgusal_hata | 4 | %2,7 |
+| kaynakta_olmayan_iddia | 3 | %2,0 |
+| olgusal_hata | 3 | %2,0 |
+| gorev_turu_hatali | 3 | %2,0 |
+| alan_disi | 2 | %1,3 |
+| talimat_belirsiz | 1 | %0,7 |
+| sayisal_hata | 1 | %0,7 |
+| yaniltici_cevap | 1 | %0,7 |
+
+Örneklem incelemesinde sorunlu bulunan **24** instruction örneği setten çıkarıldı (kalan: 3388).
 
 ### Near-duplicate eşiğinin doğrulanması
 

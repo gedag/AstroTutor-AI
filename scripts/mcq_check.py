@@ -22,6 +22,37 @@ MCQ_ANSWER_FRAME = re.compile(r"\b(soruyu|soruları|sorulara|soruya)\s+(\w+\s+){
                               r"(?!ya?ma|ye?me)\w*", re.I)
 
 
+# 25.10.2026 (LLM yargıç bulguları): talimat parçaları. Tek tırnak bölmez (Türkçe kesme işareti).
+_TEMPLATE = re.compile(r"\{.*\}", re.S)
+_SEG = re.compile(r"(?<=[.!?:])\s+|(?<=[.!?:][\"'”’])\s+|\n+|[\"“”]")
+# Talimat (istek) parçası: emir kipindeki üretim fiilleri ve görev sözcükleri. "oluşturur", "verir" gibi bildirme
+# kipleri metin cümlesidir, eşleşmez.
+_REQUEST = re.compile(r"\b(hazırla|hazırlayın|hazırlayınız|oluştur|oluşturun|oluşturunuz|üret|üretin|üretiniz|ver|verin|"
+                      r"veriniz|yaz|yazın|yazınız|sun|sunun|kullan|kullanın|irdele)\b|json|format|seçenekli|"
+                      r"çoktan seçmeli|\bsoru(yu|su|lar)?\b|m[ıi]s[ıi]n\b|m[ıi]s[ıi]n[ıi]z\b", re.I)
+PASSAGE_MIN_CHARS = 100
+
+
+def _segments(ins: str) -> list[str]:
+    return [s.strip() for s in _SEG.split(_TEMPLATE.sub(" ", ins)) if s and s.strip()]
+
+
+def mcq_passage_chars(ins: str) -> int:
+    """Talimattaki öğretim metninin (istek cümleleri ve JSON şablonu dışındaki kısım) karakter sayısı.
+    25.10.2026: "Kaynak metne dayanarak ... soru hazırla" gibi metinsiz 4 talimat; ölçüt bütün sette yalnız bunları
+    yakaladı (eşik 100; metni olan en kısa talimatta değer 117)."""
+    return sum(len(s) for s in _segments(ins) if not _REQUEST.search(s))
+
+
+def content_question_in_instruction(ins: str) -> str | None:
+    """Soru üretimi talimatında öğrenciye sorulacak sorunun kendisi ("... kimdir?") var mı? İstek cümleleri
+    ("soru hazırlar mısın?") sayılmaz. 25.10.2026: 7 örnek, 7'si de gerçek kusur."""
+    for s in _segments(ins):
+        if s.endswith("?") and not _REQUEST.search(s):
+            return s[-80:]
+    return None
+
+
 def _nz(s: str) -> str:
     return re.sub(r"\W+", " ", s.lower()).strip()
 
@@ -45,10 +76,12 @@ def mcq_in_instruction(ins: str, resp: str) -> str | None:
     try:
         qs = json.loads(re.search(r"\{.*\}", resp, re.S).group(0))["sorular"]
     except Exception:
-        return None
+        qs = []
     n = _nz(ins)
     if any(len(_nz(str(q.get("soru", "")))) >= 25 and _nz(str(q.get("soru", ""))) in n for q in qs):
         return "soru_talimatta"
+    if content_question_in_instruction(ins):
+        return "icerik_sorusu_talimatta"
     return None
 
 
@@ -80,6 +113,29 @@ if __name__ == "__main__":
         got = mcq_in_instruction(ins, '{"sorular": []}')
         bad += got != want
         print("tamam" if got == want else "HATA", want, got, "|", ins[:60].replace("\n", " "))
+    # 25.10.2026 yargıç bulguları
+    q_cases = {
+        "Metin cümlesi burada. Bu metne göre, 1960'lı yıllarda yerçekimi treni fikrini tekrar gündeme getiren kişi kimdir?": True,
+        "Aşağıdaki metne dayanarak bir soru üret: 'Güneş tutulması sırasında gamanın pozitif bir değer alması ne anlama gelir? Gamanın işareti...'": True,
+        "Aşağıdaki metni okuyup bir çoktan seçmeli soru hazırlar mısın? Metin: Kepler teleskobu...": False,
+        "Bu metinden dört seçenekli bir soru oluşturur musun?": False,
+        "Kozmik ışınların çoğunu protonlar oluşturur. Bu bilgilere dayanarak bir soru hazırlayınız.": False,
+    }
+    for ins, want in q_cases.items():
+        got = content_question_in_instruction(ins) is not None
+        bad += got != want
+        print("tamam" if got == want else "HATA", "içerik sorusu", want, got, "|", ins[:60])
+    p_cases = {
+        "Kaynak metne dayanarak, Te yöntemiyle hangi oksijen çizgisinin kullanıldığını soran dört seçenekli bir soru hazırla. "
+        'Talimatta yaklaşık 100 kelimelik bilgilendirici bir giriş yap ve sonucu JSON formatında ver: {"sorular": []}': False,
+        "Kozmik ışınların büyük bir çoğunluğunu hidrojen çekirdekleri, yani protonlar oluşturur. Geri kalan kısmın yaklaşık "
+        "yüzde 9'unu helyum ve daha ağır çekirdekler oluştururken, küçük bir kısmı da elektronlar ve pozitronlardan meydana "
+        "gelir. Bu bilgilere dayanarak bir soru hazırlayınız.": True,
+    }
+    for ins, want in p_cases.items():
+        got = mcq_passage_chars(ins) >= PASSAGE_MIN_CHARS
+        bad += got != want
+        print("tamam" if got == want else "HATA", "öğretim metni var", want, got, mcq_passage_chars(ins))
     resp = '{"sorular": [{"soru": "Antennae Gökadaları ilk olarak kim tarafından keşfedilmiştir?"}]}'
     got = mcq_in_instruction("Metin... Antennae Gökadaları ilk olarak kim tarafından keşfedilmiştir?", resp)
     bad += got != "soru_talimatta"
