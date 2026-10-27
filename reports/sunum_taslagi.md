@@ -2,7 +2,9 @@
 
 Rehber §16 akışına göre slayt slayt içerik. Sayıların hepsi veri setlerinden ve raporlardan alınmıştır
 (`reports/statistics.md`, `reports/quality_control_report.md`, kartlar); sunumdan önce son hâllerinden kontrol edin.
-Her slaytın altında konuşma notu (Not) ve beklenen "neden?" sorusuna hazır cevap var.
+Her slaytın altında konuşma notu (Not) ve beklenen "neden?" sorusuna hazır cevap var. Bu taslaktaki bölüm
+numaraları PowerPoint'teki slayt numaralarıyla aynı değildir; PowerPoint dosyası
+(`reports/AstroTutor_AI_Vize_Sunumu.pptx`) 16 slayttır ve aşağıda atıflar PowerPoint slayt numarasıyla verilmiştir.
 
 ---
 
@@ -220,9 +222,9 @@ setten çıkarıldı. En zayıf tür: adım adım problem çözme (11'in 5'i; he
 ## "Neden?" sorularına hazırlık
 - **Neden PyMuPDF?** 40 rastgele sayfada pdfplumber ile eşit kalite (40/40 sayfa, karakter sayıları yakın), çok daha
   hızlı (iki ölçümde ~70 ve ~161 kat). Taranmış sayfa yalnız 2 kapak sayfası → OCR gerekmedi.
-- **Neden 300 karakter?** Bkz. slayt 8.
-- **Neden MinHash ve 0,85?** Bkz. slayt 7; eşik 50 çiftle doğrulandı, hatalı eleme 0.
-- **Neden İngilizce doküman?** Bkz. slayt 4.
+- **Neden 300 karakter?** Bkz. bu taslakta bölüm 8 (PowerPoint'te slayt 9'un notu).
+- **Neden MinHash ve 0,85?** Bkz. bölüm 7 (PowerPoint slayt 7); eşik 50 çiftle doğrulandı, hatalı eleme 0.
+- **Neden İngilizce doküman?** Bkz. bölüm 4 (PowerPoint slayt 4 ve notu).
 - **Neden bu metadata alanları?** `source`, `url`, `license`, `retrieved_at` izlenebilirlik ve lisans için;
   `group_key` sızıntısız bölme için (EN/TR aynı madde); `subtopic` kapsam dengesi analizi için; `token_count`
   eğitim bütçesi için; `postprocess` hangi dokümanın ikinci geçişten geçtiğini göstermek için.
@@ -236,9 +238,12 @@ setten çıkarıldı. En zayıf tür: adım adım problem çözme (11'in 5'i; he
   %48,5'i), corpus'un çoğunlukla İngilizce olması, alt konu etiketlerinde anahtar kelime yöntemi hataları (~%7),
   instruction örneklerinin çoğunun lite modelle üretilmiş olması. Plan: final eğitiminden önce yargıcı bütün lite
   üretimlerine genişletip (`--extended`) Instruction v1.1 çıkarmak; örneklem hatası lite'ta %12,6, Flash'ta %0.
-- **Neden yargıç yalnız %10?** Ücretsiz katmanda model başına günde 20 istek var; tüm set ~290 ek çağrı (4–5 gün)
-  demek. Vize için rastgele örneklem hata oranını ölçmeye yeter (Rehber örneklem ve hata oranı istiyor); tam
+- **Neden yargıç yalnız %10?** Ücretsiz katmanda model başına günde 20 istek var; tüm set ~290 ek çağrı demek;
+  sunucu yoğunluğu (503) da kotadan düştüğü için gerçekte günde ~25 iş ilerliyor (~2 hafta). Vize için rastgele örneklem hata oranını ölçmeye yeter (Rehber örneklem ve hata oranı istiyor); tam
   temizlik v1.1'de. Örneklem tabakalı ve sabit seed'li, sonradan değişmesin diye dosyaya sabitlendi.
+- **Ek yargıç ne gösterdi? (27.10.2026 ara sonuç)** Örneklem dışındaki 290 lite işinin 31'i değerlendirildi: 164 örnekten
+  25'i başarısız (%15,2; en sık neden kaynakta olmayan bilgi 10, olgu/hesap hatası 6, Türkçe hatası 5). Örneklemdeki
+  lite oranına (%12,6) yakın; yani %10'luk örneklemin tahmini tutarlı. v1.0'a dokunmuyor, sonuç v1.1'e girecek.
 - **Final dönemi için eğitim notu:** corpus 16,2 M token ve %83'ü İngilizce; CPT'de düşük öğrenme hızı ve genel
   Türkçe metinle karıştırma, modelin genel yeteneklerini korumak için planlanacak.
 - **Bu veri finalde gerçekten kullanılabilir mi?** `scripts/validate_datasets.py`: şema, kimlik benzersizliği,

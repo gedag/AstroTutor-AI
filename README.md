@@ -47,7 +47,7 @@ yeniden üretilebilir. Küçük örnekler depoda `data/samples/` altındadır.
 [AstroTutor_AI_veri_v1.0.zip](https://drive.google.com/file/d/1XFhiMaWvBgCL82-XzocDW-9LbvpNTjwW/view?usp=sharing)
 (53 MB; Domain Corpus v1.0, chunk'lar, Instruction Dataset v1.0, iki kart ve `SHA256SUMS.txt`). Açtıktan sonra
 bütünlük kontrolü: `sha256sum -c SHA256SUMS.txt`. Zip dosyasının kendi SHA-256 değeri:
-`7ccd8e93c1cd970d51f82219fd36470ac700b2765d80d9987f8c7a3da44d360b`.
+`53cbb0efd84ac6332e5b24991ffe6e7a56b9cbb6e3abece985c07d6509c64053`.
 
 ## Kurulum
 

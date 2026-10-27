@@ -618,3 +618,18 @@ Corpus, instruction, kod ve belgeler gereksinim listesiyle karşılaştırıldı
   binlik ayırıcı olduğu için yanlış okunabiliyordu), metindeki eşik ve parametreler de virgülle (0,85; 0,7).
   (4) Sunum 13. slayt: corpus incelemesindeki 12 sorunun 6'sı yalnız alt konu etiketi (önce yanlışlıkla 7 yazılmıştı;
   7, alt konu hatası geçen doküman sayısıydı, biri ayrıca formül kalıntısı taşıyor).
+
+## 27.10.2026 — Vize Rehberi'ne göre son uygunluk denetimi
+- Rehber §5–§19 madde madde kontrol edildi (klasör yapısı, kaynak envanteri, extraction başarısızlık oranı, temizlik
+  kuralları ve 20+ öncesi/sonrası örnek, dil dağılımı, dedup eşiği ve gerekçesi, metadata alanları, token dağılımı,
+  doküman düzeyinde ayrım, instruction taksonomisi ve dağılımı, kaynak izlenebilirliği, kaynak dokümana göre ayrım,
+  100 + 150 elle inceleme, elenme nedenleri, sayısal özet tablosu, config/requirements/log/seed/sürüm, kartlar,
+  sunum akışı, "neden?" soruları). Eksik madde bulunmadı; `validate_datasets.py` başarılı.
+- Corpus'ta bilgi taşımayan 7 liste/galeri sayfası bulundu (~7.200 token, %0,04; ör. NASA "Archived Nuggets",
+  tek `publication_year`'ı boş doküman). Etkisi ihmal edilebilir olduğu için v1.0 değiştirilmedi; DATASET_CARD
+  "Bilinen problemler"e yazıldı, sonraki sürümde liste sayfası filtresiyle çıkarılacak. Kısa satırlı ölçütün
+  yakaladığı diğer adaylar (formül ağırlıklı Wikipedia maddeleri, asteroit yörünge bilgileri, sözlük) bilgi taşıyor.
+- Sunum taslağındaki "Bkz. slayt N" atıfları taslak bölüm numaralarıydı; PowerPoint slayt numaralarıyla düzeltildi.
+  Ek yargıç süresi gerçek hızla güncellendi (503 yoğunluğu nedeniyle günde ~25 iş). Ek yargıç ara sonucu: 31/290 iş,
+  164 örnekten 25 başarısız (%15,2), örneklemdeki lite oranına (%12,6) yakın.
+- Kart değiştiği için veri zip'i yeniden paketlendi (veri dosyaları aynı); README'deki SHA-256 güncellendi.

@@ -276,7 +276,14 @@ def dataset_card() -> None:
            "(Türkçe Wikipedia taslak maddeleri, NASA uydu sayfaları), ancak bir kısmı değeri düşük video/sosyal medya "
            "sayfalarıdır (ör. \"Watch Online\"). Türkçe metin kıt olduğu için alt sınır 500 yerine 300 tutuldu.",
            "- Kaynakta bozuk kodlanmış kesme işareti 4 yerde \"^1\" olarak kalmıştır (\"Saturn^1s\"); 1 APOD sayfasında "
-           "(DOC_007977) kaynaktan gelen bir U+FFFD karakteri vardır (\"Don�t\")."]
+           "(DOC_007977) kaynaktan gelen bir U+FFFD karakteri vardır (\"Don�t\").",
+           "- Son denetimde (26–27.10.2026) bilgi taşımayan 7 liste/galeri sayfası bulundu: NASA'nın \"Archived Nuggets\", "
+           "\"Nuggets\", \"Graphics\", \"Posters and Infographics\", \"Europa Clipper Mission Identifier\", \"Gallery: "
+           "Moonscapes\" sayfaları ve Türkçe Wikipedia'nın \"Astronomik nesneler listeleri\" maddesi (toplam ~7.200 token, "
+           "corpus'un %0,04'ü; \"Archived Nuggets\" sayfasında `publication_year` da boştur). Etkisi ihmal edilebilir "
+           "olduğu için v1.0 değiştirilmedi; bir sonraki sürümde liste sayfası filtresiyle çıkarılacak. Kısa satırlı "
+           "ama bilgi taşıyan sayfalar (formül ağırlıklı maddeler, asteroit yörünge bilgileri, sözlük sayfaları) bu "
+           "kapsamda değildir."]
     ec = R / "eval_contamination.csv"
     if ec.exists():
         with open(ec, encoding="utf-8-sig") as f:
