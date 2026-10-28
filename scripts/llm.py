@@ -31,7 +31,8 @@ class TransientError(RuntimeError):
 
 NETWORK_ERR = re.compile(r"10054|10053|10060|connection (reset|aborted|refused)|remote ?(end|host|disconnected)|"
                          r"timed? ?out|ReadTimeout|ConnectTimeout|RemoteProtocolError|ConnectError|"
-                         r"Server disconnected|EOF occurred", re.I)
+                         r"Server disconnected|EOF occurred|getaddrinfo|Name or service not known|nodename|"
+                         r"CERTIFICATE_VERIFY_FAILED|SSL|10051|10065|unreachable|erişilemeyen", re.I)
 
 
 class Gemini:
@@ -166,7 +167,10 @@ class Gemini:
                         log.warning(f"{model}: geçici yoğunluk (503), sıradaki modele geçiliyor")
                         self.busy[model] = self.busy.get(model, 0) + 1
                         break
-                    if NETWORK_ERR.search(msg) or isinstance(e, (ConnectionError, TimeoutError)):
+                    # Ağ hataları (DNS, SSL, erişilemeyen ağ) işin kusuru değildir. ssl.SSLError aynı zamanda ValueError
+                    # olduğu için bu kontrol JSON kontrolünden ÖNCE yapılır (28.10.2026: Wi-Fi değişince 15 iş için SSL ve
+                    # DNS hataları "geçersiz JSON"/işe özgü hata sayılıp deneme hakkı yaktı).
+                    if NETWORK_ERR.search(msg) or isinstance(e, (ConnectionError, TimeoutError, OSError)):
                         log.warning(f"{model}: bağlantı hatası ({msg[:80]}), sıradaki modele geçiliyor")
                         self.busy[model] = self.busy.get(model, 0) + 1
                         break
