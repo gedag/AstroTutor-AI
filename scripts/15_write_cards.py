@@ -244,9 +244,11 @@ def dataset_card() -> None:
            "alanındadır. **Akademik ve ticari olmayan** amaçla hazırlanmıştır. OpenStax Astronomy 2e (CC BY-NC-SA 4.0) "
            "ve Wikipedia (CC BY-SA 4.0) türevleri aynı koşullarla paylaşılmalıdır. **Kişisel veri:** arXiv yazar adları "
            "saklanmadı, APOD görsel kredi satırları temizlendi. NASA basın bültenlerinde kamuya açık basın iletişim "
-           "bilgileri (ad, e-posta, telefon) bulundu ve silindi (NASA kaynaklarında kalan e-posta/telefon: 0). Metinlerde "
-           "bilimcilerin ve kamusal kişilerin adları, ansiklopedik/haber içeriğinin parçası olarak geçer. NASA içeriği "
-           "NASA'nın onayını ima edecek biçimde kullanılmaz.", "",
+           "bilgileri (ad, e-posta, telefon) bulundu ve silindi; cümle sonunda kalan 5 kurumsal basın numarası 30.10.2026 "
+           "düzeltmesiyle maskelendi (`[telefon]`). Final corpus'ta telefon numarası 0; e-posta biçiminde tek eşleşme, "
+           "bir Wikipedia biyografisinde (David J. Tholen) maddenin konusu olarak geçen, bilerek bozulmuş ve çalışmayan bir "
+           "Usenet takma adıdır. Metinlerde bilimcilerin ve kamusal kişilerin adları, ansiklopedik/haber içeriğinin "
+           "parçası olarak geçer. NASA içeriği NASA'nın onayını ima edecek biçimde kullanılmaz.", "",
            "## Bilinen problemler",
            f"- Kaynak dağılımı dengesizdir: dokümanların {tr_ek(pc(top_n, len(docs)))} {SRC[top_src][0]} kaynağından, "
            f"token'ların en büyük payı {SRC[top_tok_src][0]} kaynağından gelir.",
@@ -303,7 +305,11 @@ def dataset_card() -> None:
            "356 madde) eklendi.",
            f"- v{CFG['project']['corpus_version']} (24.10.2026): Token sayımı, split; elle kalite kontrolünde bulunan "
            "kaybolmuş üsler, NASA künye/kişisel veri satırları, sözlük terimleri ve APOD yeniden yayın tekrarları "
-           "düzeltildi (06b; doküman kimlikleri ve kümeler korunarak).", "",
+           "düzeltildi (06b; doküman kimlikleri ve kümeler korunarak).",
+           f"- v{CFG['project']['corpus_version']} düzeltmesi (30.10.2026): Telefon kuralı, numaradan hemen sonra cümle "
+           "noktası gelen 5 kurumsal basın numarasını kaçırıyordu; kural düzeltildi (testli) ve corpus 06 → 06b → 07 ile "
+           "yeniden üretildi. Yalnız bu 5 dokümanın metni değişti (numara → `[telefon]`, toplam −53 token); doküman "
+           "sayısı, kimlikler ve kümeler aynı.", "",
            "## Yeniden üretme",
            "`pip install -r requirements.txt` ardından `python run_pipeline.py --corpus`. Ayrıntı: [README.md](README.md).", "",
            "## Hazırlayan",

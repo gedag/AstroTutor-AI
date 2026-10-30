@@ -2,7 +2,7 @@
   "tokenizer": "Qwen/Qwen2.5-7B",
   "documents": {
     "count": 16284,
-    "total": 16231969,
+    "total": 16231916,
     "min": 53,
     "median": 391,
     "mean": 996.8,
@@ -30,7 +30,7 @@
     },
     "nasa_science": {
       "count": 2849,
-      "total": 2651697,
+      "total": 2651644,
       "min": 55,
       "median": 700,
       "mean": 930.7,
@@ -68,7 +68,7 @@
   "per_split": {
     "train": {
       "count": 14660,
-      "total": 14798649,
+      "total": 14798596,
       "min": 53,
       "median": 391,
       "mean": 1009.5,
@@ -97,7 +97,7 @@
   "per_language": {
     "en": {
       "count": 14723,
-      "total": 13489534,
+      "total": 13489481,
       "min": 53,
       "median": 380,
       "mean": 916.2,
@@ -117,7 +117,7 @@
   "chunks": {
     "max_tokens": 1024,
     "count": 33997,
-    "total": 16229964,
+    "total": 16229911,
     "min": 2,
     "median": 396,
     "mean": 477.4,

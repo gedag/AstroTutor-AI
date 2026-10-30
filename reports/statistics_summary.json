@@ -8,10 +8,10 @@
   "near_dup": 90,
   "repost_dup": 140,
   "final_docs": 16284,
-  "words": 10494610,
-  "tokens": 16231969,
+  "words": 10494607,
+  "tokens": 16231916,
   "lang_token_share": {
-    "en": 13489534,
+    "en": 13489481,
     "tr": 2742435
   },
   "removed_by_reason": {

@@ -633,3 +633,24 @@ Corpus, instruction, kod ve belgeler gereksinim listesiyle karşılaştırıldı
   Ek yargıç süresi gerçek hızla güncellendi (503 yoğunluğu nedeniyle günde ~25 iş). Ek yargıç ara sonucu: 31/290 iş,
   164 örnekten 25 başarısız (%15,2), örneklemdeki lite oranına (%12,6) yakın.
 - Kart değiştiği için veri zip'i yeniden paketlendi (veri dosyaları aynı); README'deki SHA-256 güncellendi.
+
+## 28.10.2026 — Ek yargıçta ağ hataları deneme hakkı yakıyordu
+- Wi-Fi değişince 15 işte DNS (`getaddrinfo failed`), SSL (`self-signed certificate`) ve erişilemeyen ağ hataları
+  alındı. `ssl.SSLError` aynı zamanda `ValueError` olduğu için `llm.py` bunu "geçersiz JSON" sayıyor, 11 de işin
+  deneme hakkını yakıyordu (2 hak bitince iş kalıcı olarak atlanır). Durduruldu; hiçbir işin hakkı bitmemişti.
+  Ağ kontrolü JSON kontrolünden önceye alındı ve DNS/SSL/erişilemeyen ağ desenleri eklendi (testli); 15 hatalı
+  deneme kaydı silindi (yedek `logs/extended_judge_attempts.yedek_28-10.jsonl`). SSL doğrulaması hiçbir zaman kapatılmaz.
+
+## 30.10.2026 — Kalan 5 basın telefonu maskelendi (Corpus v1.0 düzeltmesi)
+- Son kişisel veri taramasında NASA/SwRI basın bültenlerinde 5 kurumsal iletişim numarası bulundu ("(617) 954-3214."
+  gibi). Neden: `press_boilerplate.PHONE` ondalık sayıları telefon sanmasın diye numaradan sonra nokta gelmesine izin
+  vermiyordu; cümle sonundaki numaralar kaçmıştı. Kartta ve sunumda yazan "kalan: 0" bu yüzden doğru değildi.
+- Düzeltme: sondan sonra cümle noktası serbest, ondalık devamı (".3142") değil; alan kodundan sonraki ayraç ile ikinci
+  ayraç aynı olmalı ("6 356 752.3142" gibi sayısal veriler eşleşmez, "+01 303 447 2020" eşleşir). Testler eklendi.
+  İlk denemede eklenen "önünde rakam olmasın" koşulu "+01 303 447 2020" satırının silinmesini engelledi; karşılaştırmada
+  görüldü ve kaldırıldı.
+- Corpus 06 → 06b → 06b (ikinci geçiş: HTML kalıntısı; v1.0 da böyle üretilmişti) → 07 ile yeniden üretildi ve eski
+  hâliyle doküman doküman karşılaştırıldı: yalnız 5 dokümanda numara → `[telefon]`; doküman sayısı (16.284), kimlikler,
+  kümeler ve chunk sayısı (33.997) aynı; toplam token 16.231.969 → 16.231.916 (−53). Instruction dosyaları değişmedi.
+  Kalan telefon 0; e-posta biçiminde tek eşleşme bir Wikipedia biyografisindeki çalışmayan Usenet takma adı (kartta).
+- Sunum 6. slayt "188 telefon → 0" (183 + 5); 15. slayt "ek yargıç başladı". Veri zip'i ve SHA256SUMS yeniden üretildi.

@@ -47,8 +47,8 @@ JSONL; her satır bir dokümandır. Alanlar: `document_id`, `title`, `source`, `
 | Ölçüt | Değer |
 | --- | --- |
 | Final doküman sayısı | 16.284 |
-| Toplam kelime | 10.494.610 |
-| Toplam token (Qwen/Qwen2.5-7B tokenizer) | 16.231.969 (16,2M) |
+| Toplam kelime | 10.494.607 |
+| Toplam token (Qwen/Qwen2.5-7B tokenizer) | 16.231.916 (16,2M) |
 | Ortalama doküman uzunluğu | 997 token |
 | Medyan doküman uzunluğu | 391 token |
 | 95. yüzdelik / en uzun | 3.978 / 57.979 token |
@@ -65,7 +65,7 @@ Doküman düzeyinde %90 train (14.660), %5 validation (819), %5 test (805). Böl
 Rastgele 100 doküman (kaynak oranında tabakalı) incelendi: yapay zekâ destekli ön inceleme ölçüt bazında yapıldı, nihai karar, grup üyesinin ön inceleme kararlarını onaylamasıyla verildi. Ön incelemede uygun: %88,0; nihai kararda uygun: %88,0. Ayrıntı: [reports/quality_control_report.md](reports/quality_control_report.md).
 
 ## Lisans ve kullanım
-Veri seti yalnızca açık erişimli veya açık lisanslı kaynaklardan oluşur; her dokümanın lisansı `license` alanındadır. **Akademik ve ticari olmayan** amaçla hazırlanmıştır. OpenStax Astronomy 2e (CC BY-NC-SA 4.0) ve Wikipedia (CC BY-SA 4.0) türevleri aynı koşullarla paylaşılmalıdır. **Kişisel veri:** arXiv yazar adları saklanmadı, APOD görsel kredi satırları temizlendi. NASA basın bültenlerinde kamuya açık basın iletişim bilgileri (ad, e-posta, telefon) bulundu ve silindi (NASA kaynaklarında kalan e-posta/telefon: 0). Metinlerde bilimcilerin ve kamusal kişilerin adları, ansiklopedik/haber içeriğinin parçası olarak geçer. NASA içeriği NASA'nın onayını ima edecek biçimde kullanılmaz.
+Veri seti yalnızca açık erişimli veya açık lisanslı kaynaklardan oluşur; her dokümanın lisansı `license` alanındadır. **Akademik ve ticari olmayan** amaçla hazırlanmıştır. OpenStax Astronomy 2e (CC BY-NC-SA 4.0) ve Wikipedia (CC BY-SA 4.0) türevleri aynı koşullarla paylaşılmalıdır. **Kişisel veri:** arXiv yazar adları saklanmadı, APOD görsel kredi satırları temizlendi. NASA basın bültenlerinde kamuya açık basın iletişim bilgileri (ad, e-posta, telefon) bulundu ve silindi; cümle sonunda kalan 5 kurumsal basın numarası 30.10.2026 düzeltmesiyle maskelendi (`[telefon]`). Final corpus'ta telefon numarası 0; e-posta biçiminde tek eşleşme, bir Wikipedia biyografisinde (David J. Tholen) maddenin konusu olarak geçen, bilerek bozulmuş ve çalışmayan bir Usenet takma adıdır. Metinlerde bilimcilerin ve kamusal kişilerin adları, ansiklopedik/haber içeriğinin parçası olarak geçer. NASA içeriği NASA'nın onayını ima edecek biçimde kullanılmaz.
 
 ## Bilinen problemler
 - Kaynak dağılımı dengesizdir: dokümanların %36,6'sı arXiv astro-ph (başlık + özet) kaynağından, token'ların en büyük payı Wikipedia (İngilizce) kaynağından gelir.
@@ -90,6 +90,7 @@ Bu corpus bir bilgi tabanı veya doğruluk garantisi değildir; üzerinde eğiti
 - v0.9 (23.10.2026): Tüm kaynaklar, filtreleme, deduplication ve metadata.
 - v0.9.1 (23.10.2026): Kaynakça satırları, yayın listesi sayfaları ve Wikipedia kategori kuralı (alan dışı 356 madde) eklendi.
 - v1.0 (24.10.2026): Token sayımı, split; elle kalite kontrolünde bulunan kaybolmuş üsler, NASA künye/kişisel veri satırları, sözlük terimleri ve APOD yeniden yayın tekrarları düzeltildi (06b; doküman kimlikleri ve kümeler korunarak).
+- v1.0 düzeltmesi (30.10.2026): Telefon kuralı, numaradan hemen sonra cümle noktası gelen 5 kurumsal basın numarasını kaçırıyordu; kural düzeltildi (testli) ve corpus 06 → 06b → 07 ile yeniden üretildi. Yalnız bu 5 dokümanın metni değişti (numara → `[telefon]`, toplam −53 token); doküman sayısı, kimlikler ve kümeler aynı.
 
 ## Yeniden üretme
 `pip install -r requirements.txt` ardından `python run_pipeline.py --corpus`. Ayrıntı: [README.md](README.md).

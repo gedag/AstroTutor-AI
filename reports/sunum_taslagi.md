@@ -69,7 +69,8 @@ Wikipedia düz metin servisi, trafilatura ve PyMuPDF üst simgeleri siliyordu; 7
 belirsizliği olmayan kalıplarla geri yazıldı (25 birim testi; "1024×1024 pixels" gibi yanlış pozitifler testli).
 
 **NASA basın künyeleri ve kişisel veri:** "Media Contact: ⏎ ‹ad soyad› ⏎ ‹merkez, şehir› ⏎ ‹telefon›" blokları;
-348 e-posta ve 183 telefon numarası silindi (kalan: 0).
+348 e-posta ve 188 telefon numarası silindi ya da maskelendi (183'ü 24.10'da; numaradan sonra cümle noktası
+geldiği için kuralın kaçırdığı 5 kurumsal basın numarası 30.10 düzeltmesiyle). Kalan telefon: 0.
 
 Diğer örnekler: [reports/cleaning_examples.md](cleaning_examples.md) (20 öncesi/sonrası), kural tablosu:
 [reports/cleaning_rules.md](cleaning_rules.md).
@@ -241,9 +242,10 @@ setten çıkarıldı. En zayıf tür: adım adım problem çözme (11'in 5'i; he
 - **Neden yargıç yalnız %10?** Ücretsiz katmanda model başına günde 20 istek var; tüm set ~290 ek çağrı demek;
   sunucu yoğunluğu (503) da kotadan düştüğü için gerçekte günde ~25 iş ilerliyor (~2 hafta). Vize için rastgele örneklem hata oranını ölçmeye yeter (Rehber örneklem ve hata oranı istiyor); tam
   temizlik v1.1'de. Örneklem tabakalı ve sabit seed'li, sonradan değişmesin diye dosyaya sabitlendi.
-- **Ek yargıç ne gösterdi? (27.10.2026 ara sonuç)** Örneklem dışındaki 290 lite işinin 31'i değerlendirildi: 164 örnekten
-  25'i başarısız (%15,2; en sık neden kaynakta olmayan bilgi 10, olgu/hesap hatası 6, Türkçe hatası 5). Örneklemdeki
-  lite oranına (%12,6) yakın; yani %10'luk örneklemin tahmini tutarlı. v1.0'a dokunmuyor, sonuç v1.1'e girecek.
+- **Ek yargıç ne gösterdi? (30.10.2026 ara sonuç)** Örneklem dışındaki 290 lite işinin 113'ü değerlendirildi: 875 örnekten
+  95'i başarısız (%10,9; nedenler: kaynakta olmayan bilgi 29, Türkçe hatası 23, olgu/hesap hatası 20, talimata uymama 15,
+  belirsiz talimat 8). Örneklemdeki lite oranına (%12,6) yakın; yani %10'luk örneklemin tahmini tutarlı. v1.0'a
+  dokunmuyor, sonuç v1.1'e girecek.
 - **Final dönemi için eğitim notu:** corpus 16,2 M token ve %83'ü İngilizce; CPT'de düşük öğrenme hızı ve genel
   Türkçe metinle karıştırma, modelin genel yeteneklerini korumak için planlanacak.
 - **Bu veri finalde gerçekten kullanılabilir mi?** `scripts/validate_datasets.py`: şema, kimlik benzersizliği,

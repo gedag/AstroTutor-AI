@@ -16,8 +16,8 @@ Bu rapor `scripts/08_statistics.py` tarafından üretilir; elle düzenlenmez.
 | Yeniden yayın tekrarı (06b; APOD ve NASA Science, kimlik ve kümeler korunarak) | 140 |
 | İletişim sayfası, kurgu/eser maddesi, temizlik sonrası çok kısa (06b) | 12 |
 | Final doküman | 16.284 |
-| Toplam kelime | 10.494.610 |
-| Toplam token (Qwen/Qwen2.5-7B) | 16.231.969 |
+| Toplam kelime | 10.494.607 |
+| Toplam token (Qwen/Qwen2.5-7B) | 16.231.916 |
 | İngilizce içerik (token) | %83,1 |
 | Türkçe içerik (token) | %16,9 |
 | Manuel kontrol örneği (corpus) | 100 |
@@ -59,7 +59,7 @@ Ayrıntılı liste: `reports/extraction_failures.csv`, `reports/removed_document
 | --- | --- | --- | --- | --- | --- |
 | wikipedia_en | en | 3.238 | 5.436.213 | 7.868.683 | %48,5 |
 | wikipedia_tr | tr | 1.561 | 1.024.725 | 2.742.435 | %16,9 |
-| nasa_science | en | 2.849 | 1.947.218 | 2.651.697 | %16,3 |
+| nasa_science | en | 2.849 | 1.947.215 | 2.651.644 | %16,3 |
 | arxiv_astro_ph | en | 5.953 | 1.330.311 | 2.007.161 | %12,4 |
 | openstax_astronomy_2e | en | 238 | 394.967 | 498.952 | %3,1 |
 | nasa_apod | en | 2.445 | 361.176 | 463.041 | %2,9 |
@@ -109,8 +109,8 @@ En büyük kaynağın doküman payı: %36,6 (tek kaynak baskın değil).
 
 | Küme | Doküman | Toplam token | Min | Medyan | Ortalama | p95 | Maks |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Tümü | 16.284 | 16.231.969 | 53 | 391 | 996,8 | 3.978 | 57.979 |
-| train | 14.660 | 14.798.649 | 53 | 391 | 1.009,5 | 4.039 | 57.979 |
+| Tümü | 16.284 | 16.231.916 | 53 | 391 | 996,8 | 3.978 | 57.979 |
+| train | 14.660 | 14.798.596 | 53 | 391 | 1.009,5 | 4.039 | 57.979 |
 | validation | 819 | 737.348 | 65 | 393 | 900,3 | 3.342 | 11.538 |
 | test | 805 | 695.972 | 58 | 396 | 864,6 | 3.299 | 15.770 |
 
