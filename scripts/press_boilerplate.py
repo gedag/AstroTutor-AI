@@ -12,10 +12,10 @@ from __future__ import annotations
 import re
 
 EMAIL = re.compile(r"\b[\w.+-]+@[\w-]+\.(?:[\w-]+\.)*[a-z]{2,}\b", re.I)
-# Telefon: "(617) 954-3214", "321-867-2525", "818.354.7581", "808 555 0199". Sondan sonra cümle noktası gelebilir
+# Telefon: "(617) 555-0142", "321-555-0123", "818.555.0175", "808 555 0199". Sondan sonra cümle noktası gelebilir
 # (30.10.2026: ilk sürüm "(?![\d.])" yüzünden cümle sonundaki 5 numarayı kaçırmıştı); ondalık devamı ("752.3142")
 # telefon sayılmaz. Alan kodundan sonraki ayraç ile ikinci ayraç aynı olmalıdır (parantezli alan kodunda serbest);
-# bu yüzden "6 356 752.3142" gibi sayısal veriler eşleşmez, "+01 303 447 2020" ise eşleşir.
+# bu yüzden "6 356 752.3142" gibi sayısal veriler eşleşmez, "+01 303 555 0100" ise eşleşir.
 PHONE = re.compile(r"(?<![\d.])(?:\+?1[ .-]?)?(?:\(\d{3}\)\s?|\d{3}([ .-]))\d{3}(?(1)\1|[ .-])\d{4}(?!\d|\.\d)")
 CONTACT_HEAD = re.compile(r"^(Media|News Media|Press|Public Affairs)?\s*Contacts?\s*(Information)?\s*:?\s*$|"
                           r"^(Media|News Media|Press) Contacts?\s*:|"
@@ -137,12 +137,12 @@ if __name__ == "__main__":
     print("DART kalıbı:", "tamam" if ok4 else "HATA", n4, "|", out4)
     # cümle sonundaki numaralar maskelenir; sayısal veriler korunur (30.10.2026)
     s5 = ("To arrange interviews call the GSA Newsroom in Boston, Massachusetts at any time during the meeting: "
-          "(617) 954-3214. Updates are available by calling 321-867-2525. Or 818.354.7581. "
+          "(617) 555-0142. Updates are available by calling 321-555-0123. Or 818.555.0175. "
           "Earth's polar radius is 6 356 752.3142 m and the value 6416 247.4627 comes from the table; R@P0.99 of 0.903.")
     o5, k5 = scrub_inline_pii(s5)
-    ok5 = (k5 == 3 and "954-3214" not in o5 and "867-2525" not in o5 and "354.7581" not in o5
+    ok5 = (k5 == 3 and "555-0142" not in o5 and "555-0123" not in o5 and "555.0175" not in o5
            and "6 356 752.3142" in o5 and "6416 247.4627" in o5 and "R@P0.99" in o5)
     print("cümle sonu numara / sayısal veri:", "tamam" if ok5 else "HATA", k5, "|", o5)
-    out6, n6 = clean_press("The observatory hosted the workshop.\n+01 303 447 2020 ext. 1156\nThe meeting ended.")
-    ok6 = "447 2020" not in out6 and "hosted the workshop" in out6 and n6["pii_line"] == 1
+    out6, n6 = clean_press("The observatory hosted the workshop.\n+01 303 555 0100 ext. 1156\nThe meeting ended.")
+    ok6 = "555 0100" not in out6 and "hosted the workshop" in out6 and n6["pii_line"] == 1
     print("uluslararası önekli numara satırı:", "tamam" if ok6 else "HATA", "|", out6.replace("\n", " / "))

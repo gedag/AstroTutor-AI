@@ -642,12 +642,12 @@ Corpus, instruction, kod ve belgeler gereksinim listesiyle karşılaştırıldı
   deneme kaydı silindi (yedek `logs/extended_judge_attempts.yedek_28-10.jsonl`). SSL doğrulaması hiçbir zaman kapatılmaz.
 
 ## 30.10.2026 — Kalan 5 basın telefonu maskelendi (Corpus v1.0 düzeltmesi)
-- Son kişisel veri taramasında NASA/SwRI basın bültenlerinde 5 kurumsal iletişim numarası bulundu ("(617) 954-3214."
+- Son kişisel veri taramasında NASA/SwRI basın bültenlerinde 5 kurumsal iletişim numarası bulundu ("(617) 555-0142."
   gibi). Neden: `press_boilerplate.PHONE` ondalık sayıları telefon sanmasın diye numaradan sonra nokta gelmesine izin
   vermiyordu; cümle sonundaki numaralar kaçmıştı. Kartta ve sunumda yazan "kalan: 0" bu yüzden doğru değildi.
 - Düzeltme: sondan sonra cümle noktası serbest, ondalık devamı (".3142") değil; alan kodundan sonraki ayraç ile ikinci
-  ayraç aynı olmalı ("6 356 752.3142" gibi sayısal veriler eşleşmez, "+01 303 447 2020" eşleşir). Testler eklendi.
-  İlk denemede eklenen "önünde rakam olmasın" koşulu "+01 303 447 2020" satırının silinmesini engelledi; karşılaştırmada
+  ayraç aynı olmalı ("6 356 752.3142" gibi sayısal veriler eşleşmez, "+01 303 555 0100" eşleşir). Testler eklendi.
+  İlk denemede eklenen "önünde rakam olmasın" koşulu "+01 303 555 0100" satırının silinmesini engelledi; karşılaştırmada
   görüldü ve kaldırıldı.
 - Corpus 06 → 06b → 06b (ikinci geçiş: HTML kalıntısı; v1.0 da böyle üretilmişti) → 07 ile yeniden üretildi ve eski
   hâliyle doküman doküman karşılaştırıldı: yalnız 5 dokümanda numara → `[telefon]`; doküman sayısı (16.284), kimlikler,
