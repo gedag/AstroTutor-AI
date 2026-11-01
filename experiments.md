@@ -654,3 +654,15 @@ Corpus, instruction, kod ve belgeler gereksinim listesiyle karşılaştırıldı
   kümeler ve chunk sayısı (33.997) aynı; toplam token 16.231.969 → 16.231.916 (−53). Instruction dosyaları değişmedi.
   Kalan telefon 0; e-posta biçiminde tek eşleşme bir Wikipedia biyografisindeki çalışmayan Usenet takma adı (kartta).
 - Sunum 6. slayt "188 telefon → 0" (183 + 5); 15. slayt "ek yargıç başladı". Veri zip'i ve SHA256SUMS yeniden üretildi.
+
+## 01.11.2026 — Rehber'e göre genel denetim: kart ifadeleri netleştirildi
+- Rehber §3–§19 maddeleri dosyalara ve veriye karşı yeniden kontrol edildi: `validate_datasets` BAŞARILI; `data/final`
+  dosyaları teslim zip'indeki SHA256SUMS ile birebir aynı; Drive'dan indirilen zip'in SHA-256'sı README'dekiyle aynı;
+  kart, istatistik, kalite raporu ve sunum sayıları birbirini tutuyor (huni 16.572 − 46 − 90 − 140 − 12 = 16.284;
+  instruction 3.962 − 574 = 3.388). Veri değişmedi.
+- DATASET_CARD'da üç ifade netleştirildi (15_write_cards.py): 06b'nin 12 ek elemesi (iletişim sayfası 7, kurgu/eser
+  maddesi 4, temizlik sonrası kısa 1) artık deduplication paragrafında da yazıyor (önceden yalnız istatistik
+  raporundaydı); yeniden yayın kuralının NASA Science eşikleri (0,75 / 0,9) eklendi; "kalan e-posta/telefon: 0" ifadesi
+  Lisans bölümündeki Usenet takma adı açıklamasıyla uyumlu hâle getirildi; 30.10 düzeltmesinde 06b'nin iki geçişi yazıldı.
+- INSTRUCTION_CARD'daki yargıç modeli dağılımı (toplam 306) 348'lik örneklemin değil, yargıçtan geçip final sette kalan
+  örneklerin dağılımıdır; metin buna göre düzeltildi.

@@ -94,6 +94,29 @@ def near_dup_sentence(qc: dict) -> str:
     return f"Eşik inceleme tablosu: {link} (inceleme henüz yapılmadı)."
 
 
+SRC_LABEL = {"nasa_apod": "APOD", "nasa_science": "NASA Science"}
+
+
+def repost_rules(d2: dict) -> str:
+    """06b yeniden yayın kurallarını kaynak bazında yazar (eşikler 06b'nin özetinden okunur)."""
+    r = d2.get("rules", {})
+    parts = [f"{SRC_LABEL.get(s, s)} için kelime Jaccard ≥ {tr_num(v['jaccard'])} ve karakter dizisi benzerliği "
+             f"≥ {tr_num(v['char_ratio'])}" for s, v in r.items()]
+    return "; ".join(parts) if parts else "kelime Jaccard ve karakter dizisi benzerliği"
+
+
+OTHER_LABEL = {"contact_page": "iletişim sayfası", "fiction_work_06b": "kurgu/eser maddesi",
+               "too_short_after_06b": "temizlik sonrası alt uzunluk sınırının altına düşen"}
+
+
+def other_removed_sentence(d2: dict) -> str:
+    o = {k: v for k, v in d2.get("other_removed", {}).items() if v}
+    if not o:
+        return ""
+    det = ", ".join(f"{OTHER_LABEL.get(k, k)} {v}" for k, v in o.items())
+    return f" Aynı geçişte {n(sum(o.values()))} doküman daha elendi ({det})."
+
+
 def dataset_card() -> None:
     docs = [d for s in ("train", "validation", "test") for d in read_jsonl(p("final") / f"{s}.jsonl")]
     if not docs:
@@ -178,7 +201,8 @@ def dataset_card() -> None:
             f"(1) Wikipedia düz metin servisi, trafilatura ve PyMuPDF HTML/PDF üst simgelerini sildiği için kaybolan "
             f"üsler geri yazıldı ({n(d2.get('exponent_fixes', 0))} ifade; \"1.5 × 108 km\" → \"1.5 × 10^8 km\"); "
             f"(2) NASA basın bültenlerindeki künye, kredi ve iletişim satırları ile **kişisel iletişim bilgileri "
-            f"(e-posta, telefon)** silindi ({n(d2.get('press_docs_touched', 0))} doküman; kalan e-posta/telefon: 0); "
+            f"(e-posta, telefon)** silindi ({n(d2.get('press_docs_touched', 0))} doküman; kalan telefon ve gerçek "
+            f"e-posta adresi: 0, ayrıntı Lisans bölümünde); "
             f"(3) NASA sözlük sayfalarında kısa satır kuralının sildiği terimler geri getirildi."
             if d2 else ""),
            f"- **Filtering:** {CFG['filtering']['min_chars']} karakterden kısa ({n(reasons.get('too_short', 0))}), bozuk "
@@ -194,11 +218,12 @@ def dataset_card() -> None:
            f"duplicate MinHash LSH (kelime {ded.get('shingle_words')}-gram, {ded.get('num_perm')} permütasyon) + Jaccard ≥ "
            f"{tr_num(ded.get('threshold'))} ile ({n(ded.get('near_duplicates', 0))} doküman). " + near_dup_sentence(qc) +
            (f" Eşik incelemesi, APOD'un aynı açıklamayı yıllar sonra küçük düzeltmelerle yeniden yayımladığı "
-            f"sayfaları kaçırdığını gösterdi; ikinci bir geçişte (`scripts/06b_repost_dedup.py`: kelime Jaccard ≥ 0,5 "
-            f"ve karakter dizisi benzerliği ≥ 0,85) {n(d2.get('repost_removed', 0))} yeniden yayın tekrarı çıkarıldı "
+            f"sayfaları kaçırdığını gösterdi; ikinci bir geçişte (`scripts/06b_repost_dedup.py`; " + repost_rules(d2)
+            + f") {n(d2.get('repost_removed', 0))} yeniden yayın tekrarı çıkarıldı "
             f"({n(d2.get('removed_pairs_across_splits', 0))} çift farklı kümelerdeydi, yani sızıntı riski "
             f"taşıyordu). Genel eşik düşürülmedi, çünkü NASA'nın uydu sayfaları ortak şablona rağmen farklı uyduların "
-            f"bilgisini taşıyor (Jaccard 0,74'e kadar). Bu adım doküman kimliklerini ve kümeleri değiştirmez."
+            f"bilgisini taşıyor (Jaccard 0,74'e kadar)." + other_removed_sentence(d2)
+            + " Bu adım doküman kimliklerini ve kümeleri değiştirmez."
             if d2 else ""),
            "", "Her çıkarılan doküman nedeniyle birlikte kayıtlıdır: [reports/removed_documents.csv](reports/removed_documents.csv), "
            "[reports/extraction_failures.csv](reports/extraction_failures.csv).", "",
@@ -307,7 +332,7 @@ def dataset_card() -> None:
            "kaybolmuş üsler, NASA künye/kişisel veri satırları, sözlük terimleri ve APOD yeniden yayın tekrarları "
            "düzeltildi (06b; doküman kimlikleri ve kümeler korunarak).",
            f"- v{CFG['project']['corpus_version']} düzeltmesi (30.10.2026): Telefon kuralı, numaradan hemen sonra cümle "
-           "noktası gelen 5 kurumsal basın numarasını kaçırıyordu; kural düzeltildi (testli) ve corpus 06 → 06b → 07 ile "
+           "noktası gelen 5 kurumsal basın numarasını kaçırıyordu; kural düzeltildi (testli) ve corpus 06 → 06b (iki geçiş) → 07 ile "
            "yeniden üretildi. Yalnız bu 5 dokümanın metni değişti (numara → `[telefon]`, toplam −53 token); doküman "
            "sayısı, kimlikler ve kümeler aynı.", "",
            "## Yeniden üretme",
@@ -423,7 +448,8 @@ def instruction_card() -> None:
            f"{n(vs.get('judged_examples', 0))} örnek): örneği üreten modelden **farklı** bir model, sıcaklık 0 ile her "
            "örneği kaynağıyla birlikte desteklenme, doğruluk, talimata uyma, anlaşılırlık ve Türkçe akıcılık açısından "
            f"değerlendirdi. Başarısız oranı: **{pc(vs.get('judge_fail', 0), vs.get('judged_examples') or 0)}** "
-           "(tüm set için tahmini hata oranı); başarısızlar elendi. Yargıç modelleri: "
+           "(tüm set için tahmini hata oranı); başarısızlar elendi. Yargıçtan geçip final sette kalan "
+           + f"{n(sum(jm.values()))} örneğin yargıç modelleri: "
            + (", ".join(f"{k} ({n(v)})" for k, v in jm.most_common()) or "-") + "."
            + (" Örneklem ilk çalıştırmada sabitlendi (sonradan eklenen kurallar örneklemi değiştirmesin diye)."
               + "".join(f" {lab} üretimlerinde başarısız: {n(g['fail'])}/{n(g['judged'])}"
