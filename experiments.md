@@ -666,3 +666,10 @@ Corpus, instruction, kod ve belgeler gereksinim listesiyle karşılaştırıldı
   Lisans bölümündeki Usenet takma adı açıklamasıyla uyumlu hâle getirildi; 30.10 düzeltmesinde 06b'nin iki geçişi yazıldı.
 - INSTRUCTION_CARD'daki yargıç modeli dağılımı (toplam 306) 348'lik örneklemin değil, yargıçtan geçip final sette kalan
   örneklerin dağılımıdır; metin buna göre düzeltildi.
+
+## 01.11.2026 — Sunumda "yalnız train dokümanlarından" ifadesi düzeltildi
+- Slayt 10, notu ve `reports/sunum_taslagi.md` instruction örneklerinin "yalnız corpus train dokümanlarından"
+  üretildiğini söylüyordu. Veride 320 kaynak dokümanın 290'ı train (2.590 örnek), 16'sı validation (113), 14'ü test
+  (137); her örnek kaynak dokümanın kümesini miras alıyor (uyumsuz 0, `validate_datasets`). Sızıntı önlemi doğruydu,
+  yalnız ifade yanlıştı. Slayt, not ve taslak doğru ifadeyle düzeltildi; taslağın soru-cevap bölümüne "Test
+  dokümanlarından da örnek ürettiniz mi?" cevabı eklendi. Kartlar zaten doğruydu. Veri ve zip değişmedi.

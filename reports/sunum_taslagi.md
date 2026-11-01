@@ -125,7 +125,10 @@ sürümleri (aynı Wikidata kimliği) aynı kümede; chunk'lar bölmeden **sonra
 ## 9. Instruction Dataset — örnekler
 **3.388 Türkçe örnek** · train 3.078 / validation 146 / test 164 · 10 görev türü (hedef oranlara ±0,7 puan) ·
 seviye: başlangıç %35,1, orta %33,3, ileri %31,6.
-Kaynak: corpus'un yalnız **train** dokümanları (320 doküman, 2.840 örnek), Stack Exchange (401), kapsam dışı (147).
+Kaynak: corpus'tan 320 doküman (2.840 örnek), Stack Exchange (401), kapsam dışı (147).
+Corpus'tan üretilen her örnek, kaynak dokümanın corpus'taki kümesini **miras alır**: 290 train dokümanından 2.590 örnek
+train'e, 16 validation dokümanından 113 örnek validation'a, 14 test dokümanından 137 örnek test'e girdi. Corpus'ta test
+olan bir dokümandan üretilen örnek hiçbir zaman eğitime girmez.
 Üretim: Gemini (ücretsiz katman; 4 Flash + 2 lite model havuzu, her örnekte gerçek model ve prompt sürümü kayıtlı).
 
 | Görev türü | Örnek | Oran (hedef) |
@@ -233,6 +236,9 @@ setten çıkarıldı. En zayıf tür: adım adım problem çözme (11'in 5'i; he
   kontrolü, ayrı modelle yargıç, elle inceleme; elenen her örnek nedeniyle `reports/removed_instructions.csv`'de.
 - **Instruction seti nasıl ayrıldı?** Kaynak dokümana göre gruplu; corpus'ta test/validation olan dokümanlardan
   üretilen örnekler aynı kümede kalır → aynı dokümandan gelen örnekler farklı kümelere düşmez.
+- **Test dokümanlarından da örnek ürettiniz mi?** Evet, ama o örnekler instruction setinin de test kümesine girdi.
+  Corpus'ta test olan bir dokümandan üretilen örnek hiçbir zaman eğitime girmiyor; böylece hem CPT hem SFT tarafında
+  sızıntı yok. 320 kaynak dokümanın 290'ı train (2.590 örnek), 16'sı validation (113), 14'ü test (137).
 - **Pipeline yeniden çalıştırılabilir mi?** Evet: `run_pipeline.py`, sabit seed, config'te eşikler, kaldığı yerden
   devam; ikinci geçiş (06b) işlenmiş veriye tekrar uygulanmaz.
 - **Bilinen eksikler?** Kartlardaki "Bilinen problemler" bölümü: kaynak dengesizliği (Wikipedia EN token'ların
