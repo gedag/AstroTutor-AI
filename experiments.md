@@ -673,3 +673,11 @@ Corpus, instruction, kod ve belgeler gereksinim listesiyle karşılaştırıldı
   (137); her örnek kaynak dokümanın kümesini miras alıyor (uyumsuz 0, `validate_datasets`). Sızıntı önlemi doğruydu,
   yalnız ifade yanlıştı. Slayt, not ve taslak doğru ifadeyle düzeltildi; taslağın soru-cevap bölümüne "Test
   dokümanlarından da örnek ürettiniz mi?" cevabı eklendi. Kartlar zaten doğruydu. Veri ve zip değişmedi.
+
+## 02.11.2026 — Sunuma "Kısaca" bantları ve Instruction v1.1 slaytı eklendi
+- Her içerik slaytının başlığı altına slaytın ana mesajını sade dille veren bir "Kısaca" bandı eklendi (sunarken
+  hızlı hatırlatma; jüri için de ana mesaj). İçerik ve sayılar değişmedi, yalnız yerleşim sıkıştırıldı.
+- Yeni slayt 15 "Instruction v1.1: neden ve v1.0'dan farkı": yargıcın v1.0'da yalnız %10 örneklemi denetlemesi, lite
+  %12,6 / Flash %0 hata oranı, v1.0–v1.1 karşılaştırma tablosu ve sıradaki dört adım; ek yargıç ilerlemesi 02.11
+  itibarıyla 196/290 iş (1.641 örnekten 182'si başarısız, %11,1). Sunum 17 slayt oldu; plan slaytı (16) ve
+  `reports/sunum_taslagi.md` buna göre güncellendi. Veri değişmedi.

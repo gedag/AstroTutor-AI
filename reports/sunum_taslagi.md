@@ -4,7 +4,9 @@ Rehber §16 akışına göre slayt slayt içerik. Sayıların hepsi veri setleri
 (`reports/statistics.md`, `reports/quality_control_report.md`, kartlar); sunumdan önce son hâllerinden kontrol edin.
 Her slaytın altında konuşma notu (Not) ve beklenen "neden?" sorusuna hazır cevap var. Bu taslaktaki bölüm
 numaraları PowerPoint'teki slayt numaralarıyla aynı değildir; PowerPoint dosyası
-(`reports/AstroTutor_AI_Vize_Sunumu.pptx`) 16 slayttır ve aşağıda atıflar PowerPoint slayt numarasıyla verilmiştir.
+(`reports/AstroTutor_AI_Vize_Sunumu.pptx`) 17 slayttır ve aşağıda atıflar PowerPoint slayt numarasıyla verilmiştir.
+PowerPoint'te her içerik slaytının başlığının altında sade dilli bir **"Kısaca"** bandı vardır: slaytın ana mesajı,
+sunarken takılınca bakmak için. Ayrıntılı konuşma metni slayt notlarındadır (Sunucu Görünümü).
 
 ---
 
@@ -214,7 +216,21 @@ setten çıkarıldı. En zayıf tür: adım adım problem çözme (11'in 5'i; he
 | Cevapsız kalan bir Gemini isteği döngüyü 80 dk durdurdu | Log'da ilerleme yoktu | İstek başına 10 dk zaman aşımı; süre dolarsa sıradaki model |
 | Yeni kural iki işi tamamen eleyince yargıç örneklemi değişiyordu | Örneklem karşılaştırması | Örneklem ilk çalıştırmada dosyaya sabitlendi |
 
-## 12. Final dönemi planı
+## 12. Instruction v1.1: neden ve v1.0'dan farkı (PowerPoint slayt 15)
+- **Kısaca:** v1.0 vize için hazır. v1.1, model eğitilmeden önce kalan hatalı örnekleri de ayıklamak için; hatalı
+  örnek modele yanlış bilgi öğretir.
+- **Neden?** v1.0'da LLM yargıç yalnız %10'luk rastgele örneklemi (348 örnek) kontrol etti. Örneklemde ücretsiz lite
+  modelin örneklerinin %12,6'sı hatalıydı, Flash'ta bu oran %0. Örneklem dışındaki lite örneklerinde de hata kalmış
+  olabilir → v1.1'de hepsi kontrol ediliyor (290 iş).
+- **Fark:** yargıç örneklem yerine tüm lite örneklerinde; en zayıf tür olan adım adım çözüm örnekleri Flash ile yeniden
+  üretilecek; 150 yeni örnekle ikinci elle inceleme; hedef yine en az 3.000 örnek.
+- **Durum (02.11.2026):** 290 işin 196'sı bitti; 1.641 örnekten 182'si yargıçtan geçemedi (%11,1), v1.1'de çıkarılacak.
+- **Sıradaki adımlar:** (1) yargıç tüm lite örneklerini bitirir → (2) elenenler çıkarılır, set yeniden bölünür,
+  raporlar güncellenir → (3) adım adım çözüm örnekleri Flash ile yeniden üretilir → (4) ikinci elle inceleme → SFT'de
+  v1.1 kullanılır.
+
+## 13. Final dönemi planı (PowerPoint slayt 16)
+0. Instruction v1.1'i tamamlamak (bölüm 12).
 1. Qwen2.5-7B base üzerinde Domain Corpus ile CPT/DAPT (QLoRA).
 2. Instruction Dataset ile SFT.
 3. Üç sistem karşılaştırması: hazır instruct model / alana uyarlanmış model / alana uyarlanmış + SFT;
@@ -248,9 +264,9 @@ setten çıkarıldı. En zayıf tür: adım adım problem çözme (11'in 5'i; he
 - **Neden yargıç yalnız %10?** Ücretsiz katmanda model başına günde 20 istek var; tüm set ~290 ek çağrı demek;
   sunucu yoğunluğu (503) da kotadan düştüğü için gerçekte günde ~25 iş ilerliyor (~2 hafta). Vize için rastgele örneklem hata oranını ölçmeye yeter (Rehber örneklem ve hata oranı istiyor); tam
   temizlik v1.1'de. Örneklem tabakalı ve sabit seed'li, sonradan değişmesin diye dosyaya sabitlendi.
-- **Ek yargıç ne gösterdi? (30.10.2026 ara sonuç)** Örneklem dışındaki 290 lite işinin 113'ü değerlendirildi: 875 örnekten
-  95'i başarısız (%10,9; nedenler: kaynakta olmayan bilgi 29, Türkçe hatası 23, olgu/hesap hatası 20, talimata uymama 15,
-  belirsiz talimat 8). Örneklemdeki lite oranına (%12,6) yakın; yani %10'luk örneklemin tahmini tutarlı. v1.0'a
+- **Ek yargıç ne gösterdi? (02.11.2026 ara sonuç)** Örneklem dışındaki 290 lite işinin 196'sı değerlendirildi: 1.641
+  örnekten 182'si başarısız (%11,1). 30.10'daki ilk 875 örnekte 95 başarısızın nedenleri: kaynakta olmayan bilgi 29, Türkçe hatası 23, olgu/hesap hatası 20, talimata uymama 15,
+  belirsiz talimat 8. Örneklemdeki lite oranına (%12,6) yakın; yani %10'luk örneklemin tahmini tutarlı. v1.0'a
   dokunmuyor, sonuç v1.1'e girecek.
 - **Final dönemi için eğitim notu:** corpus 16,2 M token ve %83'ü İngilizce; CPT'de düşük öğrenme hızı ve genel
   Türkçe metinle karıştırma, modelin genel yeteneklerini korumak için planlanacak.
