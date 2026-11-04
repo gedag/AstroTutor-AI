@@ -681,3 +681,14 @@ Corpus, instruction, kod ve belgeler gereksinim listesiyle karşılaştırıldı
   %12,6 / Flash %0 hata oranı, v1.0–v1.1 karşılaştırma tablosu ve sıradaki dört adım; ek yargıç ilerlemesi 02.11
   itibarıyla 196/290 iş (1.641 örnekten 182'si başarısız, %11,1). Sunum 17 slayt oldu; plan slaytı (16) ve
   `reports/sunum_taslagi.md` buna göre güncellendi. Veri değişmedi.
+
+## 04.11.2026 — Sunum adım adım anlaşılır hâle getirildi (24 slayt)
+- Rehber §16 akışı korunarak yedi slayt eklendi: corpus kaynakları (ne, hangi dil, neden), instruction kaynakları
+  (corpus 2.840 / Stack Exchange 401 / kapsam dışı 147; 320 kaynak dokümanın 280'i İngilizce, 40'ı Türkçe), neden
+  Türkçe instruction (örneklerin %85'i İngilizce kaynaktan Türkçe üretildi), corpus ve instruction adımlarının sade
+  açıklaması ve sonuç sayıları, görev türlerinin gerekçesi, Rehber'in altı "neden?" sorusunun kısa cevapları ve v1.0 /
+  v1.1 karar zinciri. Pipeline şemasında her adımın altına o adımdan sonra kalan sayı yazıldı (05 sonrası 16.436 =
+  16.572 − 46 − 90; 06b sonrası 16.284).
+- Doğrulanan sayılar: 300–500 karakter arasındaki 283 dokümanın 110'u Türkçe Wikipedia; APOD instruction kaynağı
+  değil (kaynak doküman için en az 3.000 karakter şartı); ek yargıç 04.11 itibarıyla 209/290 iş, 1.782 örnekten 198'i
+  başarısız (%11,1). Veri değişmedi; `reports/sunum_taslagi.md` slayt haritasıyla güncellendi.

@@ -4,9 +4,16 @@ Rehber §16 akışına göre slayt slayt içerik. Sayıların hepsi veri setleri
 (`reports/statistics.md`, `reports/quality_control_report.md`, kartlar); sunumdan önce son hâllerinden kontrol edin.
 Her slaytın altında konuşma notu (Not) ve beklenen "neden?" sorusuna hazır cevap var. Bu taslaktaki bölüm
 numaraları PowerPoint'teki slayt numaralarıyla aynı değildir; PowerPoint dosyası
-(`reports/AstroTutor_AI_Vize_Sunumu.pptx`) 17 slayttır ve aşağıda atıflar PowerPoint slayt numarasıyla verilmiştir.
+(`reports/AstroTutor_AI_Vize_Sunumu.pptx`) 24 slayttır ve aşağıda atıflar PowerPoint slayt numarasıyla verilmiştir.
 PowerPoint'te her içerik slaytının başlığının altında sade dilli bir **"Kısaca"** bandı vardır: slaytın ana mesajı,
 sunarken takılınca bakmak için. Ayrıntılı konuşma metni slayt notlarındadır (Sunucu Görünümü).
+
+**Slayt haritası (PowerPoint):** 1 Kapak · 2 Alan ve amaç · 3 Veri ihtiyacı · 4 Corpus kaynakları · 5 Instruction
+kaynakları · 6 Neden Türkçe? · 7 Pipeline şeması (her adımın sayısıyla) · 8 Corpus adımları ne yapar? · 9 Extraction ve
+cleaning öncesi/sonrası · 10 Tekrar ayıklama · 11 Veri erimesi · 12 Final corpus · 13 Instruction adımları ne yapar? ·
+14 Instruction v1.0 dağılımı · 15 Neden bu görev türleri? · 16 Üç örnek · 17 Doğrulama · 18 Kalite kontrolü ·
+19 Problemler ve çözümler · 20 "Neden?" soruları · 21 Neden v1.0 ve v1.1? · 22 v1.1'in farkı ve sıradaki adımlar ·
+23 Final dönemi planı · 24 Eğitime hazır mı?
 
 ---
 
@@ -46,6 +53,28 @@ Not: NASA Exoplanet Archive bilerek alınmadı (sürekli değişen tablo verisi 
 **Neden İngilizce çoğunlukta?** Alanın açık lisanslı birincil kaynakları İngilizce; Türkçe astronomi metni sınırlı.
 Türkçe Wikipedia terminoloji için eklendi (token'ların %16,9'u). Türkçe davranışı Instruction Dataset kazandırır
 (örneklerin tamamı Türkçe; özetleme görevi İngilizce kaynağı Türkçe aktarmayı öğretir).
+
+### 4a. Instruction kaynakları (PowerPoint slayt 5)
+| Kaynak | Dil | Örnek | Neden |
+| --- | --- | --- | --- |
+| Corpus dokümanları (320: 280 İngilizce, 40 Türkçe) | kaynak en/tr → örnek tr | 2.840 (%84) | Her cevap bir kaynağa dayanır, alıntıyla doğrulanabilir |
+| Stack Exchange Astronomy/Space (33.519 kayıttan 449 soru) | kaynak en → örnek tr | 401 (%12) | Gerçek kullanıcı soru biçimleri |
+| Kapsam dışı sorular (kaynak yok) | tr | 147 (%4) | Uydurmak yerine sınırını söyleme |
+
+Corpus kaynaklı örneklerin dağılımı: NASA Science 824, OpenStax 778, Wikipedia EN 756, Wikipedia TR 372, arXiv 110.
+APOD açıklamaları kaynak seçilmedi: kaynak doküman için en az 3.000 karakter şartı var (arXiv için 1.000), APOD
+metinleri bundan kısa.
+
+### 4b. Neden instruction seti Türkçe? (PowerPoint slayt 6)
+1. **Hedef kullanıcı Türkçe konuşan öğrenci.** SFT modele nasıl ve hangi dilde cevap vereceğini öğretir; bu yüzden SFT
+   verisi kullanıcının dilinde olmalı.
+2. **Bilgi İngilizce, anlatım Türkçe.** Model bilgiyi CPT ile çoğunlukla İngilizce corpus'tan alır (%83), Türkçe
+   anlatmayı SFT ile öğrenir. Örneklerin %85'i (2.468 corpus + 401 Stack Exchange = 2.869 / 3.388) İngilizce kaynaktan
+   Türkçe üretildi. Finaldeki RAG'de de aynı durum var: İngilizce NASA belgesi → Türkçe cevap (Tasarım raporunda
+   BGE-M3 bu yüzden seçildi: Türkçe sorguları İngilizce belgelerle eşleştirmek için).
+3. **Türkçe astronomi metni kıt.** Corpus'taki tek Türkçe kaynak Türkçe Wikipedia (token'ların %16,9'u); Türkçe
+   anlatmayı hazır metinden değil kontrollü örneklerden öğretiyoruz.
+4. **Türkçe kalitesi denetlendi.** Türkçe karakter kontrolü (ç, ğ, ı, ö, ş, ü); 150'lik incelemede "Türkçe akıcı" %97.
 
 ## 5. Pipeline
 ```
@@ -216,7 +245,17 @@ setten çıkarıldı. En zayıf tür: adım adım problem çözme (11'in 5'i; he
 | Cevapsız kalan bir Gemini isteği döngüyü 80 dk durdurdu | Log'da ilerleme yoktu | İstek başına 10 dk zaman aşımı; süre dolarsa sıradaki model |
 | Yeni kural iki işi tamamen eleyince yargıç örneklemi değişiyordu | Örneklem karşılaştırması | Örneklem ilk çalıştırmada dosyaya sabitlendi |
 
-## 12. Instruction v1.1: neden ve v1.0'dan farkı (PowerPoint slayt 15)
+## 12. Neden Instruction v1.0 ve v1.1? (PowerPoint slayt 21)
+- **Kısaca:** v1.0'ı vize için sabitledik. Eğitimden önce daha temiz bir v1.1 hazırlıyoruz; teslim edilen veri
+  değişmesin diye üzerine yazmadık, yeni sürüm açtık.
+- **Karar zinciri:** (1) *Kısıt:* ücretsiz Gemini'de model başına günde 20 istek; bütün sete yargıç ≈ 2 hafta, vize
+  teslimine yetişmezdi. (2) *v1.0 kararı:* yargıç %10 rastgele örneklemde (348 örnek); hata oranını ölçmeye yeter;
+  26.10'da v1.0 donduruldu (3.388 örnek). (3) *Bulgu:* örneklemde hata lite modelde %12,6, Flash'ta %0; setin %84'ü
+  (2.843 örnek) lite. (4) *v1.1 kararı:* eğitimden önce bütün lite örnekleri yargıçtan geçir, hatalıları çıkar.
+- **Neden üzerine yazmadık?** Teslim edilen ve raporlanan veri aynı kalmalı (SHA-256 değerleri kayıtlı); Rehber:
+  "Veri setinde önemli bir değişiklik yaptığınızda sürüm numarasını artırın"; v1.0 ile v1.1 karşılaştırılabilir.
+
+## 12a. Instruction v1.1: v1.0'dan farkı ve sıradaki adımlar (PowerPoint slayt 22)
 - **Kısaca:** v1.0 vize için hazır. v1.1, model eğitilmeden önce kalan hatalı örnekleri de ayıklamak için; hatalı
   örnek modele yanlış bilgi öğretir.
 - **Neden?** v1.0'da LLM yargıç yalnız %10'luk rastgele örneklemi (348 örnek) kontrol etti. Örneklemde ücretsiz lite
@@ -224,12 +263,12 @@ setten çıkarıldı. En zayıf tür: adım adım problem çözme (11'in 5'i; he
   olabilir → v1.1'de hepsi kontrol ediliyor (290 iş).
 - **Fark:** yargıç örneklem yerine tüm lite örneklerinde; en zayıf tür olan adım adım çözüm örnekleri Flash ile yeniden
   üretilecek; 150 yeni örnekle ikinci elle inceleme; hedef yine en az 3.000 örnek.
-- **Durum (02.11.2026):** 290 işin 196'sı bitti; 1.641 örnekten 182'si yargıçtan geçemedi (%11,1), v1.1'de çıkarılacak.
+- **Durum (04.11.2026):** 290 işin 209'u bitti; 1.782 örnekten 198'i yargıçtan geçemedi (%11,1), v1.1'de çıkarılacak.
 - **Sıradaki adımlar:** (1) yargıç tüm lite örneklerini bitirir → (2) elenenler çıkarılır, set yeniden bölünür,
   raporlar güncellenir → (3) adım adım çözüm örnekleri Flash ile yeniden üretilir → (4) ikinci elle inceleme → SFT'de
   v1.1 kullanılır.
 
-## 13. Final dönemi planı (PowerPoint slayt 16)
+## 13. Final dönemi planı (PowerPoint slayt 23)
 0. Instruction v1.1'i tamamlamak (bölüm 12).
 1. Qwen2.5-7B base üzerinde Domain Corpus ile CPT/DAPT (QLoRA).
 2. Instruction Dataset ile SFT.
@@ -242,9 +281,13 @@ setten çıkarıldı. En zayıf tür: adım adım problem çözme (11'in 5'i; he
 ## "Neden?" sorularına hazırlık
 - **Neden PyMuPDF?** 40 rastgele sayfada pdfplumber ile eşit kalite (40/40 sayfa, karakter sayıları yakın), çok daha
   hızlı (iki ölçümde ~70 ve ~161 kat). Taranmış sayfa yalnız 2 kapak sayfası → OCR gerekmedi.
-- **Neden 300 karakter?** Bkz. bu taslakta bölüm 8 (PowerPoint'te slayt 9'un notu).
-- **Neden MinHash ve 0,85?** Bkz. bölüm 7 (PowerPoint slayt 7); eşik 50 çiftle doğrulandı, hatalı eleme 0.
-- **Neden İngilizce doküman?** Bkz. bölüm 4 (PowerPoint slayt 4 ve notu).
+- **Neden 300 karakter?** Bkz. bu taslakta bölüm 8 (PowerPoint slayt 12'nin notu ve slayt 20).
+- **Neden MinHash ve 0,85?** Bkz. bölüm 7 (PowerPoint slayt 10 ve 20); eşik 50 çiftle doğrulandı, hatalı eleme 0.
+- **Neden İngilizce doküman?** Bkz. bölüm 4 (PowerPoint slayt 4 ve 6).
+- **Neden bu instruction kategorileri?** PowerPoint slayt 15: tasarımdaki iki ana davranış (seviyeli anlatım,
+  JSON quiz) + Rehber'in görev türleri alana uyarlandı + kapsam dışı türü uydurmayı önler; gerekçe tablosu
+  `reports/instruction_taxonomy.md`.
+- **Neden instruction seti Türkçe?** Bkz. bölüm 4b (PowerPoint slayt 6).
 - **Neden bu metadata alanları?** `source`, `url`, `license`, `retrieved_at` izlenebilirlik ve lisans için;
   `group_key` sızıntısız bölme için (EN/TR aynı madde); `subtopic` kapsam dengesi analizi için; `token_count`
   eğitim bütçesi için; `postprocess` hangi dokümanın ikinci geçişten geçtiğini göstermek için.
@@ -264,8 +307,8 @@ setten çıkarıldı. En zayıf tür: adım adım problem çözme (11'in 5'i; he
 - **Neden yargıç yalnız %10?** Ücretsiz katmanda model başına günde 20 istek var; tüm set ~290 ek çağrı demek;
   sunucu yoğunluğu (503) da kotadan düştüğü için gerçekte günde ~25 iş ilerliyor (~2 hafta). Vize için rastgele örneklem hata oranını ölçmeye yeter (Rehber örneklem ve hata oranı istiyor); tam
   temizlik v1.1'de. Örneklem tabakalı ve sabit seed'li, sonradan değişmesin diye dosyaya sabitlendi.
-- **Ek yargıç ne gösterdi? (02.11.2026 ara sonuç)** Örneklem dışındaki 290 lite işinin 196'sı değerlendirildi: 1.641
-  örnekten 182'si başarısız (%11,1). 30.10'daki ilk 875 örnekte 95 başarısızın nedenleri: kaynakta olmayan bilgi 29, Türkçe hatası 23, olgu/hesap hatası 20, talimata uymama 15,
+- **Ek yargıç ne gösterdi? (04.11.2026 ara sonuç)** Örneklem dışındaki 290 lite işinin 209'u değerlendirildi: 1.782
+  örnekten 198'i başarısız (%11,1). 30.10'daki ilk 875 örnekte 95 başarısızın nedenleri: kaynakta olmayan bilgi 29, Türkçe hatası 23, olgu/hesap hatası 20, talimata uymama 15,
   belirsiz talimat 8. Örneklemdeki lite oranına (%12,6) yakın; yani %10'luk örneklemin tahmini tutarlı. v1.0'a
   dokunmuyor, sonuç v1.1'e girecek.
 - **Final dönemi için eğitim notu:** corpus 16,2 M token ve %83'ü İngilizce; CPT'de düşük öğrenme hızı ve genel
