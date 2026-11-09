@@ -15,7 +15,7 @@ import argparse
 import csv
 from collections import defaultdict
 
-from common import CFG, get_logger, p, read_jsonl, rng
+from common import CFG, get_logger, instruction_file, p, read_jsonl, rng
 
 log = get_logger("13_sample_for_review")
 CORPUS_CRIT = ["okunabilir", "dogru_domain", "extraction_dogru", "header_footer_temiz", "bozuk_karakter_yok",
@@ -52,15 +52,63 @@ def already_filled(path) -> bool:
         return any((row.get("claude_karar") or row.get("son_karar") or "").strip() for row in csv.DictReader(f))
 
 
+def corpus_topup(docs: list[dict], n: int) -> None:
+    """Corpus v2.0 (09.11.2026): v1.0 örnekleminden corpus'ta artık olmayan satırları (Türkçe dokümanlar) çıkarır,
+    incelenmiş satırlara dokunmaz ve örneklemi kaynak oranlarına göre n dokümana tamamlar (yeni satırlar boş)."""
+    out = p("qc") / "corpus_review.csv"
+    with open(out, encoding="utf-8-sig") as f:
+        rd = csv.DictReader(f)
+        cols, rows = rd.fieldnames, list(rd)
+    ids = {d["document_id"] for d in docs}
+    kept = [x for x in rows if x["document_id"] in ids]
+    log.info(f"corpus_review.csv: {len(rows) - len(kept)} satır corpus'ta olmadığı için çıkarıldı "
+             f"({sorted(x['document_id'] for x in rows if x['document_id'] not in ids)})")
+    # hedef: kaynak oranında n doküman (en büyük küsurat yöntemi); mevcut satırlar hedeften düşülür
+    by = defaultdict(list)
+    for d in docs:
+        by[d["source"]].append(d)
+    exact = {k: n * len(v) / len(docs) for k, v in by.items()}
+    want = {k: int(v) for k, v in exact.items()}
+    for k in sorted(exact, key=lambda k: -(exact[k] - want[k]))[: n - sum(want.values())]:
+        want[k] += 1
+    have = defaultdict(int)
+    for x in kept:
+        have[x["source"]] += 1
+    r = rng(16)
+    in_sample = {x["document_id"] for x in kept}
+    new = []
+    for k in sorted(by):
+        pool = sorted((d for d in by[k] if d["document_id"] not in in_sample), key=lambda d: d["document_id"])
+        r.shuffle(pool)
+        new += pool[: max(0, want[k] - have[k])]
+    blank = {c: "" for c in cols}
+    with open(out, "w", encoding="utf-8-sig", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=cols)
+        w.writeheader()
+        w.writerows(kept)
+        for d in new:
+            w.writerow({**blank, "document_id": d["document_id"], "source": d["source"], "language": d["language"],
+                        "subtopic": d["subtopic"], "document_type": d["document_type"],
+                        "publication_year": d["publication_year"], "title": d["title"], "url": d["url"],
+                        "token_count": d["token_count"], "metin_ilk_1500": d["text"][:1500]})
+    log.info(f"corpus_review.csv: {len(kept)} incelenmiş + {len(new)} yeni satır; hedef {dict(want)}; "
+             f"yeni: {[d['document_id'] for d in new]}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--force", action="store_true")
     ap.add_argument("--only", choices=["corpus", "instruction"], default=None)
+    ap.add_argument("--corpus-topup", action="store_true",
+                    help="corpus örneklemini yeni corpus sürümüne uyarla ve qc.corpus_sample'a tamamla")
     a = ap.parse_args()
     q = CFG["qc"]
     docs = []
     for s in ("train", "validation", "test"):
         docs += list(read_jsonl(p("final") / f"{s}.jsonl"))
+    if a.corpus_topup:
+        corpus_topup(docs, q["corpus_sample"])
+        return
 
     if a.only in (None, "corpus"):
         out = p("qc") / "corpus_review.csv"
@@ -80,9 +128,9 @@ def main() -> None:
             log.info(f"corpus_review.csv: {len(sample)} doküman")
 
     if a.only in (None, "instruction"):
-        ins = list(read_jsonl(p("final") / "instruction_v1.0.jsonl"))
+        ins = list(read_jsonl(instruction_file())) if instruction_file().exists() else []
         if not ins:
-            log.warning("instruction_v1.0.jsonl yok; instruction örneklemi atlandı")
+            log.warning(f"{instruction_file().name} yok; instruction örneklemi atlandı")
             return
         doc_text = {d["document_id"]: d["text"] for d in docs}
         se_text = {}

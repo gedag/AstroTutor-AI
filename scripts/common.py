@@ -39,6 +39,8 @@ def load_config() -> dict:
 
 
 CFG = load_config()
+# Corpus'a giren kaynaklar (v2.0: yalnız İngilizce; wikipedia_tr çıkarıldı). 01-04 bu listeye göre çalışır.
+CORPUS_SOURCES: list[str] = CFG["corpus"]["sources"]
 
 
 def p(key: str) -> Path:
@@ -46,6 +48,11 @@ def p(key: str) -> Path:
     path = ROOT / CFG["paths"][key]
     path.mkdir(parents=True, exist_ok=True)
     return path
+
+
+def instruction_file() -> Path:
+    """Geçerli Instruction Dataset dosyası (sürüm config.yaml'dan): data/final/instruction_v<sürüm>.jsonl"""
+    return p("final") / f"instruction_v{CFG['project']['instruction_version']}.jsonl"
 
 
 def get_logger(name: str) -> logging.Logger:

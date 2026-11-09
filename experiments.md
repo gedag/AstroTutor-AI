@@ -692,3 +692,42 @@ Corpus, instruction, kod ve belgeler gereksinim listesiyle karşılaştırıldı
 - Doğrulanan sayılar: 300–500 karakter arasındaki 283 dokümanın 110'u Türkçe Wikipedia; APOD instruction kaynağı
   değil (kaynak doküman için en az 3.000 karakter şartı); ek yargıç 04.11 itibarıyla 209/290 iş, 1.782 örnekten 198'i
   başarısız (%11,1). Veri değişmedi; `reports/sunum_taslagi.md` slayt haritasıyla güncellendi.
+
+## 09.11.2026 — Yön değişikliği: AstroTutor AI İngilizce konuşacak; Domain Corpus v2.0
+- **Karar (Eda):** Model İngilizce konuşan bir eğitim asistanı olacak. Instruction v1.1 yapılmayacak; instruction seti
+  tamamen İngilizce olarak yeniden üretilecek (v2.0). Vize teslimi (Corpus v1.0 EN+TR 16.284 doküman, Türkçe
+  Instruction v1.0 3.388 örnek) değiştirilmeden Git etiketi `v1.0` ve `data/archive_v1.0/` (hash doğrulamalı kopya)
+  altında korunur.
+- **Türkçe Wikipedia çıkarıldı** (`config.yaml → corpus.sources`, `filtering.allowed_languages: [en]`). DOC kimlikleri
+  (05) ve kümeler (06) kaynak sırasıyla atandığı için ve wikipedia_tr en sonda olduğu için İngilizce dokümanların
+  kimlikleri ve kümeleri değişmedi: düzeltmelerden önce v2.0 çıktısı v1.0'ın İngilizce alt kümesiyle birebir aynıydı.
+- **06b koruma listesi dosyaya sabitlendi** (`reports/06b_protected_documents.txt`, v1.0 instruction kaynağı 333
+  doküman): instruction yeniden üretilince corpus kendiliğinden değişmesin. 05'teki near-duplicate inceleme tablosu
+  son karar doluyken artık yeniden yazılmıyor.
+- **Dört düzeltme (Eda'nın seçimi):**
+  1. OpenStax "Key Terms": PyMuPDF yazı tipi bilgisiyle (terim NotoSans-Bold, başlık Dosis-Bold) "terim: tanım"
+     paragrafları; 03'te sözlük için sayfa birleştirme kapalı. Eski çıktıda sayfa başlığında kesilen terimler
+     ("Wien's law", "X-rays") kayboluyordu. Final'de 26 bölüm; 300 sınırını geçen/düşen doküman yok.
+  2-4. Basın bülteni sonu (`press_boilerplate.clean_tail`, testli): yalnız ad satırları 38, yönlendirme ("Learn
+     more…") satırları 72, bağlantı cümleleri 106. Bağlantı satırında bilgi taşıyan cümle varsa yalnız bağlantı
+     cümlesi silinir (DOC_009858 "Saturn is nearing opposition…" korunur). Metni değişen 210 doküman tam olarak
+     hedeflenen kümedir; 2 doküman 300 karakterin altına düştü (DOC_009457, DOC_010263).
+  3. Liste/haber sayfaları: NASA Science ve APOD'da cümle oranı < 0,25 olan 56 aday + elle eklenen 1 galeri sayfası
+     (`scripts/list_page_candidates.py` → `reports/qc/list_page_review.csv`). Yapay zekâ destekli ön inceleme 40
+     "çıkar", 17 "tut" dedi; Eda onayladı (09.11.2026). 06b 38 sayfayı çıkardı (`list_page_06b`); 2'si zaten kısa
+     kaldığı için elenmişti. DOC_011112 koruma listesindeydi ama yalnız Türkçe v1.0 instruction'ın kaynağıydı; çıkarıldı.
+     Çıkarma öncesi/sonrası karşılaştırma: tam olarak bu 38 doküman çıktı, kalan 14.683 dokümanın hiçbiri değişmedi.
+- **Kalite kontrol örneklemi:** v1.0'ın 100 dokümanlık örnekleminin 90 İngilizce satırı ve kararları korundu; 10 Türkçe
+  satır yerine aynı yöntemle (kaynak oranında, seed'li) 10 İngilizce doküman eklendi (`13 --corpus-topup`). Ön
+  inceleme 9 uygun, 1 sorunlu (DOC_013712 "more than 1055 J" = 10^55 J, belirsiz kalıp olduğu için üs düzeltmesi
+  dokunmuyor); Eda onayladı. Örneklem başarısı %89.
+- **Sürüm farkındalığı:** `instruction_version: "2.0"`; 12/13/14/15/16 ve `validate_datasets` instruction dosyasını
+  `common.instruction_file()` ile buluyor. v2.0 yokken 14 Türkçe v1.0 incelemesini İngilizce corpus raporuna
+  karıştırmıyor, 15 INSTRUCTION_CARD'ı değiştirmiyor (v1.0 kartı kalır), 16 eski Türkçe instruction örneğini
+  `data/samples/`'tan siliyor (Git geçmişinde duruyor), `validate_datasets.py --corpus-only` yalnız corpus doğruluyor.
+- **Kart:** Türkçe gerekçeler kaldırıldı; 300 karakter sınırının v2.0 gerekçesi yazıldı (300–500 aralığında 168
+  doküman, çoğu kısa ama bilgi taşıyan); v1.0'ın "Watch Online" ve "aşağıda listelenmektedir" örnekleri v2.0 verisinde
+  olmadığı için gerçek İngilizce örneklerle değiştirildi; sürüm geçmişindeki v1.0 satırları artık sabit "v1.0".
+- **Sonuç (Corpus v2.0):** 14.683 doküman, 13.438.685 token (Qwen2.5-7B), train 13.223 / validation 735 / test 725;
+  dil %100 İngilizce; `validate_datasets.py --corpus-only` başarılı. Düzeltmelerden sonra 02 → 07 zinciri baştan iki kez
+  çalıştırıldı, final ve cleaned dosyaları birebir aynı (tekrar üretilebilirlik).

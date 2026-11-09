@@ -4,19 +4,24 @@ Süleyman Demirel Üniversitesi, Bilgisayar Mühendisliği — Tasarım / Bitirm
 **Proje:** Uzay ve Astronomi Eğitiminde SLM ve RAG Tabanlı Etkileşimli Öğrenme ve Test Sistemi (AstroTutor AI)
 **Hazırlayan:** Eda GÖGEBAKAN (2211012069) · **Danışman:** Asim Sinan YÜKSEL
 
-Bu depo, vize döneminin iki çıktısını üreten yeniden çalıştırılabilir pipeline'ı içerir:
+Bu depo, projenin iki veri setini üreten yeniden çalıştırılabilir pipeline'ı içerir:
 
 | Veri seti | Amaç | Eğitim aşaması | Belge |
 | --- | --- | --- | --- |
-| **Domain Corpus v1.0** | Modele astronomi/uzay alanının dilini ve bilgisini öğretmek (düz metin) | CPT / DAPT | [DATASET_CARD.md](DATASET_CARD.md) |
-| **Instruction Dataset v1.0** | Modele Türkçe talimat takip etme, seviyeye göre anlatım ve çoktan seçmeli soru üretme davranışı kazandırmak | SFT (QLoRA) | [INSTRUCTION_CARD.md](INSTRUCTION_CARD.md) |
+| **Domain Corpus v2.0** (İngilizce) | Modele astronomi/uzay alanının dilini ve bilgisini öğretmek (düz metin) | CPT / DAPT | [DATASET_CARD.md](DATASET_CARD.md) |
+| **Instruction Dataset v2.0** (İngilizce, hazırlanıyor) | Modele İngilizce talimat takip etme, seviyeye göre anlatım ve çoktan seçmeli soru üretme davranışı kazandırmak | SFT (QLoRA) | v2.0 kartı set üretilince yazılacak |
+
+**Sürümler:** Vizede teslim edilen sürüm v1.0'dır (Domain Corpus v1.0: İngilizce + Türkçe, 16.284 doküman; Türkçe
+Instruction Dataset v1.0: 3.388 örnek, [INSTRUCTION_CARD.md](INSTRUCTION_CARD.md)); Git etiketi `v1.0` ile korunur.
+09.11.2026'da AstroTutor AI'ın **İngilizce konuşan** bir model olmasına karar verildi: corpus yalnız İngilizce (v2.0)
+ve instruction seti tamamen İngilizce olarak yeniden üretiliyor (v2.0). Sürüm numaraları `config.yaml → project`.
 
 Değerlendirme (evaluation) setleri (Astro-mcqa, astro-mcq, HubbleSpaceTelescope-MCQ, AstroMLab Astrobench) **eğitime girmez**; yalnızca sızıntı kontrolü için indirilir.
 
 ## Problem ve kapsam
 
-- **Problem:** Türkçe konuşan öğrencilerin uzay ve astronomi konularını kendi seviyelerinde öğrenebileceği, anlatılan içerikten soru üreterek öğrenmeyi ölçebilen, kaynağı izlenebilir bir yardımcı yok.
-- **Hedef:** Başlangıç / orta / ileri seviyeye göre Türkçe konu anlatımı yapan ve anlattığı içerikten dört seçenekli soru üreten alana özel bir dil modeli (ana aday: Qwen2.5-7B ailesi).
+- **Problem:** Öğrencilerin uzay ve astronomi konularını kendi seviyelerinde öğrenebileceği, anlatılan içerikten soru üreterek öğrenmeyi ölçebilen, kaynağı izlenebilir bir yardımcı yok.
+- **Hedef:** Başlangıç / orta / ileri seviyeye göre **İngilizce** konu anlatımı yapan ve anlattığı içerikten dört seçenekli soru üreten alana özel bir dil modeli (ana aday: Qwen2.5-7B ailesi).
 - **Kapsam içi:** Güneş Sistemi, gezegenler ve uydular, yıldızlar ve yıldız evrimi, gökadalar, temel kozmoloji, ötegezegenler, uzay araçları ve keşif görevleri, gözlemevleri/teleskoplar.
 - **Kapsam dışı:** İleri matematiksel astrofizik türetmeleri, ham teleskop görüntüsü işleme, bilimsel simülasyon, roket mühendisliği ayrıntıları, uzay şirketlerinin ticari konuları, astroloji.
 - **Kullanıcı:** Ortaokul–lisans arası öğrenciler ve meraklılar; cevaplar seviyeye göre sadeleşir veya derinleşir.
@@ -29,7 +34,8 @@ data/
   extracted/      çıkarılmış metinler (.jsonl + doküman başına .txt) [Git'e girmez]
   cleaned/        temizlenmiş metinler                               [Git'e girmez]
   interim/        filtre, tekrar ayıklama ve instruction ara çıktıları [Git'e girmez]
-  final/          train/validation/test.jsonl, chunks/, instruction_v1.0.jsonl, instruction/ [Git'e girmez]
+  final/          train/validation/test.jsonl, chunks/, instruction_v<sürüm>.jsonl, instruction/ [Git'e girmez]
+  archive_v1.0/   vize teslimi v1.0 verisinin değiştirilmemiş kopyası  [Git'e girmez]
   eval_reference/ değerlendirme setleri (yalnız sızıntı kontrolü)   [Git'e girmez]
   samples/        her veri setinden küçük örnekler                   [Git'te]
 scripts/          01_download.py … 16_make_samples.py, validate_datasets.py
@@ -43,7 +49,7 @@ experiments.md    tarihli deney ve karar günlüğü
 Büyük veri dosyaları depoya konmaz. Ham veri ve üretilen veri setleri yerelde `data/` altında durur ve pipeline ile
 yeniden üretilebilir. Küçük örnekler depoda `data/samples/` altındadır.
 
-**Veri setlerinin teslim kopyası (Google Drive):**
+**Vize teslim kopyası, v1.0 (Google Drive):**
 [AstroTutor_AI_veri_v1.0.zip](https://drive.google.com/file/d/1XFhiMaWvBgCL82-XzocDW-9LbvpNTjwW/view?usp=sharing)
 (53 MB; Domain Corpus v1.0, chunk'lar, Instruction Dataset v1.0, iki kart ve `SHA256SUMS.txt`). Açtıktan sonra
 bütünlük kontrolü: `sha256sum -c SHA256SUMS.txt`. Zip dosyasının kendi SHA-256 değeri:
@@ -67,6 +73,7 @@ python run_pipeline.py --corpus          # 01-08: indirme → extraction → cle
 python run_pipeline.py --instructions    # 09-12: kaynak hazırlama → Gemini ile üretim → doğrulama → split
 python run_pipeline.py --qc              # 13-16 + validate_datasets.py
 python run_pipeline.py --all
+python scripts/validate_datasets.py --corpus-only   # instruction seti henüz üretilmemişken yalnız corpus doğrulaması
 ```
 
 Her adım tek başına da çalıştırılabilir (`python scripts/05_deduplicate.py`). Her script `logs/<ad>.log` dosyasına

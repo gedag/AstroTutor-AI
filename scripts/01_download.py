@@ -19,7 +19,7 @@ from collections import defaultdict
 from pathlib import Path
 from urllib.parse import urlparse
 
-from common import CFG, PoliteSession, ROOT, append_jsonl, file_sha256, get_logger, now_iso, p, read_jsonl, rng
+from common import CFG, CORPUS_SOURCES, PoliteSession, ROOT, append_jsonl, file_sha256, get_logger, now_iso, p, read_jsonl, rng
 
 log = get_logger("01_download")
 RAW = p("raw")
@@ -420,7 +420,13 @@ if __name__ == "__main__":
     ap.add_argument("--source", default="all", choices=["all", *SOURCES])
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
+    # Corpus'tan çıkarılmış kaynaklar (v2.0: wikipedia_tr) --all ile indirilmez; açıkça --source verilirse indirilir.
+    corpus_names = {"openstax": "openstax", "arxiv": "arxiv_astro_ph", "nasa_science": "nasa_science",
+                    "nasa_apod": "nasa_apod", "wikipedia_en": "wikipedia_en", "wikipedia_tr": "wikipedia_tr"}
     for name, fn in SOURCES.items():
+        if a.source == "all" and name in corpus_names and corpus_names[name] not in CORPUS_SOURCES:
+            log.info(f"=== {name}: corpus kaynakları arasında değil, atlandı ===")
+            continue
         if a.source in ("all", name):
             log.info(f"=== {name} ===")
             fn(a.dry_run)

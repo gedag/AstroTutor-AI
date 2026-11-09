@@ -8,6 +8,9 @@ Kontroller:
   5. Instruction örneklerine Qwen2.5-7B-Instruct chat template'inin hatasız uygulanması (SFT'ye hazır)
   6. Değerlendirme setleriyle 8-gram örtüşmesi (instruction'da 0 olmalı; corpus'ta raporlanır)
 Sonuç: reports/validation_report.md ; hata varsa çıkış kodu 1
+
+Kullanım: python scripts/validate_datasets.py                (corpus + instruction; instruction yoksa HATA)
+          python scripts/validate_datasets.py --corpus-only  (instruction seti henüz üretilmediyse; raporda belirtilir)
 """
 from __future__ import annotations
 
@@ -15,7 +18,7 @@ import importlib
 import re
 import sys
 
-from common import CFG, get_logger, p, read_jsonl
+from common import CFG, get_logger, instruction_file, p, read_jsonl
 
 log = get_logger("validate_datasets")
 CORPUS_FIELDS = ["document_id", "title", "source", "url", "language", "document_type", "publication_year", "subtopic",
@@ -70,7 +73,10 @@ def eval_contamination(docs: list[dict], n: int, min_shared: int = 3) -> int:
 
 
 def main() -> int:
-    errors, lines = [], ["# Veri seti doğrulama raporu", ""]
+    corpus_only = "--corpus-only" in sys.argv[1:]
+    errors, lines = [], ["# Veri seti doğrulama raporu", "",
+                         f"Domain Corpus v{CFG['project']['corpus_version']}"
+                         + ("" if corpus_only else f" · Instruction Dataset v{CFG['project']['instruction_version']}"), ""]
 
     def check(name, ok, detail=""):
         lines.append(f"- [{'x' if ok else ' '}] {name}{' — ' + detail if detail else ''}")
@@ -84,6 +90,9 @@ def main() -> int:
     check("Corpus şeması tam", not miss, f"eksik alanlı {len(miss)}")
     ids = [d["document_id"] for d in alld]
     check("document_id benzersiz", len(ids) == len(set(ids)))
+    langs = CFG["filtering"]["allowed_languages"]
+    bad_lang = sum(1 for d in alld if d["language"] not in langs)
+    check(f"Corpus dili yalnız {'/'.join(langs)}", bad_lang == 0, f"dışında kalan={bad_lang}")
     gs = {}
     clash = 0
     for s, v in corpus.items():
@@ -93,8 +102,12 @@ def main() -> int:
     check("Corpus split'leri arasında grup çakışması yok", clash == 0, f"çakışma={clash}")
     doc_split = {d["document_id"]: d["split"] for d in alld}
 
-    ins = list(read_jsonl(p("final") / "instruction_v1.0.jsonl"))
-    if ins:
+    ins_f = instruction_file()
+    ins = [] if corpus_only else (list(read_jsonl(ins_f)) if ins_f.exists() else [])
+    if corpus_only:
+        lines.append(f"- [i] Yalnız corpus doğrulandı (--corpus-only): Instruction Dataset "
+                     f"v{CFG['project']['instruction_version']} henüz üretilmedi")
+    elif ins:
         miss = [x["id"] for x in ins if any(f not in x for f in INS_FIELDS)]
         check("Instruction şeması tam", not miss, f"{len(ins)} örnek, eksik alanlı {len(miss)}")
         check("Instruction id benzersiz", len({x["id"] for x in ins}) == len(ins))
@@ -109,7 +122,7 @@ def main() -> int:
             n = sum(1 for _ in read_jsonl(p("final") / "instruction" / f"{s}.jsonl"))
             check(f"instruction/{s}.jsonl mevcut", n > 0, f"{n} örnek")
     else:
-        check("Instruction dataset mevcut", False, "data/final/instruction_v1.0.jsonl yok")
+        check("Instruction dataset mevcut", False, f"data/final/{ins_f.name} yok")
 
     try:
         from datasets import load_dataset

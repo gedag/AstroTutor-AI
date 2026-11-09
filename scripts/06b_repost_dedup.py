@@ -32,6 +32,7 @@ Girdi/çıktı: data/final/{train,validation,test}.jsonl (yerinde güncellenir).
 """
 from __future__ import annotations
 
+import csv
 import difflib
 import importlib
 import json
@@ -41,7 +42,7 @@ from datasketch import MinHash, MinHashLSH
 
 from collections import Counter
 
-from common import CFG, RemovalLog, get_logger, p, read_jsonl, write_jsonl
+from common import CFG, ROOT, RemovalLog, get_logger, p, read_jsonl, write_jsonl
 from domain_lexicon import _lower_tr, subtopic_scores, wiki_category_on_topic
 from exponent_fix import fix_exponents
 from html_residue import strip_html_residue
@@ -188,8 +189,11 @@ def main() -> None:
         log.warning(f"Basın temizliği metnin %{100 * x[0]:.0f}'ini sildi: {x[1]} {x[2]}")
 
     allx = {d["document_id"]: d for s in SPLITS for d in docs[s]}
-    sources = {j["source_document"] for j in read_jsonl(p("interim") / "instruction_jobs.jsonl")
-               if j.get("kind") == "doc"}
+    # Korunan dokümanlar = Instruction v1.0 kaynak dokümanları; dosyaya sabitlendi (09.11.2026), böylece yeni
+    # instruction üretimi (instruction_jobs.jsonl değişince) corpus kararlarını değiştirmez.
+    prot_f = ROOT / CFG["corpus"]["protected_documents_file"]
+    sources = {x.strip() for x in prot_f.read_text(encoding="utf-8").splitlines()
+               if x.strip() and not x.startswith("#")}
     # 1c) iletişim dizini sayfaları ve temizlikten sonra çok kısa kalan dokümanlar (instruction kaynağı asla çıkmaz)
     other_drop: dict[str, tuple[str, str]] = {}
     for i, d in allx.items():
@@ -216,7 +220,17 @@ def main() -> None:
         non_epon = [c for c in cs if _lower_tr(c) not in (title, base)]
         if any(WORK_CATEGORY.search(_lower_tr(c)) for c in cs) and not wiki_category_on_topic(non_epon, d["text"]):
             other_drop[i] = ("fiction_work_06b", f"{d['title']} | kategoriler: {'; '.join(cs[:6])}")
-    log.info(f"İletişim sayfası / kısa kalan / eser: {len(other_drop)} doküman "
+    # 1d-2) Liste/haber sayfaları (Corpus v2.0, 09.11.2026): yalnız grup üyesinin son kararı "cikar" olan sayfalar
+    # (reports/qc/list_page_review.csv; adaylar scripts/list_page_candidates.py). Koruma listesi burada uygulanmaz:
+    # v1.0'da instruction kaynağı olsa da bilgi taşımayan sayfa v2.0'da çıkar (DOC_011112).
+    lp_f = ROOT / CFG["corpus"]["list_page_review_file"]
+    if lp_f.exists():
+        with open(lp_f, encoding="utf-8-sig") as f:
+            for r in csv.DictReader(f):
+                i = r["document_id"]
+                if (r.get("son_karar") or "").strip() == "cikar" and i in allx and i not in other_drop:
+                    other_drop[i] = ("list_page_06b", f"{r['title']} | {r['claude_gerekce'][:150]}")
+    log.info(f"İletişim sayfası / kısa kalan / eser / liste sayfası: {len(other_drop)} doküman "
              f"{dict(Counter(v[0] for v in other_drop.values()))}")
 
     # 1e) arXiv alt konusu: yazarın seçtiği ve moderatörün onayladığı birincil arXiv kategorisinden

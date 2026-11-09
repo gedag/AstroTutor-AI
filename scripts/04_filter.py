@@ -21,12 +21,14 @@ import re
 import unicodedata
 from collections import Counter
 
-from common import CFG, RemovalLog, get_logger, p, read_jsonl, write_jsonl
+from common import CFG, CORPUS_SOURCES, RemovalLog, get_logger, p, read_jsonl, write_jsonl
 from domain_lexicon import domain_score, off_topic_hits, wiki_category_on_topic
 
 log = get_logger("04_filter")
 F = CFG["filtering"]
-SOURCES = ["nasa_science", "nasa_apod", "openstax", "arxiv_astro_ph", "wikipedia_en", "wikipedia_tr"]
+# Sıra sabittir (DOC_ kimlikleri ve örneklemler buna bağlı); yalnız corpus'a giren kaynaklar işlenir
+SOURCES = [s for s in ["nasa_science", "nasa_apod", "openstax", "arxiv_astro_ph", "wikipedia_en", "wikipedia_tr"]
+           if s in CORPUS_SOURCES]
 MOJIBAKE = re.compile(r"(Ã.|Ä.|Å.|â€|Â )")
 
 

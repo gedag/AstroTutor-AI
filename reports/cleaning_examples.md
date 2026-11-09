@@ -1,6 +1,6 @@
 # Temizleme: öncesi / sonrası örnekleri
 
-Rastgele seçilmiş 22 doküman (seed 42). Her örnekte ilk 1.200 karakter gösterilmiştir.
+Rastgele seçilmiş 18 doküman (seed 42). Her örnekte ilk 1.200 karakter gösterilmiştir.
 
 ## 1. nasa_science — Apollo Next Generation Sample Analysis (ANGSA)
 `NASA_59a222276426` · https://science.nasa.gov/lunar-science/programs/angsa/
@@ -430,106 +430,4 @@ A sodium-vapor lamp is a gas-discharge lamp that uses sodium in an excited state
 Two varieties of such lamps exist: low pressure and high pressure. Low-pressure sodium lamps are highly efficient electrical light sources, but their yellow-orange light restricts applications to outdoor lighting, such as street lamps, where they are widely used. High-pressure sodium lamps emit a broader spectrum of light than the low-pressure lamps, but they still have poorer color rendering than other types of lamps. Low-pressure sodium lamps give only monochromatic yellow-orange light, inhibiting color vision at night.
 Single ended self-starting lamps are insulated with a mica disc and contained in a borosilicate glass gas discharge tube (arc tube) with a metal cap. They include the sodium-vapor lamp that is the gas-discharge lamp used in street lighting.
 Low-pressure sodium lamps typically use a BY22d bayonet base, while High-pressure sodium lamps often use the E27 (for smaller wattages 35–100 W) and E40 (for higher wattages 150–1000 W) Edison screw lamp base. Like all gas-discharge lamps, sodium vapour lamps require an electrical ballast
-```
-
-## 19. wikipedia_tr — 89 Aquarii
-`WIKITR_1212951` · https://tr.wikipedia.org/wiki/89_Aquarii
-
-Uzunluk: 1,506 → 919 karakter
-
-**ÖNCE**
-```text
-89 Aquarii, Kova takımyıldızı bölgesinde yaklaşık olarak 497 ışık yılı uzaklıkta bulunan ikili yıldız sistemidir. Birincil bileşen 89 Aqr A, görünen parlaklığı 5,27 kadir olan G-tipi sarı bir altdev yıldızdır. Yoldaşı olan 89 Aqr B, görünen parlaklığı 5,8 kadir olan A-tipi beyaz bir ana kol yıldızıdır.
-89 Aquarii, Gökada içinde Güneş'e göre 25,5 km/sn'lik bir hızla hareket eder. Gökada merkezinden uzaklığı, 22.500 ile 24.200 ışık yılı aralığında tahmin edilmektedir.
-Sistemin birincil bileşeni, 5.27 büyüklüğüne ve G3 II'nin yıldız sınıflandırmasına sahiptir; bu, bunun parlak dev aşamasında gelişen bir yıldız olduğunu düşündürmektedir. Refakatçi A2 V yıldız sınıflamasına sahip A tipi bir ana dizi yıldızdır. 2010 itibarıyla, 135.1 ° konum açısı boyunca 0.1843 ark saniye açısal bir ayırmada yer almaktadır. Tahmini 201 yıllık bir periyot ve 0.45 ark saniyelik bir yarı eksen ile birbirlerinin etrafında dönerler.
-
-
-== Dış bağlantılar ==
-Resim, 89 Aquarii
-
-
-== Kaynakça ==
-
-Eggleton, P. P.; Tokovinin, A. A. (Eylül 2008), "A catalogue of multiplicity among bright stellar systems", Kraliyet Astronomi Derneği Aylık Bildirileri, 389 (2): 869–879, arXiv, (https://arxiv.org/abs/0806.2878 8 Mayıs 
-```
-**SONRA**
-```text
-89 Aquarii, Kova takımyıldızı bölgesinde yaklaşık olarak 497 ışık yılı uzaklıkta bulunan ikili yıldız sistemidir. Birincil bileşen 89 Aqr A, görünen parlaklığı 5,27 kadir olan G-tipi sarı bir altdev yıldızdır. Yoldaşı olan 89 Aqr B, görünen parlaklığı 5,8 kadir olan A-tipi beyaz bir ana kol yıldızıdır.
-89 Aquarii, Gökada içinde Güneş'e göre 25,5 km/sn'lik bir hızla hareket eder. Gökada merkezinden uzaklığı, 22.500 ile 24.200 ışık yılı aralığında tahmin edilmektedir.
-Sistemin birincil bileşeni, 5.27 büyüklüğüne ve G3 II'nin yıldız sınıflandırmasına sahiptir; bu, bunun parlak dev aşamasında gelişen bir yıldız olduğunu düşündürmektedir. Refakatçi A2 V yıldız sınıflamasına sahip A tipi bir ana dizi yıldızdır. 2010 itibarıyla, 135.1 ° konum açısı boyunca 0.1843 ark saniye açısal bir ayırmada yer almaktadır. Tahmini 201 yıllık bir periyot ve 0.45 ark saniyelik bir yarı eksen ile birbirlerinin etrafında dönerler.
-```
-
-## 20. wikipedia_tr — Uydu galaksi
-`WIKITR_4257822` · https://tr.wikipedia.org/wiki/Uydu_galaksi
-
-Uzunluk: 5,091 → 5,027 karakter
-
-**ÖNCE**
-```text
-Uydu gökada, daha büyük kütleli ve parlak bir konak gökadanın (birincil gökada olarak da bilinir) kütleçekimsel potansiyeli içinde bağlı yörüngelerde hareket eden daha küçük bir yoldaş gökadadır. Tıpkı Güneş Sistemi'ndeki gezegenlerin Güneş'e kütleçekimsel olarak bağlı olması gibi, uydu gökadalar ve bileşenleri de konak gökadalarına bağlıdır. Çoğu uydu gökada cüce gökada olsa da, büyük gökada kümelerinin uydu gökadaları çok daha büyük bir kütleye sahip olabilir. Samanyolu'nun etrafında en büyüğü Büyük Macellan Bulutu olmak üzere elliye yakın uydu gökada dönmektedir.
-Bununla birlikte uydu gökadalar, daha büyük konak gökadalara kütleçekimsel olarak bağlı olan yegane astronomik nesneler değildir (bkz. küresel yıldız kümeleri). Bu nedenle gökbilimciler gökadaları, baryonik madde (yani sıradan madde) ve Newton'un kütleçekim yasalarının kombinasyonuyla açıklanamayan özellikler sergileyen, kütleçekimsel olarak bağlı yıldız toplulukları olarak tanımlarlar. Örneğin, sarmal gökadalar içindeki yıldızların ve gazın yörünge hızlarının ölçümleri, teorik tahminlerden önemli ölçüde sapan bir hız eğrisi ortaya koymaktadır. Bu gözlem, karanlık madde teorisi ve Newton dinamiklerindeki değişikliklerin
-```
-**SONRA**
-```text
-Uydu gökada, daha büyük kütleli ve parlak bir konak gökadanın (birincil gökada olarak da bilinir) kütleçekimsel potansiyeli içinde bağlı yörüngelerde hareket eden daha küçük bir yoldaş gökadadır. Tıpkı Güneş Sistemi'ndeki gezegenlerin Güneş'e kütleçekimsel olarak bağlı olması gibi, uydu gökadalar ve bileşenleri de konak gökadalarına bağlıdır. Çoğu uydu gökada cüce gökada olsa da, büyük gökada kümelerinin uydu gökadaları çok daha büyük bir kütleye sahip olabilir. Samanyolu'nun etrafında en büyüğü Büyük Macellan Bulutu olmak üzere elliye yakın uydu gökada dönmektedir.
-Bununla birlikte uydu gökadalar, daha büyük konak gökadalara kütleçekimsel olarak bağlı olan yegane astronomik nesneler değildir (bkz. küresel yıldız kümeleri). Bu nedenle gökbilimciler gökadaları, baryonik madde (yani sıradan madde) ve Newton'un kütleçekim yasalarının kombinasyonuyla açıklanamayan özellikler sergileyen, kütleçekimsel olarak bağlı yıldız toplulukları olarak tanımlarlar. Örneğin, sarmal gökadalar içindeki yıldızların ve gazın yörünge hızlarının ölçümleri, teorik tahminlerden önemli ölçüde sapan bir hız eğrisi ortaya koymaktadır. Bu gözlem, karanlık madde teorisi ve Newton dinamiklerindeki değişikliklerin
-```
-
-## 21. wikipedia_tr — Gök mekaniği
-`WIKITR_12920` · https://tr.wikipedia.org/wiki/G%C3%B6k_mekani%C4%9Fi
-
-Uzunluk: 3,254 → 3,089 karakter
-
-**ÖNCE**
-```text
-Gök mekaniği, gök cisimlerinin hareketlerini inceleyen gökbilim dalıdır.
-Gök cisimleri arasındaki kütleçekim etkileşimlerinin belirlediği ilişkilere, Kepler'in ampirik olarak kurduğu matematiksel model üzerine Newton tarafından geliştirilen ve hareketin temel yasaları adı verilen fizik kurallarının uygulanması temeline dayanır. 20. yüzyılda Einstein'ın genel görelilik kuramı ile bu kurallar yeniden gözden geçirilmiştir.
-
-
-== Problem örnekleri ==
-Sürüklenme kuvvetleri veya bir roketin itkisi gibi ek kuvvetlerin olmadığı durumlarda gök cisimlerinin hareketi, kütleler arasındaki karşılıklı kütleçekim ivmesi tarafından belirlenir. Bunun genelleştirilmiş bir hali, n sayıda kütlenin kütleçekim kuvveti aracılığıyla birbirleriyle karşılıklı etkileşime girdiği n-cisim problemidir. Genel durumda analitik olarak integrallenebilir (kesin çözülebilir) olmasa da, nümerik (sayısal) yöntemlerle oldukça iyi bir yaklaşık çözüm hesaplanabilir.
-
-Örnekler:
-4-cisim problemi: Mars'a uzay uçuşu (uçuşun belirli bölümlerinde bir veya iki cismin etkisi çok küçüktür, bu nedenle buralarda 2 veya 3-cisim problemi söz konusudur)
-3-cisim problemi:
-Yarı uydu
-Bir Lagrange noktasına uzay uçuşu ve orada kalma
-
-  
-   
-```
-**SONRA**
-```text
-Gök mekaniği, gök cisimlerinin hareketlerini inceleyen gökbilim dalıdır.
-Gök cisimleri arasındaki kütleçekim etkileşimlerinin belirlediği ilişkilere, Kepler'in ampirik olarak kurduğu matematiksel model üzerine Newton tarafından geliştirilen ve hareketin temel yasaları adı verilen fizik kurallarının uygulanması temeline dayanır. 20. yüzyılda Einstein'ın genel görelilik kuramı ile bu kurallar yeniden gözden geçirilmiştir.
-
-## Problem örnekleri
-Sürüklenme kuvvetleri veya bir roketin itkisi gibi ek kuvvetlerin olmadığı durumlarda gök cisimlerinin hareketi, kütleler arasındaki karşılıklı kütleçekim ivmesi tarafından belirlenir. Bunun genelleştirilmiş bir hali, n sayıda kütlenin kütleçekim kuvveti aracılığıyla birbirleriyle karşılıklı etkileşime girdiği n-cisim problemidir. Genel durumda analitik olarak integrallenebilir (kesin çözülebilir) olmasa da, nümerik (sayısal) yöntemlerle oldukça iyi bir yaklaşık çözüm hesaplanabilir.
-
-Örnekler:
-4-cisim problemi: Mars'a uzay uçuşu (uçuşun belirli bölümlerinde bir veya iki cismin etkisi çok küçüktür, bu nedenle buralarda 2 veya 3-cisim problemi söz konusudur)
-3-cisim problemi:
-Bir Lagrange noktasına uzay uçuşu ve orada kalma
-
-2
-
-{\displaystyle n=
-```
-
-## 22. wikipedia_tr — Küçük gezegen adlandırması
-`WIKITR_1660674` · https://tr.wikipedia.org/wiki/K%C3%BC%C3%A7%C3%BCk_gezegen_adland%C4%B1rmas%C4%B1
-
-Uzunluk: 5,092 → 4,729 karakter
-
-**ÖNCE**
-```text
-Resmi olarak küçük gezegen adlandırması, bir küçük gezegene (asteroit, centaur, Neptün ötesi cisim ve cüce gezegen) nihai biçiminde verilen bir sayı-isim kombinasyonudur. Bu tür bir adlandırma, her zaman yeterince güvenilir bir yörünge belirlendikten sonra (buna "numaralandırma" denir) bir cisme atanan öncü numarayı (katalog veya IAU numarası) içerir. Resmi adlandırma, ilk gözlemlendiğinde otomatik olarak atanan geçici adlandırmaya dayanır. Daha sonra, resmi adlandırmanın geçici kısmı bir isim ile ("adlandırma" olarak bilinir) değiştirilebilir. Hem resmi hem de geçici adlandırmalar, Uluslararası Astronomi Birliği'nin (IAU) bir şubesi olan Küçük Gezegen Merkezi (MPC) tarafından denetlenmektedir.
-Günümüzde, bir cisim ancak yörüngesi dört iyi gözlemlenmiş karşı konumla güvence altına alındıktan sonra numaralandırılır. Dünya'ya yakın asteroitler gibi olağandışı cisimler için numaralandırma üç, belki de sadece iki karşı konumdan sonra bile gerçekleşebilir. Numaralandırılmış yarım milyondan fazla küçük gezegenden yalnızca yaklaşık 20 binine (%4) bir isim atanmıştır. Ayrıca, Kasım 2023 itibarıyla yaklaşık 700.000 küçük gezegen numaralandırılmamış durumdadır.
-Küçük gezegenlerin uyduları iç
-```
-**SONRA**
-```text
-Resmi olarak küçük gezegen adlandırması, bir küçük gezegene (asteroit, centaur, Neptün ötesi cisim ve cüce gezegen) nihai biçiminde verilen bir sayı-isim kombinasyonudur. Bu tür bir adlandırma, her zaman yeterince güvenilir bir yörünge belirlendikten sonra (buna "numaralandırma" denir) bir cisme atanan öncü numarayı (katalog veya IAU numarası) içerir. Resmi adlandırma, ilk gözlemlendiğinde otomatik olarak atanan geçici adlandırmaya dayanır. Daha sonra, resmi adlandırmanın geçici kısmı bir isim ile ("adlandırma" olarak bilinir) değiştirilebilir. Hem resmi hem de geçici adlandırmalar, Uluslararası Astronomi Birliği'nin (IAU) bir şubesi olan Küçük Gezegen Merkezi (MPC) tarafından denetlenmektedir.
-Günümüzde, bir cisim ancak yörüngesi dört iyi gözlemlenmiş karşı konumla güvence altına alındıktan sonra numaralandırılır. Dünya'ya yakın asteroitler gibi olağandışı cisimler için numaralandırma üç, belki de sadece iki karşı konumdan sonra bile gerçekleşebilir. Numaralandırılmış yarım milyondan fazla küçük gezegenden yalnızca yaklaşık 20 binine (%4) bir isim atanmıştır. Ayrıca, Kasım 2023 itibarıyla yaklaşık 700.000 küçük gezegen numaralandırılmamış durumdadır.
-Küçük gezegenlerin uyduları iç
 ```

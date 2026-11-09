@@ -5,13 +5,14 @@ rastgele (seed 42) ve gerçek örnekler alınır. Örnekler final dosyalardan de
 
 - corpus_sample.jsonl       : her kaynaktan 3 doküman (train), 6.000 karakterden kısa olanlar arasından
 - chunks_sample.jsonl       : train chunk'larından 5 örnek
-- instruction_sample.jsonl  : her görev türünden 2 örnek (instruction_v1.0.jsonl varsa)
+- instruction_sample.jsonl  : her görev türünden 2 örnek (geçerli sürümün instruction_v<sürüm>.jsonl dosyası varsa;
+                              yoksa önceki sürümden kalan örnek dosyası silinir, Git geçmişinde durur)
 """
 from __future__ import annotations
 
 from collections import defaultdict
 
-from common import get_logger, p, read_jsonl, rng, write_jsonl
+from common import get_logger, instruction_file, p, read_jsonl, rng, write_jsonl
 
 log = get_logger("16_make_samples")
 PER_SOURCE, MAX_CHARS, N_CHUNKS, PER_TASK = 3, 6000, 5, 2
@@ -36,7 +37,7 @@ def main() -> None:
     n = write_jsonl(out / "chunks_sample.jsonl", r.sample(chunks, min(N_CHUNKS, len(chunks))))
     log.info(f"chunks_sample.jsonl: {n} chunk")
 
-    ins_f = p("final") / "instruction_v1.0.jsonl"
+    ins_f = instruction_file()
     if ins_f.exists():
         by_task = defaultdict(list)
         for x in read_jsonl(ins_f):
@@ -48,7 +49,11 @@ def main() -> None:
         n = write_jsonl(out / "instruction_sample.jsonl", ins)
         log.info(f"instruction_sample.jsonl: {n} örnek ({len(by_task)} görev türü)")
     else:
-        log.warning("instruction_v1.0.jsonl yok; instruction örneği 12 çalıştıktan sonra üretilecek")
+        stale = out / "instruction_sample.jsonl"
+        if stale.exists():
+            stale.unlink()
+            log.info("önceki sürümün instruction_sample.jsonl dosyası silindi (Git geçmişinde duruyor)")
+        log.warning(f"{ins_f.name} yok; instruction örneği 12 çalıştıktan sonra üretilecek")
 
 
 if __name__ == "__main__":

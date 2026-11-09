@@ -1,11 +1,11 @@
 source_name,url,type,language,raw_document_count,document_count,token_count,access_date,license,notes
-nasa_science,https://science.nasa.gov/,HTML,en,3109,2849,2651644,2026-10-22,"NASA medya/içerik yönergeleri (kamuya açık, atıf)",Domain Corpus: güvenilir birincil kaynak; görev başına en fazla 150 sayfa
-nasa_apod,https://science.nasa.gov/apod/archive/,HTML,en,2720,2445,463041,2026-10-22,"NASA hizmeti; yalnız açıklama metni, görseller alınmadı",Domain Corpus: popüler bilim düzeyinde kısa açıklamalar; yıl başına 85 örnek (API çalışmadığı için site sayfalarından)
-openstax_astronomy_2e,https://openstax.org/details/books/astronomy-2e,PDF,en,243,238,498952,2026-10-22,CC BY-NC-SA 4.0,Domain Corpus: hakemli açık ders kitabı; kavramsal bütünlük
+nasa_science,https://science.nasa.gov/,HTML,en,3109,2809,2600395,2026-10-22,"NASA medya/içerik yönergeleri (kamuya açık, atıf)",Domain Corpus: güvenilir birincil kaynak; görev başına en fazla 150 sayfa
+nasa_apod,https://science.nasa.gov/apod/archive/,HTML,en,2720,2445,462892,2026-10-22,"NASA hizmeti; yalnız açıklama metni, görseller alınmadı",Domain Corpus: popüler bilim düzeyinde kısa açıklamalar; yıl başına 85 örnek (API çalışmadığı için site sayfalarından)
+openstax_astronomy_2e,https://openstax.org/details/books/astronomy-2e,PDF,en,243,238,499554,2026-10-22,CC BY-NC-SA 4.0,Domain Corpus: hakemli açık ders kitabı; kavramsal bütünlük
 arxiv_astro_ph,https://arxiv.org/archive/astro-ph,XML,en,6000,5953,2007161,2026-10-23,CC0 1.0 (arXiv metadata),Domain Corpus: ileri seviye terminoloji; yalnız başlık+özet
 wikipedia_en,https://en.wikipedia.org/,HTML/API,en,3576,3238,7868683,2026-10-22,CC BY-SA 4.0,"Domain Corpus: ikincil, durağan ansiklopedik bilgi"
-wikipedia_tr,https://tr.wikipedia.org/,HTML/API,tr,1737,1561,2742435,2026-10-23,CC BY-SA 4.0,Domain Corpus: Türkçe astronomi terminolojisi
-stackexchange_space_qa,https://huggingface.co/datasets/juliensimon/stackexchange-space-qa,dataset,en,33519,401,,2026-10-22,CC BY-SA 4.0,"Yalnız Instruction Dataset (soru_cevap); raw = veri setindeki kayıt, document_count = final instruction örneği"
+wikipedia_tr,https://tr.wikipedia.org/,HTML/API,tr,,0,0,,CC BY-SA 4.0,v1.0'da Domain Corpus kaynağıydı (Türkçe terminoloji); v2.0'da çıkarıldı: AstroTutor AI İngilizce konuşan bir model (09.11.2026). v1.0 Git etiketi v1.0'da
+stackexchange_space_qa,https://huggingface.co/datasets/juliensimon/stackexchange-space-qa,dataset,en,33519,,,2026-10-22,CC BY-SA 4.0,"Yalnız Instruction Dataset (soru_cevap); raw = veri setindeki kayıt, document_count = final instruction örneği (Instruction v2.0 henüz üretilmedi)"
 nasa_exoplanet_archive,https://exoplanetarchive.ipac.caltech.edu/,structured_data,en,,0,,,Atıf gerekli,"Corpus'a alınmadı; final dönemde RAG kaynağı (güncel, değişken tablo verisi)"
 Astro-mcqa,https://huggingface.co/datasets/patrickfleith/Astro-mcqa,dataset,en,200,0,,2026-10-22,CC BY 4.0,"Yalnız değerlendirme ve sızıntı (8-gram) kontrolü; eğitime girmez, dağıtılmaz"
 astro-mcq,https://huggingface.co/datasets/patrickfleith/astro-mcq,dataset,en,579,0,,2026-10-22,CC BY 4.0,"Yalnız değerlendirme ve sızıntı (8-gram) kontrolü; eğitime girmez, dağıtılmaz"

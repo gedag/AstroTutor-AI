@@ -13,13 +13,15 @@ import re
 import unicodedata
 from collections import Counter
 
-from common import CFG, get_logger, p, read_jsonl, rng, write_jsonl
+from common import CFG, CORPUS_SOURCES, get_logger, p, read_jsonl, rng, write_jsonl
 from html_residue import strip_html_residue
 
 log = get_logger("03_clean")
 EXT, OUT = p("extracted"), p("cleaned")
 SHORT = CFG["cleaning"]["short_line_chars"]
-SOURCES = ["nasa_science", "nasa_apod", "openstax", "arxiv_astro_ph", "wikipedia_en", "wikipedia_tr"]
+# Sıra sabittir (DOC_ kimlikleri ve örneklemler buna bağlı); yalnız corpus'a giren kaynaklar işlenir
+SOURCES = [s for s in ["nasa_science", "nasa_apod", "openstax", "arxiv_astro_ph", "wikipedia_en", "wikipedia_tr"]
+           if s in CORPUS_SOURCES]
 rule_hits: Counter = Counter()
 
 # ---------------------------------------------------------------- 1) Unicode
@@ -76,7 +78,7 @@ def is_heading(s: str) -> bool:
             and not re.match(r"^(Figure|Table) \d", s))
 
 
-def clean_pdf(t: str) -> str:
+def clean_pdf(t: str, glossary: bool = False) -> str:
     out = []
     for ln in t.splitlines():
         s = ln.strip()
@@ -108,8 +110,10 @@ def clean_pdf(t: str) -> str:
         if is_heading(b):
             paras.append("## " + b)
             rule_hits["pdf_heading_detected"] += 1
-        elif paras and not paras[-1].startswith("## ") and not re.search(r"[.!?:;”\")]$", paras[-1]) \
-                and b[:1].islower():
+        # Sözlük sayfalarında ("Key Terms") her paragraf zaten bir terimdir (02'de "terim: tanım" olarak ayrıldı);
+        # tanımlar noktasız bittiği ve terimler küçük harfle başladığı için birleştirme uygulanmaz.
+        elif not glossary and paras and not paras[-1].startswith("## ") \
+                and not re.search(r"[.!?:;”\")]$", paras[-1]) and b[:1].islower():
             paras[-1] += " " + b
             rule_hits["pdf_page_break_join"] += 1
         else:
@@ -274,7 +278,7 @@ def clean_doc(d: dict, boiler: set[str]) -> tuple[str, float]:
     src = d["source"]
     bib_ratio = 0.0
     if src == "openstax":
-        t = clean_pdf(t)
+        t = clean_pdf(t, glossary=(d.get("title") or "").startswith("Key Terms"))
     elif src.startswith("wikipedia"):
         t, bib_ratio = drop_bib_entries(clean_wikipedia(t, src.split("_")[1]))
     elif src == "nasa_apod":

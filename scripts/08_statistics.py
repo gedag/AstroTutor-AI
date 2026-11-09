@@ -16,6 +16,7 @@ R = p("reports")
 FIG = R / "figures"
 FIG.mkdir(exist_ok=True)
 
+LANG_NAME = {"en": "İngilizce", "tr": "Türkçe"}
 SURFACE, INK, INK2, GRID, SERIES = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df", "#2a78d6"
 
 
@@ -105,15 +106,14 @@ def main() -> None:
           f"| Near duplicate (Jaccard ≥ {tr_num(ded.get('threshold'))}) | {fmt(ded.get('near_duplicates', 0))} |",
           f"| Yeniden yayın tekrarı (06b; APOD ve NASA Science, kimlik ve kümeler korunarak) | "
           f"{fmt(d2.get('repost_removed', 0))} |",
-          f"| İletişim sayfası, kurgu/eser maddesi, temizlik sonrası çok kısa (06b) | "
+          f"| İletişim sayfası, kurgu/eser maddesi, liste/haber sayfası, temizlik sonrası çok kısa (06b) | "
           f"{fmt(sum(d2.get('other_removed', {}).values()))} |",
           f"| Final doküman | {fmt(len(docs))} |",
           f"| Toplam kelime | {fmt(words)} |",
           f"| Toplam token ({tok.get('tokenizer')}) | {fmt(tokens)} |",
-          f"| İngilizce içerik (token) | {pct(lang_tok.get('en', 0), tokens)} |",
-          f"| Türkçe içerik (token) | {pct(lang_tok.get('tr', 0), tokens)} |"]
+          *[f"| {LANG_NAME.get(l, l)} içerik (token) | {pct(n, tokens)} |" for l, n in lang_tok.most_common()]]
     # Rehber §12 özet tablosunun kalite kontrol ve instruction satırları (14 ve 12 çıktılarından; yoksa "-")
-    qcf, insf = R / "qc_summary.json", p("final") / "instruction_v1.0.jsonl"
+    qcf, insf = R / "qc_summary.json", p("final") / f"instruction_v{CFG['project']['instruction_version']}.jsonl"
     qc = json.loads(qcf.read_text(encoding="utf-8")) if qcf.exists() else {}
     cr, ir = qc.get("corpus_review", {}), qc.get("instruction_review", {})
 
@@ -209,8 +209,10 @@ def main() -> None:
     sp = Counter(d["split"] for d in docs)
     md += ["## 9. Veri ayrımı (doküman düzeyinde)", "", "| Küme | Doküman | Oran |", "| --- | --- | --- |"]
     md += [f"| {s} | {fmt(sp[s])} | {pct(sp[s], len(docs))} |" for s in ("train", "validation", "test")]
-    md += ["", f"Seed {CFG['project']['random_seed']}; kaynak bazında tabakalı; Wikipedia EN/TR aynı madde (Wikidata QID) "
-               "aynı kümede. Kümeler arası grup çakışması: 0 (`scripts/validate_datasets.py`).", ""]
+    same_article = ("; Wikipedia EN/TR aynı madde (Wikidata QID) aynı kümede" if len(lang_docs) > 1 else
+                    "; gruplama anahtarı Wikidata QID (aynı maddenin sürümleri aynı kümede)")
+    md += ["", f"Seed {CFG['project']['random_seed']}; kaynak bazında tabakalı{same_article}. "
+               "Kümeler arası grup çakışması: 0 (`scripts/validate_datasets.py`).", ""]
 
     # yayın yılı
     yrs = Counter(d["publication_year"] for d in docs if d.get("publication_year"))

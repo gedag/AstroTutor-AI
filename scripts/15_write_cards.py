@@ -9,7 +9,7 @@ import csv
 import json
 from collections import Counter
 
-from common import CFG, ROOT, get_logger, p, read_jsonl, tr_ek, tr_num
+from common import CFG, CORPUS_SOURCES, ROOT, get_logger, instruction_file, p, read_jsonl, tr_ek, tr_num
 
 log = get_logger("15_write_cards")
 R = p("reports")
@@ -106,7 +106,39 @@ def repost_rules(d2: dict) -> str:
 
 
 OTHER_LABEL = {"contact_page": "iletişim sayfası", "fiction_work_06b": "kurgu/eser maddesi",
-               "too_short_after_06b": "temizlik sonrası alt uzunluk sınırının altına düşen"}
+               "too_short_after_06b": "temizlik sonrası alt uzunluk sınırının altına düşen",
+               "list_page_06b": "liste/haber sayfası"}
+LANG_NAME = {"en": "İngilizce", "tr": "Türkçe"}
+
+
+def list_page_sentence(d2: dict) -> str:
+    """Liste/haber sayfası incelemesi (Corpus v2.0): sayılar inceleme tablosundan ve 06b özetinden okunur."""
+    f = ROOT / CFG["corpus"]["list_page_review_file"]
+    if not f.exists():
+        return ""
+    with open(f, encoding="utf-8-sig") as fh:
+        rows = list(csv.DictReader(fh))
+    thr = CFG["corpus"]["list_page_candidate_ratio"]
+    dec = Counter((r.get("son_karar") or "").strip() for r in rows)
+    if not dec.get("cikar"):
+        return ""
+    manual = sum(1 for r in rows if float(r["cumle_orani"]) >= thr)
+    # "cikar" kararı verilen bazı sayfalar 06b'de daha önce "temizlik sonrası çok kısa" nedeniyle elenir
+    removed_here = d2.get("other_removed", {}).get("list_page_06b", 0)
+    earlier = dec["cikar"] - removed_here
+    return (f"- **Liste/haber sayfaları (v2.0):** NASA Science ve APOD'da cümle oranı (noktalı cümle içeren satırlardaki "
+            f"kelimelerin payı) {tr_num(thr)} altında kalan sayfalar"
+            + (f" ve elle eklenen {manual} galeri sayfası" if manual else "")
+            + f", toplam {len(rows)} aday, yapay zekâ destekli ön incelemeyle tek tek değerlendirildi ve grup üyesinin "
+            f"onayıyla karar verildi ([reports/qc/list_page_review.csv](reports/qc/list_page_review.csv); adaylar "
+            f"`scripts/list_page_candidates.py`, çıkarma 06b). Bilgi taşımayan {dec['cikar']} sayfa (okul müfredatı "
+            f"standart tabloları, araştırma fonu çağrıları, haber başlığı, dosya ve broşür listeleri, indirme ve galeri "
+            f"sayfaları) çıkarıldı"
+            + (f" ({removed_here} tanesi bu nedenle; {earlier} tanesi temizlik sonrası çok kısa kaldığı için zaten "
+               f"elenmişti)" if earlier else "")
+            + f"; bilgi taşıyan {dec.get('tut', 0)} tablo sayfası (uydu tabloları, Ay görevleri, "
+            f"Cassini yakın geçiş verileri ve haftalık raporları) tutuldu. Eşik tek başına karar vermez; yalnız aday "
+            f"bulur.")
 
 
 def other_removed_sentence(d2: dict) -> str:
@@ -128,9 +160,14 @@ def dataset_card() -> None:
     d2 = j("dedup2_summary.json")
     rem = removed_rows("removed_documents.csv") + removed_rows("extraction_failures.csv")
     reasons = Counter(r["reason"] for r in rem)
-    by = {s: [d for d in docs if d["source"] == s] for s in SRC}
+    # yalnız bu sürümde corpus'a giren kaynaklar (v2.0: wikipedia_tr yok)
+    by = {s: [d for d in docs if d["source"] == s] for s, (_, _, ek) in SRC.items() if ek in CORPUS_SOURCES}
     total_tok = sum(d["token_count"] for d in docs)
-    short_band = sum(1 for d in docs if CFG["filtering"]["min_chars"] <= d["char_count"] < 500)
+    short_docs = [d for d in docs if CFG["filtering"]["min_chars"] <= d["char_count"] < 500]
+    short_band = len(short_docs)
+    short_src = Counter(d["source"] for d in short_docs)
+    n_keyterms = sum(1 for d in docs if d["source"] == "openstax_astronomy_2e" and d["title"].startswith("Key Terms"))
+    pb = d2.get("press_boilerplate_lines", {})
     lang_tok = Counter()
     for d in docs:
         lang_tok[d["language"]] += d["token_count"]
@@ -144,11 +181,12 @@ def dataset_card() -> None:
 
     md = [f"# Uzay ve Astronomi Domain Corpus v{CFG['project']['corpus_version']} (AstroTutor AI)", "",
           "## Amaç",
-          "Bu veri seti, uzay ve astronomi eğitiminde kullanıcının seviyesine göre Türkçe konu anlatımı yapan ve "
+          "Bu veri seti, uzay ve astronomi eğitiminde kullanıcının seviyesine göre **İngilizce** konu anlatımı yapan ve "
           "anlattığı içerikten çoktan seçmeli soru üreten alana özel bir dil modelinin (AstroTutor AI) **continued "
           "pretraining (CPT / DAPT)** aşamasında kullanılmak üzere hazırlanmıştır. Model ailesi olarak Qwen2.5-7B "
           "hedeflenmektedir. Genel amaçlı bir corpus değildir; soru-cevap davranışı için ayrı hazırlanan "
-          "[Instruction Dataset](INSTRUCTION_CARD.md) kullanılır.", "",
+          "Instruction Dataset kullanılır (İngilizce v2.0 hazırlanıyor; vizede teslim edilen Türkçe v1.0: "
+          "[INSTRUCTION_CARD.md](INSTRUCTION_CARD.md), Git etiketi `v1.0`).", "",
           "## Kapsam",
           "**Kapsam içi:** Güneş Sistemi; gezegenler ve uydular; yıldızların özellikleri ve yıldız evrimi; gökadalar; "
           "temel kozmoloji; ötegezegenler; uzay araçları ve keşif görevleri; gözlemevleri ve teleskoplar.", "",
@@ -159,6 +197,8 @@ def dataset_card() -> None:
           "| Kaynak | Tür | Dil | Ham doküman | Final doküman | Token payı | Lisans / kullanım |",
           "| --- | --- | --- | --- | --- | --- | --- |"]
     for s, (name, typ, ek) in SRC.items():
+        if s not in by:
+            continue
         raw = ext.get("per_source", {}).get(ek, {}).get("raw", 0)
         lang = Counter(d["language"] for d in by[s]).most_common(1)[0][0] if by[s] else "-"
         md.append(f"| {name} | {typ} | {lang} | {n(raw)} | {n(len(by[s]))} | "
@@ -168,9 +208,10 @@ def dataset_card() -> None:
            "final dönemde RAG; Stack Exchange: yalnız instruction verisi) için: "
            "[reports/source_notes.md](reports/source_notes.md), [reports/source_inventory.csv](reports/source_inventory.csv).",
            "",
-           f"İngilizce kaynaklar bilinçli olarak çoğunluktadır: alanın güvenilir ve açık lisanslı birincil kaynakları "
-           f"(NASA, ders kitabı, makale özetleri) İngilizcedir. Türkçe Wikipedia, modelin Türkçe astronomi "
-           f"terminolojisini görmesi için eklenmiştir ve token'ların {tr_ek(pc(lang_tok.get('tr', 0), total_tok), 'iyelik_belirtme')} oluşturur.", "",
+           "Corpus v2.0 yalnız İngilizcedir: AstroTutor AI İngilizce konuşan bir eğitim asistanı olarak geliştirilmektedir "
+           "(09.11.2026 kararı) ve alanın güvenilir, açık lisanslı birincil kaynakları (NASA, ders kitabı, makale özetleri) "
+           "İngilizcedir. v1.0'da modelin Türkçe terminolojiyi görmesi için eklenen Türkçe Wikipedia (token'ların "
+           "%16,9'u) bu sürümde çıkarıldı; İngilizce dokümanların kimlikleri ve kümeleri değişmedi.", "",
            "## Veri toplama",
            f"Dokümanlar {dates[0] if dates else '-'} – {dates[-1] if dates else '-'} tarihleri arasında "
            "`scripts/01_download.py` ile indirildi. science.nasa.gov `robots.txt` kurallarına uyuldu (istekler arası "
@@ -201,13 +242,22 @@ def dataset_card() -> None:
             f"(1) Wikipedia düz metin servisi, trafilatura ve PyMuPDF HTML/PDF üst simgelerini sildiği için kaybolan "
             f"üsler geri yazıldı ({n(d2.get('exponent_fixes', 0))} ifade; \"1.5 × 108 km\" → \"1.5 × 10^8 km\"); "
             f"(2) NASA basın bültenlerindeki künye, kredi ve iletişim satırları ile **kişisel iletişim bilgileri "
-            f"(e-posta, telefon)** silindi ({n(d2.get('press_docs_touched', 0))} doküman; kalan telefon ve gerçek "
-            f"e-posta adresi: 0, ayrıntı Lisans bölümünde); "
-            f"(3) NASA sözlük sayfalarında kısa satır kuralının sildiği terimler geri getirildi."
+            f"(e-posta, telefon)** silindi (kalan telefon ve gerçek e-posta adresi: 0, ayrıntı Lisans bölümünde); "
+            f"(3) NASA sözlük sayfalarında kısa satır kuralının sildiği terimler geri getirildi. "
+            f"Corpus v2.0'da (09.11.2026) iki düzeltme daha yapıldı: (4) OpenStax'ın \"Key Terms\" sözlük bölümleri "
+            f"PDF yazı tipi bilgisiyle (kalın terim) her terim ayrı paragraf olacak biçimde \"terim: tanım\" olarak "
+            f"çıkarıldı ({n(n_keyterms)} bölüm; önceden terimler bir önceki tanıma yapışıyor, sayfa başlığında kesilen "
+            f"terimler (ör. \"Wien's law\", \"X-rays\") kayboluyordu); (5) basın bültenlerinin sonundaki yalnız kişi "
+            f"adından oluşan satırlar ({n(pb.get('press_names', 0))}), \"Learn more / Visit …\" gibi yönlendirme "
+            f"satırları ({n(pb.get('cta_tail', 0))}) ve yalnız bağlantı taşıyan cümleler ({n(pb.get('url_tail', 0))}) "
+            f"silindi; aynı satırdaki bilgi taşıyan cümleler korundu (testler: `scripts/press_boilerplate.py`). "
+            f"Basın temizliğinden (2, 5) etkilenen doküman: {n(d2.get('press_docs_touched', 0))}."
             if d2 else ""),
            f"- **Filtering:** {CFG['filtering']['min_chars']} karakterden kısa ({n(reasons.get('too_short', 0))}), bozuk "
            f"karakter oranı {tr_ek('%' + str(int(100 * CFG['filtering']['max_garbled_ratio'])), 'belirtme')} aşan veya çoğu simgeden oluşan "
-           f"({n(reasons.get('garbled', 0))}), İngilizce/Türkçe dışındaki ({n(reasons.get('wrong_language', 0))}), "
+           f"({n(reasons.get('garbled', 0))}), "
+           f"{'/'.join(LANG_NAME.get(x, x) for x in CFG['filtering']['allowed_languages'])} dışındaki "
+           f"({n(reasons.get('wrong_language', 0))}), "
            f"satırlarının yarısından fazlası kaynakça girdisi olan yayın listesi ({n(reasons.get('reference_list', 0))}) ve "
            f"alan dışı ({n(reasons.get('out_of_domain', 0))}) dokümanlar elendi. Alan tespiti astronomi terim sözlüğü "
            "yoğunluğu ile yapıldı (`scripts/domain_lexicon.py`). Wikipedia'da kategori gezintisi alt kategorilere indiği "
@@ -225,6 +275,7 @@ def dataset_card() -> None:
             f"bilgisini taşıyor (Jaccard 0,74'e kadar)." + other_removed_sentence(d2)
             + " Bu adım doküman kimliklerini ve kümeleri değiştirmez."
             if d2 else ""),
+           *([list_page_sentence(d2)] if list_page_sentence(d2) else []),
            "", "Her çıkarılan doküman nedeniyle birlikte kayıtlıdır: [reports/removed_documents.csv](reports/removed_documents.csv), "
            "[reports/extraction_failures.csv](reports/extraction_failures.csv).", "",
            "## Format",
@@ -242,7 +293,8 @@ def dataset_card() -> None:
            f"| Ortalama doküman uzunluğu | {n(round(td.get('mean', 0)))} token |",
            f"| Medyan doküman uzunluğu | {n(td.get('median', 0))} token |",
            f"| 95. yüzdelik / en uzun | {n(td.get('p95', 0))} / {n(td.get('max', 0))} token |",
-           f"| İngilizce / Türkçe (token) | {pc(lang_tok.get('en', 0), total_tok)} / {pc(lang_tok.get('tr', 0), total_tok)} |",
+           "| Dil (token payı) | " + ", ".join(f"{LANG_NAME.get(k, k)} {pc(v, total_tok)}"
+                                                for k, v in lang_tok.most_common()) + " |",
            "", "Alt konu dağılımı (doküman): " + ", ".join(f"{k} {pc(v, len(docs), 0)}" for k, v in sub.most_common()) + ".",
            "", "Ayrıntılı istatistikler ve grafikler: [reports/statistics.md](reports/statistics.md).", "",
            "## Veri ayrımı",
@@ -250,8 +302,9 @@ def dataset_card() -> None:
            f"%{int(100 * CFG['split']['validation'])} validation ({n(sp['validation'])}), "
            f"%{int(100 * CFG['split']['test'])} test ({n(sp['test'])}). Bölme `scripts/06_split.py` içinde "
            f"`random_seed = {CFG['project']['random_seed']}` ile, kaynak bazında tabakalı yapılır. Chunk'lar bölmeden "
-           "SONRA üretildiği için aynı dokümanın parçaları tek kümede kalır; aynı Wikipedia maddesinin İngilizce ve "
-           "Türkçe sürümleri (aynı Wikidata kimliği) de aynı kümeye düşer. Kümeler arası grup çakışması: 0.", "",
+           "SONRA üretildiği için aynı dokümanın parçaları tek kümede kalır. Kümeler arası grup çakışması: 0. "
+           "v2.0'da Türkçe dokümanlar çıkarıldığında İngilizce dokümanların kümeleri v1.0 ile aynı kaldı (kaynak bazında "
+           "tabakalı bölme; Türkçe kaynak sıralamada en sondaydı).", "",
            "## Kalite kontrolü"]
     cr = qc.get("corpus_review", {})
     if cr.get("pre_reviewed") or cr.get("human_reviewed"):
@@ -261,6 +314,9 @@ def dataset_card() -> None:
                   f"inceleme ölçüt bazında yapıldı, {who}. Ön incelemede uygun: "
                   f"{pc(cr.get('pre_pass_rate', 0), 1)}; nihai kararda uygun: "
                   f"{pc(cr.get('human_pass_rate', 0), 1) if cr.get('human_reviewed') else 'bekleniyor'}. "
+                  "v2.0'da v1.0 örnekleminin İngilizce dokümanları ve kararları korundu; çıkarılan Türkçe dokümanların "
+                  "yerine aynı yöntemle (kaynak oranında, seed'li) yeni İngilizce dokümanlar eklenip incelendi "
+                  "(`scripts/13_sample_for_review.py --corpus-topup`). "
                   "Ayrıntı: [reports/quality_control_report.md](reports/quality_control_report.md).")
     else:
         md.append("Rastgele örneklem incelemesi: [reports/quality_control_report.md](reports/quality_control_report.md).")
@@ -277,8 +333,6 @@ def dataset_card() -> None:
            "## Bilinen problemler",
            f"- Kaynak dağılımı dengesizdir: dokümanların {tr_ek(pc(top_n, len(docs)))} {SRC[top_src][0]} kaynağından, "
            f"token'ların en büyük payı {SRC[top_tok_src][0]} kaynağından gelir.",
-           f"- Corpus büyük ölçüde İngilizcedir (token'ların {tr_ek(pc(lang_tok.get('en', 0), total_tok))}); hedef kullanıcı "
-           "Türkçe konuştuğu için Türkçe davranış ağırlıklı olarak Instruction Dataset ile kazandırılacaktır.",
            "- PDF'teki matematiksel ifadeler görsel/MathML olarak gömülü olduğu için bazı formüller metne çıkmadı "
            "(ör. \"the force would be , or as large\"). Tablolar düz metne dönüştüğünde sütun yapısı kaybolur.",
            "- Wikipedia ikincil kaynaktır; güncel sayısal bilgilerde (ör. ötegezegen sayısı) zamanla eskiyebilir. Bu tür "
@@ -293,24 +347,25 @@ def dataset_card() -> None:
               "sorunsuzdu. Etiket yalnız dağılım analizinde ve instruction kaynak dokümanlarının alt konuya göre dengeli "
               "seçiminde kullanılır; eğitim metnini değiştirmez."
               if cr.get("error_types", {}).get("alt_konu_hatali") else ""),
-           "- Wikipedia düz metin servisi tabloları çıkarmaz; bazı maddelerde \"aşağıda listelenmektedir\" gibi var olmayan "
-           "bir listeye atıf kalır. Wikipedia formülleri `{\\displaystyle ...}` biçiminde LaTeX olarak korunur.",
+           "- Wikipedia düz metin servisi tabloları çıkarmaz; bazı maddelerde var olmayan bir tabloya atıf kalır (ör. "
+           "\"Orbital period\" maddesi \"The following table lists the synodic periods of some planets…\" cümlesiyle "
+           "biter). Wikipedia formülleri `{\\displaystyle ...}` biçiminde LaTeX olarak korunur.",
            "- Kaybolan üslerin yalnız belirsizliği olmayan kalıpları düzeltildi; işaretsiz kalanlar (ör. \"(1031 erg/s)\") "
            "olduğu gibi duruyor.",
            "- Birkaç APOD sayfasında bağlantı metninden kaynaklanan kelime birleşmeleri vardır (\"Galacticwar\", "
            "\"PerseidMeteorShower\").",
-           f"- 300–500 karakter aralığında {n(short_band)} doküman vardır; çoğu kısa ama bilgi taşıyan sayfalardır "
-           "(Türkçe Wikipedia taslak maddeleri, NASA uydu sayfaları), ancak bir kısmı değeri düşük video/sosyal medya "
-           "sayfalarıdır (ör. \"Watch Online\"). Türkçe metin kıt olduğu için alt sınır 500 yerine 300 tutuldu.",
+           f"- {CFG['filtering']['min_chars']}–500 karakter aralığında {n(short_band)} doküman vardır ("
+           + ", ".join(f"{SRC[k][0]} {n(v)}" for k, v in short_src.most_common()) + "); çoğu kısa ama bilgi taşıyan "
+           "sayfalardır (APOD açıklamaları, uydu ve yakın geçiş sayfaları, makale özetleri), ancak bir kısmı değeri düşük "
+           "video ve indirme sayfalarıdır (ör. \"To view this video please enable JavaScript\" metinli görev animasyonları). "
+           "v2.0'da alt sınır yeniden değerlendirildi ve 300'de tutuldu: 500'e çıkarmak bu aralıktaki bilgi taşıyan kısa "
+           "sayfaları da toplu olarak atardı.",
            "- Kaynakta bozuk kodlanmış kesme işareti 4 yerde \"^1\" olarak kalmıştır (\"Saturn^1s\"); 1 APOD sayfasında "
            "(DOC_007977) kaynaktan gelen bir U+FFFD karakteri vardır (\"Don�t\").",
-           "- Son denetimde (26–27.10.2026) bilgi taşımayan 7 liste/galeri sayfası bulundu: NASA'nın \"Archived Nuggets\", "
-           "\"Nuggets\", \"Graphics\", \"Posters and Infographics\", \"Europa Clipper Mission Identifier\", \"Gallery: "
-           "Moonscapes\" sayfaları ve Türkçe Wikipedia'nın \"Astronomik nesneler listeleri\" maddesi (toplam ~7.200 token, "
-           "corpus'un %0,04'ü; \"Archived Nuggets\" sayfasında `publication_year` da boştur). Etkisi ihmal edilebilir "
-           "olduğu için v1.0 değiştirilmedi; bir sonraki sürümde liste sayfası filtresiyle çıkarılacak. Kısa satırlı "
-           "ama bilgi taşıyan sayfalar (formül ağırlıklı maddeler, asteroit yörünge bilgileri, sözlük sayfaları) bu "
-           "kapsamda değildir."]
+           "- Liste/haber sayfası incelemesi yalnız NASA Science ve APOD'a uygulandı. Wikipedia'da cümle oranı düşük "
+           "maddeler çoğunlukla formül ağırlıklı veya tablo içerikli ve bilgi taşıyan maddeler olduğu için kapsam dışı "
+           "tutuldu. Tutulan tablo sayfalarında (ör. uydu tabloları) satırlar düz metne dönüştüğü için sütun ilişkisi "
+           "kaybolur."]
     ec = R / "eval_contamination.csv"
     if ec.exists():
         with open(ec, encoding="utf-8-sig") as f:
@@ -328,13 +383,20 @@ def dataset_card() -> None:
            "- v0.9 (23.10.2026): Tüm kaynaklar, filtreleme, deduplication ve metadata.",
            "- v0.9.1 (23.10.2026): Kaynakça satırları, yayın listesi sayfaları ve Wikipedia kategori kuralı (alan dışı "
            "356 madde) eklendi.",
-           f"- v{CFG['project']['corpus_version']} (24.10.2026): Token sayımı, split; elle kalite kontrolünde bulunan "
+           "- v1.0 (24.10.2026): Token sayımı, split; elle kalite kontrolünde bulunan "
            "kaybolmuş üsler, NASA künye/kişisel veri satırları, sözlük terimleri ve APOD yeniden yayın tekrarları "
            "düzeltildi (06b; doküman kimlikleri ve kümeler korunarak).",
-           f"- v{CFG['project']['corpus_version']} düzeltmesi (30.10.2026): Telefon kuralı, numaradan hemen sonra cümle "
+           "- v1.0 düzeltmesi (30.10.2026): Telefon kuralı, numaradan hemen sonra cümle "
            "noktası gelen 5 kurumsal basın numarasını kaçırıyordu; kural düzeltildi (testli) ve corpus 06 → 06b (iki geçiş) → 07 ile "
            "yeniden üretildi. Yalnız bu 5 dokümanın metni değişti (numara → `[telefon]`, toplam −53 token); doküman "
-           "sayısı, kimlikler ve kümeler aynı.", "",
+           "sayısı, kimlikler ve kümeler aynı. Vizede teslim edilen sürüm (İngilizce + Türkçe, 16.284 doküman); Git "
+           "etiketi `v1.0`.",
+           f"- v{CFG['project']['corpus_version']} (09.11.2026): AstroTutor AI İngilizce konuşan bir model olarak "
+           "geliştirileceği için Türkçe Wikipedia çıkarıldı (corpus yalnız İngilizce). OpenStax \"Key Terms\" bölümleri "
+           "\"terim: tanım\" biçiminde yeniden çıkarıldı; basın bültenlerinin sonundaki ad, yönlendirme ve bağlantı "
+           f"satırları silindi; {n(d2.get('other_removed', {}).get('list_page_06b', 0))} liste/haber sayfası grup "
+           f"üyesinin onayıyla çıkarıldı. Final: {n(len(docs))} doküman, {mtok(total_tok)} token. İngilizce dokümanların "
+           "kimlikleri ve kümeleri v1.0 ile aynı; tüm zincir (02 → 07) yeniden çalıştırıldığında çıktı birebir aynı.", "",
            "## Yeniden üretme",
            "`pip install -r requirements.txt` ardından `python run_pipeline.py --corpus`. Ayrıntı: [README.md](README.md).", "",
            "## Hazırlayan",
@@ -345,9 +407,14 @@ def dataset_card() -> None:
 
 
 def instruction_card() -> None:
-    ins = list(read_jsonl(p("final") / "instruction_v1.0.jsonl"))
+    # Geçerli sürüm (config.yaml) üretilmediyse kart DEĞİŞTİRİLMEZ: v2.0 (İngilizce) yokken INSTRUCTION_CARD.md
+    # vizede teslim edilen Türkçe v1.0'ı anlatır; eski dosyadan yeni sürüm numarasıyla kart üretilmemeli.
+    if not instruction_file().exists():
+        log.warning(f"{instruction_file().name} yok; INSTRUCTION_CARD.md değiştirilmedi")
+        return
+    ins = list(read_jsonl(instruction_file()))
     if not ins:
-        log.warning("Instruction dataset yok, INSTRUCTION_CARD atlandı")
+        log.warning("Instruction dataset boş, INSTRUCTION_CARD atlandı")
         return
     vs, src_s, qc = j("instruction_verification_summary.json"), j("instruction_sources_summary.json"), j("qc_summary.json")
     I = CFG["instruction"]
@@ -553,7 +620,7 @@ def instruction_card() -> None:
 def source_inventory() -> None:
     """reports/source_inventory.csv — Rehber §4 sütunları; doküman sayıları final veriden."""
     docs = [d for s in ("train", "validation", "test") for d in read_jsonl(p("final") / f"{s}.jsonl")]
-    ins = list(read_jsonl(p("final") / "instruction_v1.0.jsonl"))
+    ins = list(read_jsonl(instruction_file())) if instruction_file().exists() else []
     by = Counter(d["source"] for d in docs)
     first = {}
     for d in docs:
@@ -572,7 +639,9 @@ def source_inventory() -> None:
         ("openstax_astronomy_2e", "https://openstax.org/details/books/astronomy-2e", "PDF", "en", "Domain Corpus: hakemli açık ders kitabı; kavramsal bütünlük"),
         ("arxiv_astro_ph", "https://arxiv.org/archive/astro-ph", "XML", "en", "Domain Corpus: ileri seviye terminoloji; yalnız başlık+özet"),
         ("wikipedia_en", "https://en.wikipedia.org/", "HTML/API", "en", "Domain Corpus: ikincil, durağan ansiklopedik bilgi"),
-        ("wikipedia_tr", "https://tr.wikipedia.org/", "HTML/API", "tr", "Domain Corpus: Türkçe astronomi terminolojisi"),
+        ("wikipedia_tr", "https://tr.wikipedia.org/", "HTML/API", "tr",
+         "v1.0'da Domain Corpus kaynağıydı (Türkçe terminoloji); v2.0'da çıkarıldı: AstroTutor AI İngilizce konuşan "
+         "bir model (09.11.2026). v1.0 Git etiketi v1.0'da"),
     ]
     out = R / "source_inventory.csv"
     with open(out, "w", encoding="utf-8", newline="") as f:
@@ -583,9 +652,11 @@ def source_inventory() -> None:
             w.writerow([s, url, typ, lang, raw_n.get(s, ""), by.get(s, 0), tok.get(s, 0), first.get(s, ""),
                         LICENSE[s], note])
         w.writerow(["stackexchange_space_qa", "https://huggingface.co/datasets/juliensimon/stackexchange-space-qa",
-                    "dataset", "en", se_sum.get("stackexchange_total", ""), se_n, "", "2026-10-22", "CC BY-SA 4.0",
+                    "dataset", "en", se_sum.get("stackexchange_total", ""), se_n if ins else "", "", "2026-10-22",
+                    "CC BY-SA 4.0",
                     "Yalnız Instruction Dataset (soru_cevap); raw = veri setindeki kayıt, document_count = final "
-                    "instruction örneği"])
+                    "instruction örneği" + ("" if ins else
+                                            f" (Instruction v{CFG['project']['instruction_version']} henüz üretilmedi)")])
         w.writerow(["nasa_exoplanet_archive", "https://exoplanetarchive.ipac.caltech.edu/", "structured_data", "en",
                     "", 0, "", "", "Atıf gerekli",
                     "Corpus'a alınmadı; final dönemde RAG kaynağı (güncel, değişken tablo verisi)"])

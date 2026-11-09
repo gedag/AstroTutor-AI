@@ -16,7 +16,7 @@ import json
 import re
 from collections import Counter
 
-from common import CFG, RemovalLog, get_logger, p, read_jsonl, tr_ek, tr_num, write_jsonl
+from common import CFG, RemovalLog, get_logger, instruction_file, p, read_jsonl, tr_ek, tr_num, write_jsonl
 
 log = get_logger("14_qc_report")
 R = p("reports")
@@ -107,7 +107,12 @@ def main() -> None:
     docs = []
     for s in ("train", "validation", "test"):
         docs += list(read_jsonl(p("final") / f"{s}.jsonl"))
-    ins = list(read_jsonl(p("final") / "instruction_v1.0.jsonl"))
+    # Instruction dosyası ve inceleme tablosu yalnız geçerli sürüm üretildiyse okunur. v2.0 (İngilizce) henüz
+    # yokken reports/qc/instruction_review.csv Türkçe v1.0'a aittir; İngilizce corpus raporuna karışmamalı.
+    ins_f = instruction_file()
+    ins = list(read_jsonl(ins_f)) if ins_f.exists() else []
+    cv, iv = CFG["project"]["corpus_version"], CFG["project"]["instruction_version"]
+    langs = CFG["filtering"]["allowed_languages"]
     summary: dict = {}
     fp = CFG["filtering"]["min_chars"]
     ids = [d["document_id"] for d in docs]
@@ -118,13 +123,13 @@ def main() -> None:
         f"{fp} karakterden kısa": sum(1 for d in docs if len(d["text"]) < fp),
         "Benzersiz document_id": "evet" if len(ids) == len(set(ids)) else "HAYIR",
         "Kaynak / URL / lisans eksik": sum(1 for d in docs if not (d.get("source") and d.get("url") and d.get("license"))),
-        "Dil en/tr dışında": sum(1 for d in docs if d["language"] not in ("en", "tr")),
+        f"Dil {'/'.join(langs)} dışında": sum(1 for d in docs if d["language"] not in langs),
         "Bozuk karakter (U+FFFD) içeren": sum(1 for d in docs if "�" in d["text"]),
         "token_count eksik": sum(1 for d in docs if not d.get("token_count")),
         "Aynı grup birden fazla kümede": grp_clash,
     }
     md = ["# Kalite Kontrol Raporu", "", "Bu rapor `scripts/14_qc_report.py` tarafından üretilir.", "",
-          "## A. Otomatik kontroller — Domain Corpus v1.0", "", "| Kontrol | Sonuç |", "| --- | --- |"]
+          f"## A. Otomatik kontroller — Domain Corpus v{cv}", "", "| Kontrol | Sonuç |", "| --- | --- |"]
     md += [f"| {k} | {fmt(v)} |" for k, v in auto_c.items()] + [""]
     summary["corpus_auto"] = auto_c
 
@@ -136,7 +141,7 @@ def main() -> None:
     # çıkarıldıktan sonraki FİNAL set üzerinde raporlanır; çıkarma işlemi aşağıda B bölümünden sonra yapılır.
     # Eşleştirme raw_example_id ile yapılır: INS_ numaraları doğrulanmış küme değişince (yargıç, yeni örnek)
     # kayabilir, raw_example_id kaymaz. Eski tablolarda bu sütun yoksa id -> raw_example_id eşlemesi kullanılır.
-    irow = read_csv(p("qc") / "instruction_review.csv")
+    irow = read_csv(p("qc") / "instruction_review.csv") if ins else []
     id2raw = {x["id"]: x["raw_example_id"] for x in ins}
 
     def rkey(r):
@@ -173,7 +178,7 @@ def main() -> None:
             "LLM yargıç örneklemi (örnek)": vsum.get("judged_examples"),
             "LLM yargıç başarısızlık oranı (tahmini hata oranı)": pct(vsum.get("judge_fail", 0), vsum.get("judged_examples") or 0),
         }
-        md += ["## A. Otomatik kontroller — Instruction Dataset v1.0", "",
+        md += [f"## A. Otomatik kontroller — Instruction Dataset v{iv}", "",
                "Elle incelemede sorunlu bulunan örnekler çıkarıldıktan sonraki final set üzerinde.", "",
                "| Kontrol | Sonuç |", "| --- | --- |"]
         md += [f"| {k} | {fmt(v)} |" for k, v in auto_i.items()] + [""]
@@ -194,12 +199,16 @@ def main() -> None:
            "model), her örneği kaynak metniyle karşılaştırıp ölçüt bazında karar ve gerekçe yazar; (2) grup üyesi "
            "ön incelemeyi gözden geçirip nihai kararı verir. İki aşama ayrı raporlanır.", ""]
     crow = read_csv(p("qc") / "corpus_review.csv")
-    sec, s_c = review_section(crow, CORPUS_CRIT, "Domain Corpus")
+    sec, s_c = review_section(crow, CORPUS_CRIT, f"Domain Corpus v{cv}")
     md += sec
     summary["corpus_review"] = s_c
-    sec, s_i = review_section(irow, INS_CRIT, "Instruction Dataset")
-    md += sec
-    summary["instruction_review"] = s_i
+    if ins:
+        sec, s_i = review_section(irow, INS_CRIT, f"Instruction Dataset v{iv}")
+        md += sec
+        summary["instruction_review"] = s_i
+    else:
+        md += [f"### Instruction Dataset v{iv}", "", f"*Henüz üretilmedi (`{ins_f.name}` yok); "
+               "inceleme set üretildikten sonra yapılacak.*", ""]
 
     # nihai kararı (yoksa ön incelemesi) 'sorunlu' olan instruction örneklerini çıkar (drop yukarıda hesaplandı)
     if ins and irow:
@@ -224,7 +233,7 @@ def main() -> None:
             rm.add(i, f"qc_fail({src})", "", tag)
         rm.save()
         if len(kept) != len(ins) or any(x["raw_example_id"] in reviewed for x in ins):
-            write_jsonl(p("final") / "instruction_v1.0.jsonl", kept)
+            write_jsonl(ins_f, kept)
             for s in ("train", "validation", "test"):
                 write_jsonl(p("final") / "instruction" / f"{s}.jsonl", [x for x in kept if x["split"] == s])
         md += [f"Örneklem incelemesinde sorunlu bulunan **{len(drop)}** instruction örneği setten çıkarıldı "

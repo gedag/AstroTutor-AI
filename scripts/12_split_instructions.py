@@ -6,7 +6,7 @@ Sızıntı önleme:
        instruction train'e giremez (CPT ile SFT arasında da sızıntı yok).
   - StackExchange örnekleri soru kimliğine (qid), kapsam dışı örnekler kendi kimliğine göre gruplanır ve
     grup kimliğinin seed 42'li hash'iyle %90/%5/%5 ayrılır (bir grubun elenmesi diğerlerini etkilemez).
-Çıktı: data/final/instruction_v1.0.jsonl (tamamı, split alanıyla)
+Çıktı: data/final/instruction_v<sürüm>.jsonl (tamamı, split alanıyla; sürüm config.yaml'da)
        data/final/instruction/{train,validation,test}.jsonl
 """
 from __future__ import annotations
@@ -15,7 +15,7 @@ import hashlib
 import json
 from collections import Counter, defaultdict
 
-from common import CFG, get_logger, p, read_jsonl, write_jsonl
+from common import CFG, get_logger, instruction_file, p, read_jsonl, write_jsonl
 
 log = get_logger("12_split_instructions")
 S = CFG["split"]
@@ -69,7 +69,7 @@ def main() -> None:
             "license": lic, "split": split, "raw_example_id": x["raw_example_id"],
             # kural tabanlı metin düzeltmesi (ör. "kaynak_atfi_silindi"), yoksa None — bkz. 11_verify_instructions.py
             "postprocess": x.get("postprocess")})
-    write_jsonl(p("final") / "instruction_v1.0.jsonl", out)
+    write_jsonl(instruction_file(), out)
     by = defaultdict(list)
     for x in out:
         by[x["split"]].append(x)
@@ -87,7 +87,7 @@ def main() -> None:
                "task_type_by_split": {s: dict(Counter(x["task_type"] for x in v)) for s, v in by.items()}}
     (p("reports") / "instruction_summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False),
                                                            encoding="utf-8")
-    log.info(f"Instruction v1.0: {len(out)} örnek; " + ", ".join(f"{s}={len(v)}" for s, v in by.items()))
+    log.info(f"Instruction v{CFG['project']['instruction_version']}: {len(out)} örnek; " + ", ".join(f"{s}={len(v)}" for s, v in by.items()))
 
 
 if __name__ == "__main__":

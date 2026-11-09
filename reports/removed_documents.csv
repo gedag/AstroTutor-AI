@@ -208,9 +208,9 @@ APOD_ec422a987180,filter,out_of_domain,nasa_apod,domain_score=0.0 off_topic=0
 APOD_f5a1e6d4d712,filter,out_of_domain,nasa_apod,domain_score=0.0 off_topic=0
 APOD_fae7e86aece6,filter,too_short,nasa_apod,52 chars
 OPENSTAX_0017,filter,out_of_domain,openstax,domain_score=28.3 off_topic=73
-OPENSTAX_0019,filter,out_of_domain,openstax,domain_score=125.9 off_topic=3
-OPENSTAX_0107,filter,too_short,openstax,279 chars
-OPENSTAX_0130,filter,too_short,openstax,239 chars
+OPENSTAX_0019,filter,out_of_domain,openstax,domain_score=127.1 off_topic=3
+OPENSTAX_0107,filter,too_short,openstax,268 chars
+OPENSTAX_0130,filter,too_short,openstax,224 chars
 ARXIV_1801.05383,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
 ARXIV_1908.11564,filter,out_of_domain,arxiv_astro_ph,domain_score=0.0 off_topic=0
 ARXIV_2309.12298,filter,too_short,arxiv_astro_ph,271 chars
@@ -591,176 +591,6 @@ WIKIEN_944638,filter,out_of_domain_category,wikipedia_en,Earth's energy budget |
 WIKIEN_95314,filter,out_of_domain_category,wikipedia_en,Haumea (mythology) | kategoriler: Deity stubs; Fertility goddesses; Haumea; Hawaiian goddesses
 WIKIEN_9604,filter,out_of_domain_category,wikipedia_en,Many-worlds interpretation | kategoriler: 1957 in science; 1970s neologisms; Hugh Everett III; Interpretations of quantum mechanics; Metaphysical realism; Metaphysics of science; Multiverse; Quantum measurement
 WIKIEN_9823,filter,out_of_domain_category,wikipedia_en,Eris (mythology) | kategoriler: Chaos goddesses; Children of Hera; Children of Nyx; Daughters of Zeus; Deities in the Iliad; Discordianism; Eris (dwarf planet); Eris (mythology)
-WIKITR_1112385,filter,too_short,wikipedia_tr,267 chars
-WIKITR_1179027,filter,out_of_domain_category,wikipedia_tr,Atmosfer kimyası | kategoriler: Atmosfer; Atmosfer kimyası; Kimya; Çevresel kimya
-WIKITR_120006,filter,out_of_domain_category,wikipedia_tr,Cowboy Bebop | kategoriler: 1998 anime serileri; 1998 mangaları; Adult Swim; Aksiyon animeleri ve mangaları; Animax; Bandai Visual; Bilimkurgu anime; Cowboy Bebop
-WIKITR_1201195,filter,out_of_domain_category,wikipedia_tr,Sönümlü poisson denklemi | kategoriler: Elektrostatik; Kısmi diferansiyel denklemler; Plazma fiziği
-WIKITR_1212952,filter,too_short,wikipedia_tr,289 chars
-WIKITR_123042,filter,out_of_domain_category,wikipedia_tr,Christian Andreas Doppler | kategoriler: 1803 doğumlular; 1853'te ölenler; Avusturyalı fizikçiler; Avusturyalı matematikçiler; Doppler etkisi; Salzburg doğumlular; Venedik'te defnedilenler; Venedik'te ölenler
-WIKITR_123178,filter,out_of_domain_category,wikipedia_tr,Doppler etkisi | kategoriler: Doppler etkisi
-WIKITR_1278622,filter,too_short,wikipedia_tr,273 chars
-WIKITR_1280080,filter,too_short,wikipedia_tr,277 chars
-WIKITR_1281852,filter,too_short,wikipedia_tr,257 chars
-WIKITR_1282175,filter,too_short,wikipedia_tr,235 chars
-WIKITR_1282196,filter,too_short,wikipedia_tr,278 chars
-WIKITR_1282859,filter,too_short,wikipedia_tr,274 chars
-WIKITR_1285188,filter,too_short,wikipedia_tr,286 chars
-WIKITR_12913,filter,out_of_domain_category,wikipedia_tr,Dünya'nın mantosu | kategoriler: Dünya'nın yapısı; Jeomorfoloji
-WIKITR_1297820,filter,out_of_domain_category,wikipedia_tr,Brewster açısı | kategoriler: Açı; Fiziksel optik; Geometrik optik; Polarizasyon
-WIKITR_1300437,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_1305877,filter,out_of_domain_category,wikipedia_tr,Polarizör | kategoriler: Optik aletler; Polarizasyon
-WIKITR_1331344,filter,out_of_domain,wikipedia_tr,domain_score=0.8 off_topic=0
-WIKITR_134976,filter,out_of_domain_category,wikipedia_tr,Aşınma çevrimi | kategoriler: Jeomorfoloji
-WIKITR_1349890,filter,too_short,wikipedia_tr,227 chars
-WIKITR_1400864,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_1409904,filter,out_of_domain_category,wikipedia_tr,Polarizörler | kategoriler: Optik aletler; Polarizasyon
-WIKITR_1409911,filter,out_of_domain_category,wikipedia_tr,Atmosfer optiği | kategoriler: Atmosfer; Dünya'nın yapısı; Optik; Optik olaylar
-WIKITR_1442263,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_145127,filter,out_of_domain,wikipedia_tr,domain_score=97.5 off_topic=3
-WIKITR_1471015,filter,too_short,wikipedia_tr,254 chars
-WIKITR_1474834,filter,out_of_domain_category,wikipedia_tr,Floresan lamba | kategoriler: Amerika Birleşik Devletleri icatları; Cıva; Floresans; Gaz deşarj lambaları; Lambalar; Plazma fiziği
-WIKITR_1513721,filter,out_of_domain_category,wikipedia_tr,Büyük Tasarım | kategoriler: 2010 kitapları; Astronomi kitapları; Din eleştirisi kitapları; Fizik kitapları; Kozmoloji kitapları; Popüler bilim kitapları; Stephen Hawking kitapları
-WIKITR_153461,filter,out_of_domain_category,wikipedia_tr,Metronom | kategoriler: Alman icatları; Ritim; Sarkaçlar
-WIKITR_157211,filter,out_of_domain_category,wikipedia_tr,Ay Savaşçısı | kategoriler: 1991 mangaları; 1992 anime serileri; ABS-CBN programları; Atv dizileri; Ay Savaşçısı; Ergenler ile ilgili televizyon dizileri; Fantastik anime; Kodansha mangaları
-WIKITR_1606462,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_16393,filter,out_of_domain_category,wikipedia_tr,Küçük Prens | kategoriler: 100 Temel Eser; 1940'larda Fransız romanları; 1940'larda çocuk kitapları; 1943 romanları; Antoine de Saint-Exupéry eserleri; En İyi Kısa Roman Hugo Ödülü kazanan eserler; Fransız felsefi romanları; Fransız çocuk romanları
-WIKITR_1664294,filter,too_short,wikipedia_tr,264 chars
-WIKITR_1665189,filter,out_of_domain_category,wikipedia_tr,Time Crash | kategoriler: 2007 televizyon bölümleri; Beşinci Doktor bölümleri; Doctor Who kısa bölümleri; Kurguda kara delikler; Kurguda süpernovalar; Onuncu Doktor bölümleri
-WIKITR_1667588,filter,too_short,wikipedia_tr,283 chars
-WIKITR_1668325,filter,too_short,wikipedia_tr,294 chars
-WIKITR_1668564,filter,too_short,wikipedia_tr,292 chars
-WIKITR_1668605,filter,too_short,wikipedia_tr,266 chars
-WIKITR_1669284,filter,too_short,wikipedia_tr,271 chars
-WIKITR_1670803,filter,too_short,wikipedia_tr,291 chars
-WIKITR_1670997,filter,too_short,wikipedia_tr,276 chars
-WIKITR_1671004,filter,too_short,wikipedia_tr,292 chars
-WIKITR_1671019,filter,too_short,wikipedia_tr,285 chars
-WIKITR_1672236,filter,too_short,wikipedia_tr,297 chars
-WIKITR_1675694,filter,out_of_domain_category,wikipedia_tr,Orgon (hipotez) | kategoriler: Bilim taslakları; Buluşlar; Hipotezler; Kozmoloji; Seksoloji; Sözdebilim; Wilhelm Reich
-WIKITR_1692535,filter,out_of_domain,wikipedia_tr,domain_score=1.5 off_topic=0
-WIKITR_1693813,filter,out_of_domain,wikipedia_tr,domain_score=1.5 off_topic=0
-WIKITR_1715585,filter,out_of_domain_category,wikipedia_tr,Kriyosfer | kategoriler: Dünya'nın yapısı; Subilim; Yer bilimleri
-WIKITR_1718544,filter,out_of_domain_category,wikipedia_tr,Ayrışma (jeoloji) | kategoriler: Ayrışma (jeoloji); Jeolojik süreçler; Jeomorfoloji; Klimatoloji; Pedoloji; Toprak; Yer bilimleri
-WIKITR_1729491,filter,too_short,wikipedia_tr,218 chars
-WIKITR_1733610,filter,too_short,wikipedia_tr,196 chars
-WIKITR_1741339,filter,out_of_domain_category,wikipedia_tr,Ayna simetrisi | kategoriler: Cebirsel geometri; Matematiksel fizik; Sicim teorisi
-WIKITR_1745000,filter,too_short,wikipedia_tr,287 chars
-WIKITR_177831,filter,out_of_domain_category,wikipedia_tr,Foucault sarkacı | kategoriler: Fransız icatları; Sarkaçlar
-WIKITR_1787603,filter,out_of_domain_category,wikipedia_tr,Yıldızlararası | kategoriler: 2010'larda bilimkurgu macera filmleri; 2010'larda dramatik bilimkurgu filmleri; 2010'larda felaket filmleri; 2010'larda İngilizce filmler; 2014 çıkışlı Amerika Birleşik Devletleri filmleri; 2014 çıkışlı dramatik filmler; 2014 çıkışlı filmler; 2067'de geçen filmler
-WIKITR_1793960,filter,out_of_domain_category,wikipedia_tr,Sicim kuramı ve kuantum alan kuramı arasındaki ilişki | kategoriler: Kuantum alan teorisi; Kuantum fiziği; Sicim teorisi
-WIKITR_1794968,filter,out_of_domain,wikipedia_tr,domain_score=1.3 off_topic=0
-WIKITR_1796500,filter,out_of_domain_category,wikipedia_tr,Hidrotermal baca | kategoriler: Hidrotermal bacalar; Jeodinamik; Jeomorfoloji; Levha tektoniği
-WIKITR_1798495,filter,out_of_domain_category,wikipedia_tr,Sicim kuramının tarihi | kategoriler: Fizik tarihi; Sicim teorisi
-WIKITR_1806286,filter,out_of_domain_category,wikipedia_tr,Plazma odak makinesi | kategoriler: Plazma fiziği; Çekirdeksel kaynaşma
-WIKITR_1806944,filter,out_of_domain_category,wikipedia_tr,Atmosferik dağılım | kategoriler: Akustik; Atmosfer; Kırınım; Ses
-WIKITR_1810097,filter,too_short,wikipedia_tr,231 chars
-WIKITR_1810246,filter,too_short,wikipedia_tr,226 chars
-WIKITR_181566,filter,out_of_domain_category,wikipedia_tr,Hendrik Lorentz | kategoriler: 1853 doğumlular; 1928'de ölenler; 20. yüzyıl fizikçileri; Arnhem doğumlular; Copley Madalyası sahipleri (1901-1950); Edinburgh Kraliyet Topluluğu üyeleri; Franklin Madalyası sahipleri; Genel görelilik
-WIKITR_185325,filter,out_of_domain_category,wikipedia_tr,Asit yağmuru | kategoriler: Jeomorfoloji; Orman patolojisi; Yağış; Çevre kirliliği; Çevresel kimya
-WIKITR_186509,filter,out_of_domain_category,wikipedia_tr,Mie saçılması | kategoriler: Atmosfer; Elektrodinamik; Elektromanyetizma; Işık; Saçılma
-WIKITR_1923337,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_1928452,filter,out_of_domain_category,wikipedia_tr,Elektrostatik boşalma | kategoriler: Elektrik arızası; Elektrik güvenliği; Elektrostatik; Plazma fiziği
-WIKITR_1928482,filter,out_of_domain_category,wikipedia_tr,Anti-kütleçekim | kategoriler: Anti-kütleçekimi; Bilimkurgu konuları; Fizik tarihi; Genel görelilik; Sözdebilim; Sınırfizik
-WIKITR_1928701,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_1932092,filter,out_of_domain,wikipedia_tr,domain_score=1.4 off_topic=0
-WIKITR_1937660,filter,out_of_domain_category,wikipedia_tr,Marfa ışıkları | kategoriler: Meteoroloji folkloru; Paranormal; Plazma fiziği; Presidio County; Teksas'taki çevre; Ufoloji
-WIKITR_20057,filter,out_of_domain_category,wikipedia_tr,HAARP | kategoriler: Alaska'daki yapılar; Araştırma istasyonları; Atmosfer; Valdez–Cordova Census Area; Çevre araştırması
-WIKITR_2011881,filter,out_of_domain_category,wikipedia_tr,Doppler genişlemesi | kategoriler: Doppler etkisi; Fiziksel olaylar
-WIKITR_2047846,filter,too_short,wikipedia_tr,236 chars
-WIKITR_2060727,filter,out_of_domain_category,wikipedia_tr,Define Gezegeni | kategoriler: 2000'lerde Amerika Birleşik Devletleri animasyon filmleri; 2000'lerde gençlik filmleri; 2000'lerde İngilizce filmler; 2002 çıkışlı bilimkurgu filmleri; 2002 çıkışlı filmler; Amerika Birleşik Devletleri gençlik filmleri; Amerika Birleşik Devletleri robot filmleri; Ameri
-WIKITR_2080157,filter,out_of_domain_category,wikipedia_tr,Dilaton | kategoriler: Hipotetik temel parçacıklar; Sicim teorisi; Süpersimetri
-WIKITR_2094813,filter,too_short,wikipedia_tr,215 chars
-WIKITR_2095453,filter,too_short,wikipedia_tr,195 chars
-WIKITR_2095702,filter,too_short,wikipedia_tr,203 chars
-WIKITR_2095832,filter,too_short,wikipedia_tr,206 chars
-WIKITR_2095855,filter,too_short,wikipedia_tr,211 chars
-WIKITR_2096234,filter,too_short,wikipedia_tr,216 chars
-WIKITR_2096244,filter,too_short,wikipedia_tr,271 chars
-WIKITR_2096254,filter,too_short,wikipedia_tr,249 chars
-WIKITR_210199,filter,out_of_domain_category,wikipedia_tr,Akaşa kayıtları | kategoriler: Antropozofi; Ezoterik kozmoloji; Teozofi
-WIKITR_2109826,filter,out_of_domain_category,wikipedia_tr,Plazma aktüatörü | kategoriler: Aktüatörler; Elektrostatik; Plazma fiziği
-WIKITR_2111177,filter,out_of_domain_category,wikipedia_tr,Yıldırım topu | kategoriler: Plazma fiziği; Yıldırım; Çözülememiş fizik problemleri
-WIKITR_2111181,filter,out_of_domain_category,wikipedia_tr,Rayleigh gökyüzü modeli | kategoriler: Polarizasyon
-WIKITR_221559,filter,out_of_domain_category,wikipedia_tr,Bengi dönüş | kategoriler: Din felsefesi; Dinî kozmolojiler; Felsefi argümanlar; Friedrich Nietzsche; Nedensellik
-WIKITR_2308733,filter,out_of_domain_category,wikipedia_tr,Dark (dizi) | kategoriler: 1880'lerde geçen televizyon dizileri; 1920'lerde geçen televizyon dizileri; 1953'te geçen televizyon dizileri; 1954'te geçen televizyon dizileri; 1974'te geçen televizyon dizileri; 1986'da geçen televizyon dizileri; 1987'de geçen televizyon dizileri; 2010'larda Alman drama
-WIKITR_2313330,filter,too_short,wikipedia_tr,270 chars
-WIKITR_2316456,filter,too_short,wikipedia_tr,284 chars
-WIKITR_2339771,filter,too_short,wikipedia_tr,140 chars
-WIKITR_2385739,filter,out_of_domain_category,wikipedia_tr,Gudea silindirleri | kategoriler: Antik Yakın ve Orta Doğu kil nesneleri; Irak'taki arkeolojik buluntular; Kil tabletler; Louvre Müzesi koleksiyonu; Mezopotamya mitolojisi; Mitolojik evren bilimleri; Sümerce edebiyat; Yaratılış efsaneleri
-WIKITR_2408603,filter,out_of_domain_category,wikipedia_tr,Düz Dünya | kategoriler: Düz Dünya teorisi; Erken dönem bilimsel kozmolojiler; Komplo teorileri; Sözdebilim
-WIKITR_2475110,filter,out_of_domain_category,wikipedia_tr,İndüksiyonla birleşmiş plazma | kategoriler: Elektrodinamik; Plazma fiziği; Spektroskopi
-WIKITR_2522068,filter,too_short,wikipedia_tr,260 chars
-WIKITR_2522714,filter,too_short,wikipedia_tr,231 chars
-WIKITR_2526599,filter,too_short,wikipedia_tr,223 chars
-WIKITR_2526600,filter,too_short,wikipedia_tr,295 chars
-WIKITR_2530629,filter,out_of_domain_category,wikipedia_tr,Yüzey plazmonu | kategoriler: Fotonik; Katı hâl fiziği; Nanoteknoloji; Plazma fiziği; Yüzey dalgaları
-WIKITR_2612172,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_261791,filter,out_of_domain_category,wikipedia_tr,Yaratılışçılık | kategoriler: Dinî kozmolojiler; Hristiyan terminolojisi; Sözdebilim; Teizm; Yaratılış efsaneleri; Yaratılışçılık; Yaşamın kökeni; Yürürlükte olmayan biyoloji kuramları
-WIKITR_261869,filter,too_short,wikipedia_tr,214 chars
-WIKITR_262167,filter,too_short,wikipedia_tr,274 chars
-WIKITR_2622059,filter,out_of_domain_category,wikipedia_tr,Plaj gelişimi | kategoriler: Jeomorfoloji; Kıyı coğrafyası; Okyanus bilimi terminolojisi; Sedimantoloji
-WIKITR_262595,filter,too_short,wikipedia_tr,208 chars
-WIKITR_2628745,filter,out_of_domain_category,wikipedia_tr,Yükselmiş kıyı | kategoriler: Gölsel yeryüzü şekilleri; Jeomorfoloji; Kıyı coğrafyası
-WIKITR_2647611,filter,out_of_domain_category,wikipedia_tr,Mass Effect (seri) | kategoriler: 2007'de başlatılan video oyunu serileri; Aksiyon-rol yapma video oyunları; Askerî bilimkurgu video oyunları; Bilimkurgu video oyunları; BioWare oyunları; Electronic Arts imtiyazları; Konusu gelecekte geçen video oyunları; Kurguda Samanyolu
-WIKITR_2818483,filter,out_of_domain_category,wikipedia_tr,Faraday kupası | kategoriler: Kütle spektrometrisi; Plazma fiziği; Ölçü aletleri
-WIKITR_2818686,filter,out_of_domain_category,wikipedia_tr,İyon siklotron rezonansı | kategoriler: Bilimsel teknikler; Madde içinde elektrik ve manyetik alanlar; Plazma fiziği; Yoğun madde fiziği
-WIKITR_2846582,filter,too_short,wikipedia_tr,297 chars
-WIKITR_2853752,filter,out_of_domain_category,wikipedia_tr,Mapuçe mitolojisi | kategoriler: Etnik din; Ezoterik kozmoloji; Şamanizm
-WIKITR_2857317,filter,too_short,wikipedia_tr,250 chars
-WIKITR_2885033,filter,out_of_domain_category,wikipedia_tr,İklim jeomorfolojisi | kategoriler: Jeomorfoloji; Klimatoloji
-WIKITR_2885049,filter,out_of_domain_category,wikipedia_tr,Denüdasyon | kategoriler: Jeolojik süreçler; Jeomorfoloji
-WIKITR_2885065,filter,out_of_domain,wikipedia_tr,domain_score=0.9 off_topic=0
-WIKITR_2887361,filter,out_of_domain_category,wikipedia_tr,Enkaz Akışı | kategoriler: Doğal afetler; Jeolojik tehlikeler; Jeomorfoloji
-WIKITR_2983003,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_2987086,filter,out_of_domain_category,wikipedia_tr,Sarkaçlı saat | kategoriler: Hollandalı icatları; Osilatörler; Saatler; Sarkaçlar
-WIKITR_2995135,filter,out_of_domain,wikipedia_tr,domain_score=1.0 off_topic=0
-WIKITR_2995517,filter,too_short,wikipedia_tr,214 chars
-WIKITR_3020893,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_3032828,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_3060257,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_3101405,filter,out_of_domain_category,wikipedia_tr,Don't Look Up | kategoriler: 2020'lerde bilimkurgu komedi filmleri; 2020'lerde hiciv filmleri; 2020'lerde İngilizce filmler; 2021 çıkışlı Amerika Birleşik Devletleri filmleri; 2021 çıkışlı filmler; 2021 çıkışlı komedi filmleri; Adam McKay'in senaryosunu yazdığı filmler; Adam McKay'in yapımcısı olduğ
-WIKITR_3210094,filter,out_of_domain_category,wikipedia_tr,Soluk Mavi Nokta (kitap) | kategoriler: Amerikan araştırma kitapları; Astronomi kitapları; Carl Sagan eserleri; Random House kitapları; İngilizce kitaplar
-WIKITR_3417186,filter,out_of_domain_category,wikipedia_tr,Yaratılış miti | kategoriler: Dinî kozmolojiler; Karşılaştırmalı mitoloji; Yaratılış efsaneleri
-WIKITR_3417878,filter,out_of_domain_category,wikipedia_tr,Enlil ile Ninlil | kategoriler: Dinî kozmolojiler; Kil tabletler; Mitolojik dağlar; Sümerce edebiyat; Yaratılış efsaneleri
-WIKITR_3461951,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_3468726,filter,too_short,wikipedia_tr,114 chars
-WIKITR_3469027,filter,out_of_domain,wikipedia_tr,domain_score=68.0 off_topic=3
-WIKITR_3504003,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_3535944,filter,out_of_domain_category,wikipedia_tr,Atmosferik nehir | kategoriler: Atmosfer; Atmosfer dinamiği; Etkili hava ve konveksiyon; Hava olayları; Meteorolojik olaylar
-WIKITR_3544222,filter,out_of_domain_category,wikipedia_tr,Kristal sistemi | kategoriler: Jeomorfoloji; Kristal sistemleri; Kristalografi; Mineraloji; Simetri; Öklid geometrisi
-WIKITR_3550855,filter,out_of_domain_category,wikipedia_tr,Astral düzlem | kategoriler: Ezoterik kozmoloji; Ölümden sonra yaşam yerleri
-WIKITR_3602779,filter,out_of_domain_category,wikipedia_tr,Calabi-Yau manifoldu | kategoriler: Cebirsel geometri; Diferansiyel geometri; Karmaşık manifoldlar; Matematiksel fizik; Sicim teorisi
-WIKITR_3616740,filter,out_of_domain_category,wikipedia_tr,Yüzeye çıkma tarihlemesi | kategoriler: Erozyon; Jeokronolojik yaş tayini yöntemleri; Jeomorfoloji; Tarihsel jeoloji
-WIKITR_4090427,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_4211661,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_4243097,filter,out_of_domain_category,wikipedia_tr,İbrani astronomisi | kategoriler: Antik astronomi; Dinî kozmolojiler
-WIKITR_4243545,filter,too_short,wikipedia_tr,267 chars
-WIKITR_440467,filter,too_short,wikipedia_tr,200 chars
-WIKITR_4465252,filter,out_of_domain_category,wikipedia_tr,Kitâb-ı Mukaddes kozmolojisi | kategoriler: Dinî kozmolojiler; Hristiyanlıkta kozmoloji; Kitâb-ı Mukaddes
-WIKITR_4493727,filter,out_of_domain_category,wikipedia_tr,Büyük Patlama teorisinin dinî yorumları | kategoriler: Bilim ve din; Büyük Patlama; Dinî kozmolojiler
-WIKITR_4500701,filter,out_of_domain_category,wikipedia_tr,All Tomorrows | kategoriler: 2006 bilimkurgu romanları; 2006 romanları; 2021'de tanıtılan internet meme'leri; Evrim kitapları; Genetik mühendisliği ile ilgili romanlar; Konusu gelecekte geçen romanlar; Kurguda Mars; Kurguda Samanyolu
-WIKITR_452485,filter,out_of_domain_category,wikipedia_tr,Dinî kozmoloji | kategoriler: Dinî inanç ve doktrin; Dinî kozmolojiler
-WIKITR_454764,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_4556251,filter,out_of_domain_category,wikipedia_tr,Gelecek dünya | kategoriler: Dinî kozmolojiler; Eskatoloji; Kitâb-ı Mukaddes'te geçen sözler; İznik İnanç Bildirgesi
-WIKITR_4652351,filter,out_of_domain_category,wikipedia_tr,Sürtünme hızı | kategoriler: Akışkanlar mekaniği; Hesaplamalı akışkanlar dinamiği; Jeofizik; Jeomorfoloji; Sedimantoloji
-WIKITR_4746386,filter,out_of_domain,wikipedia_tr,domain_score=86.4 off_topic=10
-WIKITR_488387,filter,too_short,wikipedia_tr,279 chars
-WIKITR_554520,filter,out_of_domain_category,wikipedia_tr,Polarizasyon | kategoriler: Antenler; Elektromanyetik radyasyon; Polarizasyon
-WIKITR_558076,filter,out_of_domain_category,wikipedia_tr,Süpersicim teorisi | kategoriler: Sicim teorisi; Süpersimetri
-WIKITR_592216,filter,out_of_domain_category,wikipedia_tr,Yer bilimleri | kategoriler: Yer bilimleri
-WIKITR_644154,filter,out_of_domain_category,wikipedia_tr,İzostazi | kategoriler: Jeodinamik; Jeomorfoloji; Kaldırma kuvveti
-WIKITR_64952,filter,out_of_domain_category,wikipedia_tr,Düalist kozmoloji | kategoriler: Düalizm; Metafizik teorileri; Mitolojik evren bilimleri
-WIKITR_657144,filter,out_of_domain_category,wikipedia_tr,Sarkaç | kategoriler: Fizik taslakları; Sarkaçlar
-WIKITR_67047,filter,out_of_domain_category,wikipedia_tr,Armageddon (film) | kategoriler: 1990'larda aksiyon filmleri; 1990'larda bilimkurgu filmleri; 1990'larda felaket filmleri; 1990'larda İngilizce filmler; 1998 çıkışlı Amerika Birleşik Devletleri filmleri; 1998 çıkışlı filmler; Aerosmith; Altın Ahududu Ödülü kazanan filmler
-WIKITR_725196,filter,too_short,wikipedia_tr,275 chars
-WIKITR_775738,filter,out_of_domain,wikipedia_tr,domain_score=0.0 off_topic=0
-WIKITR_792958,filter,out_of_domain_category,wikipedia_tr,Makemake (mitoloji) | kategoriler: Bereket tanrıları; Makemake; Paskalya Adası; Rapanui mitolojisi; Tarım tanrıları; Yaratıcı tanrılar
-WIKITR_81105,filter,out_of_domain_category,wikipedia_tr,M teorisi | kategoriler: Sicim teorisi
-WIKITR_815705,filter,too_short,wikipedia_tr,210 chars
-WIKITR_851040,filter,too_short,wikipedia_tr,257 chars
-WIKITR_852862,filter,too_short,wikipedia_tr,242 chars
-WIKITR_856231,filter,too_short,wikipedia_tr,150 chars
-WIKITR_873442,filter,too_short,wikipedia_tr,108 chars
 NASA_79b2a7270aed,dedup,duplicate,nasa_science,same_sha256_as=NASA_5bfd75e926dd
 NASA_3aa39dbf1d85,dedup,duplicate,nasa_science,same_sha256_as=NASA_03a701a3dcc3
 NASA_052e9fc8fc03,dedup,duplicate,nasa_science,same_sha256_as=NASA_0360efc7240b
@@ -1035,17 +865,56 @@ APOD_fc6ac2b1d13e,dedup2,repost_duplicate,nasa_apod,DOC_008502 -> tutulan DOC_00
 APOD_fd5b83386919,dedup2,repost_duplicate,nasa_apod,DOC_008511 -> tutulan DOC_007666 (train); jaccard=0.696 karakter=0.937
 APOD_feb57173b765,dedup2,repost_duplicate,nasa_apod,DOC_008524 -> tutulan DOC_008138 (train); jaccard=0.674 karakter=0.909
 NASA_6883faed7069,dedup2,repost_duplicate,nasa_science,DOC_009772 -> tutulan DOC_010305 (validation); jaccard=0.788 karakter=0.903
-NASA_77ae3e401385,dedup2,repost_duplicate,nasa_science,DOC_009946 -> tutulan DOC_010946 (test); jaccard=0.847 karakter=0.974
+NASA_77ae3e401385,dedup2,repost_duplicate,nasa_science,DOC_009946 -> tutulan DOC_010946 (test); jaccard=0.844 karakter=0.973
 NASA_ede611b39f89,dedup2,repost_duplicate,nasa_science,DOC_011210 -> tutulan DOC_010277 (train); jaccard=0.809 karakter=0.951
 NASA_08ba37496a0b,dedup2,contact_page,nasa_science,DOC_008637: 185 karakter; https://science.nasa.gov/mission/lro/media-resources/
 NASA_09e01826b71a,dedup2,contact_page,nasa_science,DOC_008647: 471 karakter; https://science.nasa.gov/mission/osiris-rex/media-resources/
-NASA_3f35f681c584,dedup2,contact_page,nasa_science,DOC_009245: 332 karakter; https://science.nasa.gov/mission/viper/media-resources/
+NASA_0a6e05fa795b,dedup2,list_page_06b,nasa_science,DOC_008654: MatISSE | Araştırma fonu çağrısı (MatISSE); başvuru takvimi ve koşulları. Kapsam dışı (araştırmacı duyurusu).
+NASA_10b105c18c7c,dedup2,list_page_06b,nasa_science,"DOC_008723: Planck | Görev sayfasının gövdesi çıkmamış; yalnız ilgisiz haber başlıkları (APOD, RS-25 motor testi, JPL) ve menü başlıkları var."
+NASA_134499903c05,dedup2,list_page_06b,nasa_science,"DOC_008752: Science Events | Konferans/etkinlik takvimi tablosu (tarih, toplantı adı, kurum); alan bilgisi yok."
+NASA_13899d2f1bb4,dedup2,list_page_06b,nasa_science,"DOC_008754: Partners | Dawn ortak kurumlar listesi; kurum tanıtımları, alan bilgisi çok az."
+NASA_27c9b1b99b9a,dedup2,list_page_06b,nasa_science,"DOC_008956: Planetary Science Standards Alignments | Okul müfredatı (NGSS) standart eşleme tablosu; astronomi bilgisi değil, eğitim yönetimi içeriği."
+NASA_29fbbb4b18a0,dedup2,list_page_06b,nasa_science,DOC_008991: Gallery: Moonscapes | Görsel galerisi: tanıtım cümlesinden sonra yalnız görsel başlıkları. Oranı eşiğin üstünde olduğu için aday olmadı; v1.0 kartında bilgi taşımayan sayfa
+NASA_328277205103,dedup2,list_page_06b,nasa_science,"DOC_009115: Papers & Publications | Doküman/sunum bağlantıları listesi (PDF, PowerPoint)."
+NASA_37e28b6ce635,dedup2,list_page_06b,nasa_science,"DOC_009167: Past International Observe the Moon Night Events | Etkinlik katılım istatistikleri tablosu (yıl, katılımcı, fotoğraf grubu); alan bilgisi yok."
+NASA_39843b886984,dedup2,list_page_06b,nasa_science,DOC_009177: Historic Technology Milestones | Teknoloji raporu başlıklarının listesi; açıklama yok.
+NASA_3f35f681c584,dedup2,contact_page,nasa_science,DOC_009245: 167 karakter; https://science.nasa.gov/mission/viper/media-resources/
+NASA_41fa0fece3fe,dedup2,list_page_06b,nasa_science,DOC_009282: Data Products | LRO doküman kütüphanesi: tarih + rapor adı + [PDF] bağlantı listesi.
+NASA_42fdb3ef8532,dedup2,list_page_06b,nasa_science,DOC_009297: Europa Clipper Downloadable 3D Model | 3B model indirme sayfası: dosya adları ve boyutları.
+NASA_4359eed7e74f,dedup2,list_page_06b,nasa_science,DOC_009306: Heliophysics Standards Alignments | Okul müfredatı (NGSS) standart eşleme tablosu; büyük kısmı hava/biyoloji standartları.
+NASA_43b174d49c1e,dedup2,list_page_06b,nasa_science,DOC_009311: Astrobiology Standards Alignments | Okul müfredatı (NGSS) standart eşleme tablosu; alan bilgisi değil.
+NASA_48de09e5517a,dedup2,list_page_06b,nasa_science,"DOC_009380: Join the Science Community | Topluluk üyelik/kayıt sayfası (e-posta bülteni, etkinlik duyurusu); alan bilgisi yok."
 NASA_4cc1be34013d,dedup2,contact_page,nasa_science,DOC_009430: 371 karakter; https://science.nasa.gov/mission/ladee/media-resources/
+NASA_4d29f79ba313,dedup2,list_page_06b,nasa_science,DOC_009435: Industrial Partners | Hubble sanayi ortakları: şirket adları listesi.
+NASA_4e8f570124e7,dedup2,too_short_after_06b,nasa_science,DOC_009457: 296 karakter
+NASA_5932b794dd90,dedup2,list_page_06b,nasa_science,DOC_009563: Brochures and Fact Sheets | Broşür ve poster adlarının listesi (indirme sayfası).
+NASA_63be72c08fd5,dedup2,list_page_06b,nasa_science,"DOC_009703: Message to Attendees of the 2013 IAA Planetary Defense Conference | Gövde metni çıkmamış; yalnız başlık, ekip adı ve ilgisiz haber başlıkları kalmış."
 NASA_63d778cc89d3,dedup2,contact_page,nasa_science,DOC_009707: 458 karakter; https://science.nasa.gov/planetary-science/programs/radioisotope-power-systems/contact/
+NASA_644615ec1e70,dedup2,list_page_06b,nasa_science,DOC_009713: Total Solar Eclipse Telescope Feeds | Tutulma canlı yayın akışı için medya kullanım koşulları ve şehir adları.
+NASA_67eb007faa12,dedup2,list_page_06b,nasa_science,DOC_009759: Nuggets | 'Nugget' başlıklarının listesi (v1.0 kartında listelenmişti).
+NASA_6fd38dcf40ca,dedup2,list_page_06b,nasa_science,DOC_009862: DALI | Araştırma fonu çağrısı (DALI); başvuru takvimi ve koşulları. Kapsam dışı (araştırmacı duyurusu).
 NASA_7671ce4a9500,dedup2,too_short_after_06b,nasa_science,DOC_009932: 195 karakter
+NASA_76874efd9476,dedup2,list_page_06b,nasa_science,DOC_009933: Astrophysics Standards Alignments | Okul müfredatı (NGSS) standart eşleme tablosu; alan bilgisi değil.
+NASA_79adce3c5421,dedup2,list_page_06b,nasa_science,DOC_009971: News Archive | COBE haber arşivi: yalnız tarih + haber başlığı listesi.
+NASA_80152cc03dd6,dedup2,list_page_06b,nasa_science,DOC_010046: Graphics | Grafik dosyası adlarının listesi (v1.0 kartında listelenmişti).
+NASA_828c2167a2f4,dedup2,list_page_06b,nasa_science,"DOC_010080: PESTO Project Portfolio | Proje portföyü tablosu (PI adı, proje başlığı, kurum); 40 bin karakterlik liste, alan bilgisi çok az."
+NASA_8bfef3688dba,dedup2,list_page_06b,nasa_science,DOC_010181: Science Data Access | Veri arşivlerine bağlantı adlarından oluşan liste.
+NASA_8fc548e48978,dedup2,list_page_06b,nasa_science,"DOC_010217: HOTTech | Araştırma fonu çağrısı (başvuru takvimi, teklif adımları). Kapsam dışı: NASA URL seçiminde 'solicitation' sayfaları zaten dışlanıyordu."
+NASA_9354d45155f7,dedup2,list_page_06b,nasa_science,DOC_010257: Prebiotic Atmospheric Chemistry on Titan | Metnin çoğu ~100 kişilik yazar listesi; yalnız iki cümlelik özet var.
+NASA_939f22e2ed2b,dedup2,too_short_after_06b,nasa_science,DOC_010263: 297 karakter
 NASA_98aff086f4a3,dedup2,contact_page,nasa_science,DOC_010318: 796 karakter; https://science.nasa.gov/mission/psyche/media-contacts/
+NASA_9d479edbbb7b,dedup2,list_page_06b,nasa_science,DOC_010365: Posters and Infographics | Poster ve infografik adlarının listesi (v1.0 kartında listelenmişti).
+NASA_a66601940759,dedup2,list_page_06b,nasa_science,DOC_010469: Related Funding Opportunities | Fon programlarının adlarından oluşan liste.
+NASA_aff22dd1a0aa,dedup2,list_page_06b,nasa_science,DOC_010564: PICASSO | Araştırma fonu çağrısı (PICASSO); başvuru takvimi ve koşulları. Kapsam dışı (araştırmacı duyurusu).
+NASA_b16be592949d,dedup2,list_page_06b,nasa_science,DOC_010575: Instrument Concepts for Europa Exploration (ICEE) | Europa Clipper çalışma dokümanlarının adlarından oluşan liste; içerik yok.
+NASA_b4c6439057d8,dedup2,list_page_06b,nasa_science,DOC_010613: Archived Nuggets | Arşiv sayfası: ay/yıl başlıklarından oluşan liste (v1.0 kartında bilgi taşımayan sayfa olarak listelenmişti).
+NASA_b997bfccd2af,dedup2,list_page_06b,nasa_science,"DOC_010654: Calls for Roman Community Input and Participation | Topluluk başvuru çağrıları tablosu (ad, bağlantı, kapanış tarihi)."
+NASA_c613c5081990,dedup2,list_page_06b,nasa_science,DOC_010786: NASA Planetary Mission Senior Reviews - PMSR | Görev uzatma değerlendirme süreci (araştırma yönetimi) ve tekrar eden yıl/görev listeleri.
+NASA_de4765c536e1,dedup2,list_page_06b,nasa_science,DOC_011051: Science Teams | Fonlanan teklifler ve PI adları; araştırmacı katılım duyurusu.
+NASA_e32fb4585bee,dedup2,list_page_06b,nasa_science,DOC_011112: Biological and Physical Sciences Standards Alignments | Fizik/biyoloji okul müfredatı (NGSS) standart tablosu; astronomi dışı. Not: v1.0'da instruction kaynağıydı (koruma listesinde).
+NASA_e3e4c62e9cd9,dedup2,list_page_06b,nasa_science,DOC_011121: Astro2020 White papers | Astro2020 beyaz rapor başlıkları ve yazar adları listesi.
+NASA_ec581dd5e9cf,dedup2,list_page_06b,nasa_science,DOC_011195: Resources | Araştırma fonu çağrılarının listesi (ROSES ekleri).
 NASA_f6680d972897,dedup2,contact_page,nasa_science,DOC_011295: 393 karakter; https://science.nasa.gov/mission/lucy/media-resources/
 WIKIEN_11660577,dedup2,fiction_work_06b,wikipedia_en,DOC_011741: Pluto (song) | kategoriler: 1997 songs; Björk songs; Industrial songs; Pluto; Song recordings produced by Björk; Songs written by Björk
 WIKIEN_648781,dedup2,fiction_work_06b,wikipedia_en,DOC_014034: Treasure Planet | kategoriler: 2000s epic films; 2002 American animated films; 2002 English-language films; 2002 children's films; 2002 films; 2002 science fiction action films
 WIKIEN_896326,dedup2,fiction_work_06b,wikipedia_en,DOC_014740: Revelation Space | kategoriler: 2000 British novels; 2000 English-language novels; 2000 debut novels; 2000 science fiction novels; British science fiction novels; Fiction about consciousness transfer
-WIKITR_128686,dedup2,fiction_work_06b,wikipedia_tr,DOC_014994: Yıldız Geçidi (film) | kategoriler: 1928'de geçen filmler; 1990'larda aksiyon filmleri; 1990'larda bilimkurgu filmleri; 1990'larda İngilizce filmler; 1994'te başlatılan medya imtiyazları; 1994'te geçen filmler

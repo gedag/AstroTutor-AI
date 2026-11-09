@@ -23,3 +23,6 @@ logs/
 # Office belgeleri (ders rehberi ve tasarım raporu depoya konmaz) ve geçici dosyaları
 *.docx
 ~$*
+
+# Türkçe v1.0 verisinin yerel yedeği (09.11.2026; Git etiketi v1.0 ile eşleşir)
+data/archive_v1.0/

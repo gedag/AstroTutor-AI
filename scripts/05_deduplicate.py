@@ -99,6 +99,19 @@ def assign_subtopic(d: dict) -> str:
     return best if s[best] > 0 else "general_astronomy"
 
 
+def write_review(review_f, sample, review_cols, prev, by_id, thr) -> None:
+    """Eşik inceleme tablosu (50 aday çift). Önceki kararlar (id_a, id_b) eşleşmesiyle taşınır."""
+    with open(review_f, "w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["jaccard", "above_threshold", "id_a", "id_b", "title_a", "title_b", "snippet_a", "snippet_b",
+                    *review_cols])
+        for j, a, b in sorted(sample, reverse=True):
+            old = prev.get((a, b), {})
+            w.writerow([f"{j:.3f}", j >= thr, a, b, by_id[a].get("title"), by_id[b].get("title"),
+                        by_id[a]["text"][:400].replace("\n", " "), by_id[b]["text"][:400].replace("\n", " "),
+                        *[old.get(c, "") for c in review_cols]])
+
+
 def main() -> None:
     docs = list(read_jsonl(p("interim") / "filtered.jsonl"))
     docs.sort(key=lambda d: (PRIORITY[d["source"]], -len(d["text"]), d["raw_id"]))
@@ -169,15 +182,12 @@ def main() -> None:
     if review_f.exists():
         with open(review_f, encoding="utf-8-sig") as f:
             prev = {(x["id_a"], x["id_b"]): x for x in csv.DictReader(f)}
-    with open(review_f, "w", encoding="utf-8", newline="") as f:
-        w = csv.writer(f)
-        w.writerow(["jaccard", "above_threshold", "id_a", "id_b", "title_a", "title_b", "snippet_a", "snippet_b",
-                    *review_cols])
-        for j, a, b in sorted(sample, reverse=True):
-            old = prev.get((a, b), {})
-            w.writerow([f"{j:.3f}", j >= thr, a, b, by_id[a].get("title"), by_id[b].get("title"),
-                        by_id[a]["text"][:400].replace("\n", " "), by_id[b]["text"][:400].replace("\n", " "),
-                        *[old.get(c, "") for c in review_cols]])
+    # Grup üyesinin karar verdiği tablo dondurulur (09.11.2026): yeniden çalıştırmada örneklem değişirse (ör. bir kaynak
+    # çıkarılınca) onaylı satırlar silinip yerine incelenmemiş çiftler gelebilirdi. Eşik kararı bu tabloya dayanır.
+    if any(x.get("son_karar_tekrar_mi") for x in prev.values()):
+        log.info(f"{review_f.name}: grup üyesinin kararları var, tablo değiştirilmedi ({len(prev)} çift)")
+    else:
+        write_review(review_f, sample, review_cols, prev, by_id, thr)
     hist = Counter(round(int(x[0] * 20) / 20, 2) for x in pairs)
 
     # ---- metadata (Rehber §9)

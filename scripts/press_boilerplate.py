@@ -35,6 +35,50 @@ CENTER_LINE = re.compile(r"^(NASA.s |NASA )?([A-Z][\w.'’ -]{0,40} )?(Space Fli
 TAIL_LINK = re.compile(r"\s*(For the full text( and image)?|For more (information|details)),? (link|go) to:?\s*$", re.I)
 CONTACT_FIELD = re.compile(r"^(E-?mail|Phone|Tel|Fax|Web ?Site|Website)\s*:", re.I)
 MAX_BOILER = 200  # bu uzunluktan uzun satırlar düzyazı sayılır, dokunulmaz
+# Corpus v2.0 (09.11.2026) — yalnız dokümanın SONUNDAKİ satırlar için (metin ortasındaki başlıklara dokunulmaz):
+# (a) başlıksız kalan basın sorumlusu adları: "Karen Fox / Molly Wasser", "DC Agle / Jia-Rui Cook" (29 doküman);
+# (b) bağlantı düğmesinden kalan çağrı satırları: "Follow us on Facebook", "Download your postcard here";
+# (c) gezinme etiketleri: "Exoplanets Multimedia", "Europa Clipper Resources";
+# (d) adres içeren kısa son satırlar: "For more about NASA's Astrobiology program: https://...", "<http://.../feedback/>"
+#     ve APOD sayfalarında kalan JavaScript satırı "digg_url = '...'; digg_skin = 'compact';" (tablo satırı hariç).
+NAME = r"[A-Z][\w.'’-]*(?: [A-Z][\w.'’-]*){1,2}"
+PRESS_NAMES = re.compile(rf"^{NAME}(?:\s*/\s*{NAME})+\s*$")
+CTA = re.compile(r"^(Learn|Visit|Explore|Follow|Download|Browse|Discover|Watch|Read|Find|Join|Subscribe|Sign up|"
+                 r"Check out|Get|See|Take|View|Listen to)\b[^.!?:]{0,70}$")
+NAV_LABEL = re.compile(r"^[A-Z][\w'’ -]{0,40} (Multimedia|Resources)$")
+URL_TAIL = re.compile(r"https?://|www\.|\bdigg_url\b")
+MAX_TAIL = 5  # sondan en fazla bu kadar satır silinir
+
+
+def clean_tail(text: str) -> tuple[str, dict]:
+    """Dokümanın sonundaki ad/çağrı/gezinme/adres satırlarını siler (en fazla MAX_TAIL satır)."""
+    lines = text.rstrip().splitlines()
+    n = {"press_names": 0, "cta_tail": 0, "url_tail": 0}
+    for _ in range(MAX_TAIL):
+        while lines and not lines[-1].strip():
+            lines.pop()
+        if len(lines) < 2:
+            break
+        s = lines[-1].strip()
+        if PRESS_NAMES.match(s) and len(s.split()) <= 8:
+            n["press_names"] += 1
+        elif (CTA.match(s) or NAV_LABEL.match(s)) and len(s.split()) <= 10:
+            n["cta_tail"] += 1
+        elif URL_TAIL.search(s) and len(s.split()) <= 60 and not s.startswith("|"):
+            # yalnız adres içeren cümleler çıkar; aynı satırdaki bilgi cümlesi kalır ("Saturn is nearing opposition
+            # ... small telescope. See JPL's video at: http://...")
+            sents = re.split(r"(?<=[.!?])\s+(?=[A-Z“\"'])", s)
+            if any(len(x.split()) > 30 for x in sents if URL_TAIL.search(x)):
+                break
+            n["url_tail"] += 1
+            keep = [x for x in sents if not URL_TAIL.search(x)]
+            if keep:
+                lines[-1] = " ".join(keep)
+                break
+        else:
+            break
+        lines.pop()
+    return "\n".join(lines).strip(), n
 
 
 def clean_press(text: str) -> tuple[str, dict]:
@@ -84,7 +128,9 @@ def clean_press(text: str) -> tuple[str, dict]:
             n["link_only"] += 1
             ln = TAIL_LINK.sub("", ln)
         out.append(ln)
-    return "\n".join(out).strip(), n
+    t, tail = clean_tail("\n".join(out))
+    n.update(tail)
+    return t, n
 
 
 def scrub_inline_pii(text: str) -> tuple[str, int]:
@@ -143,6 +189,29 @@ if __name__ == "__main__":
     ok5 = (k5 == 3 and "555-0142" not in o5 and "555-0123" not in o5 and "555.0175" not in o5
            and "6 356 752.3142" in o5 and "6416 247.4627" in o5 and "R@P0.99" in o5)
     print("cümle sonu numara / sayısal veri:", "tamam" if ok5 else "HATA", k5, "|", o5)
+    # sondaki basın adları ve çağrı satırları silinir; metin ortasındaki aynı biçimli satırlar korunur (09.11.2026)
+    t7 = ("## Explore the Roman Systems\nThe telescope has two instruments.\nFollow us on Facebook\n"
+          "The Moon causes the tides.\nSee the full report\nLearn about NASA citizen science projects\n"
+          "Exoplanets Multimedia\nKaren Fox / Molly Wasser")
+    out7, n7 = clean_press(t7)
+    ok7 = (out7.endswith("The Moon causes the tides.") and "## Explore the Roman Systems" in out7
+           and "Follow us on Facebook" in out7 and n7["press_names"] == 1 and n7["cta_tail"] == 3)
+    print("sondaki ad/çağrı satırları:", "tamam" if ok7 else "HATA", n7, "|", out7.replace("\n", " / "))
+    t9 = ("A crater was found.\n| Mission Website | https://www.esa.int/juice |\n"
+          "For more about NASA's Astrobiology program: https://science.nasa.gov/astrobiology/\n"
+          "digg_url = 'http://apod.nasa.gov/apod/ap081222.html'; digg_skin = 'compact';")
+    out9, n9 = clean_press(t9)
+    ok9 = out9 == "A crater was found.\n| Mission Website | https://www.esa.int/juice |" and n9["url_tail"] == 2
+    print("sondaki adres satırları (tablo satırı korunur):", "tamam" if ok9 else "HATA", n9["url_tail"], "|",
+          out9.replace("\n", " / "))
+    t10 = ("Cassini reached Saturn.\nSaturn is nearing opposition in Earth's night sky, and presenting a fine view in "
+           "almost any small telescope. See JPL's \"What's Up\" video at: http://youtu.be/abc")
+    out10, n10 = clean_press(t10)
+    ok10 = out10.endswith("almost any small telescope.") and "youtu.be" not in out10 and n10["url_tail"] == 1
+    print("adresli cümle çıkar, bilgi cümlesi kalır:", "tamam" if ok10 else "HATA", "|", out10.replace("\n", " / "))
+    out8, n8 = clean_press("Saturn has 274 known moons.\nSee you next month!\nDC Agle / Jia-Rui Cook\n")
+    ok8 = out8 == "Saturn has 274 known moons.\nSee you next month!" and n8["press_names"] == 1
+    print("noktalama ile biten satır korunur:", "tamam" if ok8 else "HATA", "|", out8.replace("\n", " / "))
     out6, n6 = clean_press("The observatory hosted the workshop.\n+01 303 555 0100 ext. 1156\nThe meeting ended.")
     ok6 = "555 0100" not in out6 and "hosted the workshop" in out6 and n6["pii_line"] == 1
     print("uluslararası önekli numara satırı:", "tamam" if ok6 else "HATA", "|", out6.replace("\n", " / "))

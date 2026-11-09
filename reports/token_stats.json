@@ -1,12 +1,12 @@
 {
   "tokenizer": "Qwen/Qwen2.5-7B",
   "documents": {
-    "count": 16284,
-    "total": 16231916,
+    "count": 14683,
+    "total": 13438685,
     "min": 53,
-    "median": 391,
-    "mean": 996.8,
-    "p95": 3978,
+    "median": 379,
+    "mean": 915.3,
+    "p95": 3593,
     "max": 57979
   },
   "per_source": {
@@ -21,28 +21,28 @@
     },
     "nasa_apod": {
       "count": 2445,
-      "total": 463041,
+      "total": 462892,
       "min": 73,
       "median": 187,
-      "mean": 189.4,
+      "mean": 189.3,
       "p95": 257,
       "max": 348
     },
     "nasa_science": {
-      "count": 2849,
-      "total": 2651644,
+      "count": 2809,
+      "total": 2600395,
       "min": 55,
-      "median": 700,
-      "mean": 930.7,
-      "p95": 2280,
+      "median": 701,
+      "mean": 925.7,
+      "p95": 2245,
       "max": 57979
     },
     "openstax_astronomy_2e": {
       "count": 238,
-      "total": 498952,
-      "min": 73,
+      "total": 499554,
+      "min": 68,
       "median": 1800,
-      "mean": 2096.4,
+      "mean": 2099.0,
       "p95": 5219,
       "max": 6747
     },
@@ -54,74 +54,56 @@
       "mean": 2430.1,
       "p95": 7640,
       "max": 27769
-    },
-    "wikipedia_tr": {
-      "count": 1561,
-      "total": 2742435,
-      "min": 91,
-      "median": 722,
-      "mean": 1756.8,
-      "p95": 7055,
-      "max": 25286
     }
   },
   "per_split": {
     "train": {
-      "count": 14660,
-      "total": 14798596,
+      "count": 13223,
+      "total": 12193842,
       "min": 53,
-      "median": 391,
-      "mean": 1009.5,
-      "p95": 4039,
+      "median": 379,
+      "mean": 922.2,
+      "p95": 3633,
       "max": 57979
     },
     "validation": {
-      "count": 819,
-      "total": 737348,
+      "count": 735,
+      "total": 639605,
       "min": 65,
-      "median": 393,
-      "mean": 900.3,
+      "median": 379,
+      "mean": 870.2,
       "p95": 3342,
       "max": 11538
     },
     "test": {
-      "count": 805,
-      "total": 695972,
+      "count": 725,
+      "total": 605238,
       "min": 58,
-      "median": 396,
-      "mean": 864.6,
-      "p95": 3299,
+      "median": 385,
+      "mean": 834.8,
+      "p95": 3112,
       "max": 15770
     }
   },
   "per_language": {
     "en": {
-      "count": 14723,
-      "total": 13489481,
+      "count": 14683,
+      "total": 13438685,
       "min": 53,
-      "median": 380,
-      "mean": 916.2,
-      "p95": 3594,
+      "median": 379,
+      "mean": 915.3,
+      "p95": 3593,
       "max": 57979
-    },
-    "tr": {
-      "count": 1561,
-      "total": 2742435,
-      "min": 91,
-      "median": 722,
-      "mean": 1756.8,
-      "p95": 7055,
-      "max": 25286
     }
   },
   "chunks": {
     "max_tokens": 1024,
-    "count": 33997,
-    "total": 16229911,
+    "count": 29070,
+    "total": 13437090,
     "min": 2,
-    "median": 396,
-    "mean": 477.4,
-    "p95": 982,
+    "median": 383,
+    "mean": 462.2,
+    "p95": 980,
     "max": 1430
   }
 }

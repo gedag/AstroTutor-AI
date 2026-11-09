@@ -21,7 +21,7 @@ from collections import Counter
 from pathlib import Path
 from urllib.parse import urlparse
 
-from common import CFG, ROOT, RemovalLog, get_logger, p, read_jsonl, write_jsonl
+from common import CFG, CORPUS_SOURCES, ROOT, RemovalLog, get_logger, p, read_jsonl, write_jsonl
 
 log = get_logger("02_extract")
 RAW, OUT = p("raw"), p("extracted")
@@ -164,6 +164,53 @@ def extract_openstax() -> None:
         blocks.sort(key=lambda b: (round(b[1]), b[0]))
         return "\n\n".join(b[4].strip() for b in blocks)
 
+    # "Key Terms" sözlük sayfaları (Corpus v2.0, 09.11.2026): terim kalın (NotoSans-Bold), tanımı aynı satırda normal
+    # yazıyla devam eder. Blok metni ikisini ayırmadığı için "apparent solar time time as measured..." gibi yapışıyordu
+    # ve başlık iki kez çıkıyordu. Satırlar yazı tipine göre okunur; her terim "terim: tanım" paragrafı olur.
+    def is_body(sp) -> bool:
+        return 8.5 <= sp["size"] <= 9.5
+
+    def is_bold(sp) -> bool:
+        return bool(sp["flags"] & 16) or "Bold" in sp["font"]
+
+    def glossary_text(first_page: int, last_page: int) -> str | None:
+        entries, started = [], False
+        for pno in range(first_page - 1, last_page):
+            lines = []
+            for b in pdf[pno].get_text("dict")["blocks"]:
+                if b["type"] != 0:
+                    continue
+                for ln in b["lines"]:
+                    sps = [s for s in ln["spans"] if s["text"].strip()]
+                    if sps:
+                        lines.append((round(ln["bbox"][1]), ln["bbox"][0], sps))
+            lines.sort(key=lambda x: (x[0], x[1]))
+            body_x = [x for _, x, sps in lines if is_body(sps[0])]
+            left = min(body_x) if body_x else 0
+            for _, x, sps in lines:
+                if "Dosis" in sps[0]["font"] and sps[0]["size"] > 12:  # bölüm başlığı
+                    title = "".join(s["text"] for s in sps).strip()
+                    if started and title != "Key Terms":
+                        break
+                    started = started or title == "Key Terms"
+                    continue
+                if not started or not is_body(sps[0]):
+                    continue
+                if is_bold(sps[0]) and x <= left + 3:  # yeni terim: sol kenarda kalın başlayan satır
+                    k = 0
+                    while k < len(sps) and is_bold(sps[k]):
+                        k += 1
+                    entries.append(["".join(s["text"] for s in sps[:k]).strip(),
+                                    "".join(s["text"] for s in sps[k:]).strip()])
+                elif entries:  # tanımın devam satırı
+                    entries[-1][1] = (entries[-1][1] + " " + "".join(s["text"] for s in sps).strip()).strip()
+            else:
+                continue
+            break
+        if not entries or any(not t or not d for t, d in entries):
+            return None
+        return "Key Terms\n\n" + "\n\n".join(f"{t}: {d}" for t, d in entries)
+
     pages = [page_text(pg) for pg in pdf]
     no_text = sum(1 for t in pages if len(t.strip()) < 20)
     log.info(f"OpenStax: {len(pages)} sayfa, metin katmanı olmayan/boş sayfa: {no_text}")
@@ -188,7 +235,7 @@ def extract_openstax() -> None:
             chapter = title
         if lv == level:
             entries.append((title.strip(), page, chapter))
-    rows, skipped = [], 0
+    rows, skipped, n_glossary = [], 0, 0
     for i, (title, page, chap) in enumerate(entries):
         end_page = entries[i + 1][1] if i + 1 < len(entries) else len(pages)
         rid = f"OPENSTAX_{i:04d}"
@@ -206,6 +253,13 @@ def extract_openstax() -> None:
             mn = next((x for x in heading_regex(entries[i + 1][0]).finditer(flat) if x.start() > 50), None)
             if mn:
                 flat = flat[: mn.start()]
+        if title.lower().startswith("key terms"):
+            g = glossary_text(page, max(end_page, page))
+            if g:
+                flat = g
+                n_glossary += 1
+            else:
+                log.warning(f"{rid} ({title}, s. {page}): sözlük ayrıştırılamadı, blok metni kullanıldı")
         year = m["extra"]["publication_year"]
         dtype = "ders_kitabi_ozet" if title.lower().startswith(("summary", "key terms")) else "ders_kitabi"
         rows.append({"raw_id": rid, "source": "openstax", "url": f"{m['landing_url']}#page={page}",
@@ -213,7 +267,8 @@ def extract_openstax() -> None:
                      "language_hint": "en", "document_type": dtype, "publication_year": year,
                      "license": m["license"], "retrieved_at": m["retrieved_at"], "extraction_method": "pymupdf",
                      "text": flat})
-    log.info(f"OpenStax: TOC {len(entries)} bölüm, {skipped} içerik dışı bölüm (alıştırma/kaynakça/ek) atlandı")
+    log.info(f"OpenStax: TOC {len(entries)} bölüm, {skipped} içerik dışı bölüm (alıştırma/kaynakça/ek) atlandı; "
+             f"{n_glossary} 'Key Terms' bölümü terim: tanım biçiminde")
     emit("openstax", rows)
     compare_pdf_tools(ROOT / m["file"], pdf)
 
@@ -302,12 +357,14 @@ def extract_wikipedia(lang: str) -> None:
 
 
 if __name__ == "__main__":
-    extract_html_source("nasa_science", RAW / "nasa_science")
-    extract_html_source("nasa_apod", RAW / "nasa_apod")
-    extract_openstax()
-    extract_arxiv()
-    extract_wikipedia("en")
-    extract_wikipedia("tr")
+    # Yalnız corpus kaynakları (config: corpus.sources; v2.0'da wikipedia_tr yok)
+    steps = {"nasa_science": lambda: extract_html_source("nasa_science", RAW / "nasa_science"),
+             "nasa_apod": lambda: extract_html_source("nasa_apod", RAW / "nasa_apod"),
+             "openstax": extract_openstax, "arxiv_astro_ph": extract_arxiv,
+             "wikipedia_en": lambda: extract_wikipedia("en"), "wikipedia_tr": lambda: extract_wikipedia("tr")}
+    for name, fn in steps.items():
+        if name in CORPUS_SOURCES:
+            fn()
     fails.save()
     total = Counter()
     for c in stats.values():

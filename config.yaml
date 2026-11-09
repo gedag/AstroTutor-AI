@@ -3,8 +3,8 @@
 
 project:
   name: AstroTutor-AI
-  corpus_version: "1.0"
-  instruction_version: "1.0"
+  corpus_version: "2.0"       # v1.0 (vize, EN+TR) Git etiketi v1.0; v2.0 (09.11.2026): yalniz Ingilizce
+  instruction_version: "2.0"  # v1.0 (vize, Turkce) Git etiketi v1.0 ve data/archive_v1.0; v2.0: tamamen Ingilizce
   random_seed: 42
 
 paths:
@@ -29,6 +29,19 @@ http:
   arxiv_delay_seconds: 4.0  # arXiv OAI-PMH: istekler arasi en az 3 sn
   timeout: 60
   max_retries: 4
+
+corpus:
+  # 09.11.2026 (v2.0): proje Ingilizce konusan bir model; Turkce Wikipedia corpus'tan cikarildi.
+  # 01-04 yalniz buradaki kaynaklari isler (wikipedia_tr ayarlari asagida kayit icin duruyor, kullanilmiyor).
+  sources: [nasa_science, nasa_apod, openstax, arxiv_astro_ph, wikipedia_en]
+  # 06b'nin "asla cikarma" listesi: v1.0'daki instruction kaynak dokumanlari (333). Once dogrudan
+  # data/interim/instruction_jobs.jsonl okunuyordu; yeni instruction uretimi corpus'u degistirmesin diye
+  # v1.0 listesi dosyaya sabitlendi (v1.0 kararlari ayni kalir, bkz. experiments.md 09.11.2026).
+  protected_documents_file: reports/06b_protected_documents.txt
+  # Liste/haber sayfaları (v2.0): cümle oranı bu değerin altındaki NASA sayfaları inceleme tablosuna aday olur;
+  # 06b yalnız son_karar = "cikar" olanları çıkarır (scripts/list_page_candidates.py).
+  list_page_candidate_ratio: 0.25
+  list_page_review_file: reports/qc/list_page_review.csv
 
 sources:
   nasa_science:
@@ -160,7 +173,7 @@ cleaning:
 filtering:
   min_chars: 300
   max_garbled_ratio: 0.15
-  allowed_languages: [en, tr]
+  allowed_languages: [en]     # v2.0: yalniz Ingilizce (v1.0: [en, tr])
   min_domain_score: 2.0       # 1000 kelime basina astronomi terimi (bkz. scripts/domain_lexicon.py)
   max_bib_line_ratio: 0.5     # satirlarinin yarisindan fazlasi kaynakca girdisi olan sayfa = yayin listesi
 

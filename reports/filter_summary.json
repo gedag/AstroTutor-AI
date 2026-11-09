@@ -1,12 +1,12 @@
 {
-  "kept": 16572,
+  "kept": 15010,
   "removed_by_reason": {
-    "too_short": 242,
+    "too_short": 183,
     "reference_list": 5,
     "garbled": 3,
-    "out_of_domain": 150,
+    "out_of_domain": 123,
     "wrong_language": 6,
-    "out_of_domain_category": 356
+    "out_of_domain_category": 272
   },
   "per_source": {
     "nasa_science:in": 3068,
@@ -18,12 +18,9 @@
     "arxiv_astro_ph:in": 6000,
     "arxiv_astro_ph:kept": 5954,
     "wikipedia_en:in": 3575,
-    "wikipedia_en:kept": 3241,
-    "wikipedia_tr:in": 1732,
-    "wikipedia_tr:kept": 1562
+    "wikipedia_en:kept": 3241
   },
   "languages": {
-    "en": 15010,
-    "tr": 1562
+    "en": 15010
   }
 }

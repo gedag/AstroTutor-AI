@@ -23,17 +23,12 @@
       "raw": 3576,
       "failed": 1,
       "ok": 3575
-    },
-    "wikipedia_tr": {
-      "raw": 1737,
-      "failed": 5,
-      "ok": 1732
     }
   },
   "total": {
-    "raw": 17385,
-    "failed": 51,
-    "ok": 17334
+    "raw": 15648,
+    "failed": 46,
+    "ok": 15602
   },
   "failure_rate": 0.0029
 }

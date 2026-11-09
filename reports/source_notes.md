@@ -32,13 +32,14 @@ Doküman sayıları ve erişim tarihleri `reports/source_inventory.csv` dosyası
 - **Seçim:** 30 astronomi kategorisi ve doğrudan alt kategorileri; liste/zaman çizelgesi maddeleri ve 6.000 bayttan kısa taslaklar dışarıda; kategori başına en uzun 140 madde.
 - **Not:** Güncel sayısal veriler için Wikipedia değil NASA/IPAC birincil kaynakları tercih edilecek (Tasarım raporu).
 
-## Wikipedia (Türkçe) — Domain Corpus, Türkçe terminoloji
-- **Amaç:** Modelin Türkçe astronomi terimlerini (gökada, ötegezegen, kırmızıya kayma...) görmesi; Türkçe kullanıcıya hizmet edecek modelin Türkçe alan dilini kazanması.
+## Wikipedia (Türkçe) — yalnız Domain Corpus v1.0'da; v2.0'da çıkarıldı
+- **v2.0 (09.11.2026):** AstroTutor AI İngilizce konuşan bir model olarak geliştirileceği için Türkçe Wikipedia corpus'tan çıkarıldı (`config.yaml → corpus.sources`). Aşağıdaki notlar v1.0 içindir; v1.0 Git etiketi `v1.0` ile korunur.
+- **Amaç (v1.0):** Modelin Türkçe astronomi terimlerini (gökada, ötegezegen, kırmızıya kayma...) görmesi; Türkçe kullanıcıya hizmet edecek modelin Türkçe alan dilini kazanması.
 - **Lisans:** CC BY-SA 4.0.
 - **Neden payı küçük:** Türkçe astronomi maddeleri sayıca ve uzunlukça sınırlı; corpus'un çoğunluğunun İngilizce olması bilinçli bir tercih (dil dağılımı kartta raporlanır). Aynı maddenin EN ve TR sürümleri Wikidata kimliği ile eşleştirilip aynı split'e konur.
 
 ## Stack Exchange Space/Astronomy (juliensimon/stackexchange-space-qa) — Instruction Dataset kaynağı
-- **Amaç:** Gerçek kullanıcı soruları ve uzman cevapları → `soru_cevap` görev türü (Türkçeleştirilerek).
+- **Amaç:** Gerçek kullanıcı soruları ve uzman cevapları → soru-cevap görev türü (v1.0'da Türkçeleştirilerek; İngilizce v2.0'da orijinal İngilizce soru ve en iyi cevap, kural tabanlı temizlikle).
 - **Lisans:** CC BY-SA 4.0 (veri kartı); orijinal gönderilerin URL'si her örnekte `source_url` alanında saklanır. Kullanıcı adları alınmadı.
 - **Neden corpus'a girmedi:** Instruction verisiyle aynı metnin CPT corpus'unda da bulunması gereksiz tekrar olurdu; ayrıca forum dili ansiklopedik metinden farklı ve kapsam dışı (roket mühendisliği, şirket, yazılım) içerik oranı yüksek.
 - **Fark edilen sorun:** Veri kümesinde üslü sayılar kaybolmuş ("1.989 × 1030 kg" = 1.989 × 10^30 kg). 09 numaralı script bu kalıbı düzeltir.
