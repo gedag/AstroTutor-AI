@@ -171,7 +171,8 @@ def build_se(removed: RemovalLog, grams: set, n_target: int) -> list[dict]:
     # site dengesi (config: se_site_share), her sitede soru puanına göre en iyiler (eşitlikte kimlik sırası), sonra karıştır
     r = rng(9)
     pick = []
-    for site, share in I["se_site_share"].items():
+    # sözlükler ADA GÖRE sıralı okunur: config.yaml'da satırların sırası değişse de seçim aynı kalır (10.11.2026)
+    for site, share in sorted(I["se_site_share"].items()):
         cs = sorted([c for c in cands if c["site"] == site], key=lambda c: (-c["qscore"], c["rid"]))
         pick += cs[: int(n_target * share) + 1]
     r.shuffle(pick)
@@ -204,7 +205,7 @@ def build_doc_jobs(quota: dict[str, int], exclude_docs: frozenset = frozenset(),
         # APOD'da uzun doküman yok ve kaynak payları aşağı yuvarlanıyor: aday sayısı %50 fazla tutulur (ek2, 24.10.2026)
         n_docs = int(total_examples / per_doc * 1.5) + 1
     chosen = []
-    for src, sh in share.items():
+    for src, sh in sorted(share.items()):  # config sırasından bağımsız (10.11.2026)
         pool = by_src.get(src, [])
         # alt konu dengesi: alt konulara göre round-robin
         sub = defaultdict(list)
@@ -276,7 +277,9 @@ REFUSAL_THEMES = [  # v1.0 temalarının İngilizcesi
 
 def quotas() -> tuple[dict, int, int]:
     total = I["target_total"]
-    quota = {k: round(v * total) for k, v in I["taxonomy"].items()}
+    # ADA GÖRE sıralı: görev ataması kotaların sırasına göre rastgele sayı tükettiği için config.yaml'daki
+    # satır sırası sonucu değiştiriyordu (aynı ayarlarla 287 / sıra değişince 283 iş; 10.11.2026 denetimi)
+    quota = {k: round(v * total) for k, v in sorted(I["taxonomy"].items())}
     return quota, quota.pop("question_answering"), quota.pop("out_of_scope_refusal")
 
 
@@ -343,7 +346,7 @@ def main() -> None:
                 log.info(f"'{sup['name']}' ek paketi zaten var; değiştirilmedi")
                 continue
             used = frozenset(j["source_document"] for j in jobs + new if j["kind"] == "doc")
-            add = build_doc_jobs(dict(sup["quota"]), exclude_docs=used, per_type_cap=sup["per_type_cap"],
+            add = build_doc_jobs(dict(sorted(sup["quota"].items())), exclude_docs=used, per_type_cap=sup["per_type_cap"],
                                  seed_offset=12 + k, batch=sup["name"])
             clash = {j["job_id"] for j in add} & {j["job_id"] for j in jobs + new}
             if clash:
