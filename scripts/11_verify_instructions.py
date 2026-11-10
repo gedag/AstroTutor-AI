@@ -328,6 +328,14 @@ def main() -> int:
     # Aşama 1 örneklemi ilk hesaplandığında dosyaya sabitlenir (sonradan eklenen bir kural bir işin bütün örneklerini
     # elerse rastgele seçim baştan değişmesin). Tabaka: iş türü (doc/refusal) x üretici türü (flash/lite).
     sample_f = p("interim") / "instruction_judge_sample.json"
+    # Örneklem ve grup kararı yalnız üretim TAMAMEN bittiğinde dosyaya sabitlenir; yoksa (ör. pilotta birkaç iş
+    # varken) seçim yalnız o işlerden yapılıp kalıcı olurdu. Bitmemişse bu çalıştırmada bellekte hesaplanır.
+    all_jobs = {j["job_id"] for j in read_jsonl(p("interim") / "instruction_jobs.jsonl")}
+    done_jobs = {r["job_id"] for r in read_jsonl(p("interim") / "instruction_jobs_done.jsonl")}
+    generation_complete = bool(all_jobs) and all_jobs <= done_jobs
+    if not generation_complete:
+        log.warning(f"Üretim bitmedi ({len(all_jobs - done_jobs)} iş kaldı): yargıç örneklemi ve grup kararı "
+                    f"dosyaya SABİTLENMEZ")
     if sample_f.exists():
         sample_planned = set(json.loads(sample_f.read_text(encoding="utf-8")))
     else:
@@ -339,7 +347,8 @@ def main() -> int:
         sample_planned = set()
         for _, js in sorted(strata.items()):
             sample_planned.update(rnd.sample(js, max(1, round(len(js) * J["initial_fraction"]))))
-        sample_f.write_text(json.dumps(sorted(sample_planned), indent=0), encoding="utf-8")
+        if generation_complete:
+            sample_f.write_text(json.dumps(sorted(sample_planned), indent=0), encoding="utf-8")
     sample_jobs = {j for j in sample_planned if j in by_job}
     judged = {r["raw_example_id"]: r for r in read_jsonl(p("interim") / "instruction_judgments.jsonl")}
     attempts_f = p("interim") / "instruction_judge_attempts.jsonl"
@@ -360,7 +369,7 @@ def main() -> int:
         """Aşama 1 bittiyse (bekleyen örneklem işi yoksa) grup kararını hesaplar ve dosyaya sabitler."""
         if plan_f.exists():
             return json.loads(plan_f.read_text(encoding="utf-8"))
-        if pending(sample_jobs):
+        if pending(sample_jobs) or not generation_complete:
             return None
         stats = defaultdict(lambda: [0, 0])  # grup -> [değerlendirilen, başarısız]
         for jid in sample_jobs:
@@ -447,7 +456,9 @@ def main() -> int:
                         jd["verdict"] = str(jd["verdict"]).strip().lower()
                         jd["level"] = str(jd["level"]).strip().lower()
                         rec = {"raw_example_id": rs[jd["index"]]["raw_example_id"], **jd, "judge_model": llm.last_model,
-                               "judge_phase": "se" if jid in se_jobs else phase}
+                               # üretim bitmeden verilen kararlar (pilot) aşama 1 istatistiğine karışmasın diye ayrı etiket
+                               "judge_phase": ("pilot" if not generation_complete
+                                               else "se" if jid in se_jobs else phase)}
                         judged[rec["raw_example_id"]] = rec
                         append_jsonl(p("interim") / "instruction_judgments.jsonl", rec)
                 attempts[jid] += 1

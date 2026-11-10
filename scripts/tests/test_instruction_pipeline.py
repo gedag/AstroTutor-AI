@@ -116,7 +116,9 @@ class FakeGemini:
             resp = (f"Here is the explanation of {key}. {ev}. This idea matters in astronomy because it connects "
                     f"observations with physical understanding.")
             if t == "mcq_generation":
-                passage = " ".join(w[i:i + 70])
+                # kaynaktaki retorik sorular ("...?") mcq_check'te içerik sorusu sayılır (doğru davranış, ayrı test
+                # edilir); sahte pasajda iş reddine yol açmasın diye nokta yapılır
+                passage = " ".join(w[i:i + 70]).replace("?", ".")
                 ins = f"Write one four-option question from the passage below and return it as JSON. Passage: {passage}"
                 q = {"question": f"Which statement about {key} is supported by the passage?",
                      "options": {"A": f"{key} statement one", "B": "an unrelated claim about comets",
@@ -210,6 +212,11 @@ check("SE kayıtları benzersiz", len({it["rid"] for it in items}) == len(items)
 want_se = round(0.12 * 400)
 check("SE sayısı hedefin ~%10 fazlası", want_se <= len(items) <= int(want_se * 1.1) + 3, f"{len(items)} (hedef {want_se})")
 
+# Pilot benzetimi: üretim bitmeden 11 çalışırsa yargıç örneklemi ve grup kararı dosyaya SABİTLENMEMELİ
+check("10 pilot (3 iş)", run("10_generate_instructions", "--limit", "3") == 0)
+check("11 pilot (üretim bitmeden)", run("11_verify_instructions") == 2)
+check("pilotta örneklem dosyası yazılmadı", not (TMP / "interim" / "instruction_judge_sample.json").exists())
+check("pilotta grup kararı yazılmadı", not (TMP / "interim" / "instruction_judge_plan.json").exists())
 check("10 üretim", run("10_generate_instructions") == 0)
 raw = [json.loads(x) for x in open(TMP / "interim" / "instructions_raw.jsonl", encoding="utf-8")]
 se_raw = [r for r in raw if r["source_name"] == "stackexchange_space_qa"]
@@ -228,10 +235,14 @@ check("SE kaynak elemeleri kayıtlı (not_usable_verbatim)", src_reasons.get("no
       str(dict(src_reasons.most_common(4))))
 plan = json.load(open(TMP / "interim" / "instruction_judge_plan.json", encoding="utf-8"))
 full = set(plan["full_check_groups"])
-check("lite grupları tam kontrole alındı", all(g in full for g, s in plan["stage1_groups"].items()
-                                               if g.startswith("lite") and s["judged"]), str(sorted(full)))
-flash_ok = [g for g, s in plan["stage1_groups"].items() if g.startswith("flash") and s["judged"] >= 3 and s["fail"] == 0]
-check("hatasız ve yeterli örnekli flash grupları tam kontrole ALINMADI", all(g not in full for g in flash_ok), str(flash_ok))
+J = cfg["instruction"]["judge"]
+rule = {g: (s["judged"] < J["min_group_examples"] or s["fail"] / s["judged"] >= J["full_check_fail_rate"])
+        for g, s in plan["stage1_groups"].items()}
+check("grup kararı kurala birebir uyuyor (az örnek veya hata >= eşik -> tam kontrol)",
+      all((g in full) == want for g, want in rule.items()), str(plan["stage1_groups"]))
+check("hata veren lite grupları tam kontrolde", any(g.startswith("lite") and s["fail"] for g, s in plan["stage1_groups"].items())
+      and all(g in full for g, s in plan["stage1_groups"].items() if s["fail"]))
+check("tam kontrole alınmayan grup var (aşamalı karar gerçekten ayırıyor)", any(not w for w in rule.values()))
 ver = [json.loads(x) for x in open(TMP / "interim" / "instructions_verified.jsonl", encoding="utf-8")]
 sample = set(json.load(open(TMP / "interim" / "instruction_judge_sample.json", encoding="utf-8")))
 v11 = importlib.import_module("11_verify_instructions")
