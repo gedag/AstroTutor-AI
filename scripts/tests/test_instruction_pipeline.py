@@ -138,6 +138,14 @@ class FakeGemini:
             # bilerek kusurlu örnekler
             if t == "definition_explanation" and k % 2 == 0:
                 resp = "According to the text, " + resp          # -> response_references_unseen_text
+            if t == "leveled_explanation" and self.n_doc % 4 == 0:
+                # 6.000 karakterin altında (karakter kuralına takılmasın) ama 1.024 token'ın üstünde -> too_long_for_training
+                extra = ""
+                for word in w:
+                    if len(extra) > 5600 - len(resp):
+                        break
+                    extra += word + " "
+                resp = resp + "\n\n" + extra.strip()
             if t == "comparison" and k % 3 == 0:
                 ev = "this quote was invented by the model and does not appear anywhere in the source document at all"
             out.append({"task_type": t, "level": lv, "instruction": ins, "response": resp, "supporting_evidence": ev})
@@ -229,7 +237,8 @@ rc = run("11_verify_instructions")
 check("11 doğrulama (tüm yargıç işleri bitti)", rc == 0, f"çıkış kodu {rc}")
 rem = list(csv.DictReader(open(TMP / "reports" / "removed_instructions.csv", encoding="utf-8")))
 reasons = Counter(r["reason"].split(":")[0] for r in rem if r["stage"] == "verify")
-for want in ("response_references_unseen_text", "evidence_not_in_source", "judge_fail", "level_unassigned"):
+for want in ("response_references_unseen_text", "evidence_not_in_source", "judge_fail", "level_unassigned",
+             "too_long_for_training"):
     check(f"kusur yakalandı: {want}", reasons.get(want, 0) > 0, str(reasons.get(want, 0)))
 src_reasons = Counter(r["reason"] for r in rem if r["stage"] == "source")
 check("SE kaynak elemeleri kayıtlı (not_usable_verbatim)", src_reasons.get("not_usable_verbatim", 0) > 0,
@@ -274,6 +283,9 @@ check("doküman örneği corpus kümesini miras aldı",
 own = {}
 check("bir kaynak doküman tek kümede", all(own.setdefault(x["source_document"], x["split"]) == x["split"] for x in ins))
 check("messages biçimi", all([m["role"] for m in x["messages"]] == ["user", "assistant"] for x in ins))
+check("final örneklerin hepsi eğitim uzunluğuna sığıyor",
+      all(v11.train_tokens(x["instruction"], x["response"]) <= cfg["instruction"]["train_max_tokens"]
+          - cfg["instruction"]["train_token_margin"] for x in ins))
 check("SE lisansı tarihe göre ve verified_by", all(x["license"].split(" (")[0] == b9.se_license(x_date[x["source_document"]])
                                                    and x["verified_by"] == "rules+llm_judge"
                                        for x in ins if x["source_name"] == "stackexchange_space_qa"))

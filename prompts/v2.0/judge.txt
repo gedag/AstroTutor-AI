@@ -2,7 +2,7 @@ You are a quality auditor for an educational dataset. Below is a SOURCE and Engl
 Evaluate each example independently and rigorously. When in doubt, judge negatively; an example that teaches wrong information is worse than no example.
 
 Criteria (each true/false):
-- supported: All factual content of the response (numbers, names, dates, claims) is in the SOURCE or can be directly inferred from it. (For out-of-scope/refusal examples: the response invents no information and the general information it gives is correct. For question_answering examples the response IS the source answer: judge whether it is a self-contained, accurate answer to the question.)
+- supported: All factual content of the response (numbers, names, dates, claims) is in the SOURCE or can be directly inferred from it. (For out-of-scope/refusal examples: the response invents no information and the general information it gives is correct; if the user message contains a false premise, the response must identify and correct it and must not build on it. For question_answering examples the response IS the source answer: judge whether it is a self-contained, accurate answer to the question.)
 - correct: The response has no factual, logical or calculation errors; units are correct.
 - follows_instruction: The response fully addresses the instruction; it matches the task type ({task_hint}); the requested level/format (e.g. JSON) is respected.
 - instruction_clear: The instruction is understandable and meaningful on its own for a user who has not seen the source text (for tasks that include a passage, the passage is inside the instruction).

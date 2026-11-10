@@ -96,5 +96,10 @@ check("is_english: Türkçe cevap", v11.is_english(det, "Pulsar, hızla dönen b
                                                       "atımları yayar.", "What is a pulsar?"), False)
 check("is_english: Türkçe uzun talimat", v11.is_english(det, RESP, "Başlangıç seviyesindeki bir öğrenciye pulsarların "
                                                              "nasıl oluştuğunu kısa bir dersle anlat."), False)
+# 7) SFT uzunluğu (Final Rehberi: 1024 token; Qwen3 chat template, düşünme kapalı, sistem mesajı dahil)
+short = v11.train_tokens("What is a pulsar?", "A rotating neutron star.")
+check("kısa örnek kısa ölçülüyor", 20 < short < 80, True)
+long_resp = " ".join(["Pulsars are rapidly rotating neutron stars."] * 200)
+check("uzun örnek sınırı aşıyor", v11.train_tokens("Explain pulsars.", long_resp) > 1024, True)
 print("hata:", bad)
 sys.exit(1 if bad else 0)

@@ -256,6 +256,13 @@ instruction:
   min_response_chars: 40
   max_response_chars: 6000
   decontam_ngram: 8
+  # Final Rehberi: SFT'de sequence length 1024; asan ornek kesilir ve cevabin sonundaki <|im_end|> kaybolur (model
+  # durmayi ogrenemez). Ornek, Final modelinin (Qwen3-1.7B) chat template'iyle (dusunme kapali) sistem mesaji dahil
+  # olculur; Final'de kesinlesecek sistem mesaji icin pay birakilir (Eda karari 10.11.2026).
+  train_max_tokens: 1024
+  train_token_margin: 48
+  train_tokenizer: Qwen/Qwen3-1.7B
+  train_system_message: "You are AstroTutor, an assistant that helps students learn space and astronomy in English."
 
 qc:
   corpus_sample: 100          # Rehber alt siniri (100-200)

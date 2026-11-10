@@ -823,3 +823,26 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
   51 SE işi (502 soru; 270 CC BY-SA 3.0, 232 CC BY-SA 4.0), 12 kapsam dışı işi; canlı liste testteki listeyle bit bit
   aynı. Testler: SE filtresi/ses/lisans 41 vaka, doğrulama kuralları, çoktan seçmeli 21 vaka, uçtan uca 47/47,
   tekrar üretilebilirlik; hepsi geçti.
+
+## 10.11.2026 — Final Rehberi uyum denetimi: yanlış öncüllü sorular ve 1.024 token sınırı
+- **Final Rehberi okundu.** Veri biçimi uyumlu: CPT train 12,2M token (< 20M, tamamı kullanılır), instruction
+  train/val/test kaynak dokümana göre ayrılmış, `messages` + `task_type` var (sistem mesajı Final Adım 6'da eklenir).
+- **Dil:** Rehber genel yetenek kaybını Türkçe ölçüyor (TurkishMMLU, Türkçe Vikipedi perplexity, %10 Türkçe replay,
+  Türkçe sistem mesajı). Danışmanın İngilizceye geçişi onayladığı Eda tarafından bildirildi (10.11.2026). Final'de
+  karşılıkları: İngilizce MMLU (lm-eval `mmlu`), İngilizce Vikipedi (wikimedia/wikipedia 20231101.en) ile genel
+  perplexity ve replay, İngilizce sistem mesajı; Final deney günlüğünde sapma olarak yazılacak.
+- **Model:** Rehber Qwen3-1.7B-Base / Qwen3-1.7B kullanıyor (kartlarda Qwen2.5-7B yazıyor; Adım 6'da güncellenecek).
+  Qwen3 ve Qwen2.5 tokenizer'ları aynı token dizisini veriyor; corpus token sayıları geçerli.
+- **Yanlış öncüllü sorular (Eda kararı):** Rehber değerlendirmede yanlış bilgi içeren soruları ve modelin bunu
+  düzeltmesini ("doğru ret") ölçüyor; eğitim verisinde yoktu. Kapsam dışı prompt'una (v2.0) kural eklendi: her işin
+  15 mesajından 5'i yanlış öncüllü astronomi sorusu, cevap öncülü nazikçe düzeltir (yalnız yerleşik temel bilgiyle).
+  Yargıç prompt'u: öncülü düzeltmeyen cevap başarısız. Döngü durdurulmadan hemen önce eski prompt'la tamamlanan 1
+  kapsam dışı işi (JOB_REF_000, 15 örnek) canlı dosyalardan çıkarıldı (yedek ve kayıtlar
+  `data/interim/run_v2.0_aborted_20261110/ref_old_prompt/`); yeniden üretilecek.
+- **1.024 token (Eda kararı):** Rehber SFT'de sequence length 1024; aşan örnek kesilir ve `<|im_end|>` kaybolur.
+  11'e `too_long_for_training` kuralı: örnek Qwen3-1.7B chat template'iyle (düşünme kapalı, sistem mesajı dahil)
+  ölçülür, 1024 − 48 (Final sistem mesajı payı) = 976 token'ı aşan elenir. Mevcut 502 SE örneğinden 1'i aşıyor
+  (medyan 389, en uzun 1.007).
+- **Final Adım 1 notu:** test kümesinde planlanan örnek görev başına 6–25 (adım adım ~6, sınıflandırma ~10, özetleme
+  ~11); her türün 15'e tamamlanması Rehber'in istediği ≥ 50 elle yazılmış soruyla yapılacak.
+- Testler: kurallar (uzunluk dahil), SE filtresi, çoktan seçmeli, uçtan uca 49/49, tekrar üretilebilirlik; hepsi geçti.

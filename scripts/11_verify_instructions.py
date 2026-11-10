@@ -149,6 +149,22 @@ def is_english(det, resp: str, ins: str) -> bool:
     return len(ins.split()) < LANG_MIN_WORDS or det.detect_language_of(ins[:600]) == Language.ENGLISH
 
 
+_TOK = None
+
+
+def train_tokens(ins: str, resp: str) -> int:
+    """Örneğin SFT'deki token uzunluğu: Final modelinin chat template'i, düşünme kapalı, sistem mesajı dahil."""
+    global _TOK
+    if _TOK is None:
+        from transformers import AutoTokenizer
+
+        _TOK = AutoTokenizer.from_pretrained(I["train_tokenizer"])
+    msgs = [{"role": "system", "content": I["train_system_message"]}, {"role": "user", "content": ins},
+            {"role": "assistant", "content": resp}]
+    txt = _TOK.apply_chat_template(msgs, tokenize=False, enable_thinking=False)
+    return len(_TOK(txt, add_special_tokens=False)["input_ids"])
+
+
 def rule_checks(rows: list[dict], removed: RemovalLog, det, grams: set) -> list[dict]:
     ok = []
     seen = set()
@@ -182,6 +198,9 @@ def rule_checks(rows: list[dict], removed: RemovalLog, det, grams: set) -> list[
             reason = ("task_type_mismatch", f"{t}!={r['planned_task_type']}")
         elif not is_english(det, resp, ins):
             reason = ("wrong_language", "")
+        elif train_tokens(ins, resp) > I["train_max_tokens"] - I["train_token_margin"]:
+            # SFT'de kesilirdi (cevabın sonu ve <|im_end|> kaybolur); Final Rehberi sequence length 1024
+            reason = ("too_long_for_training", f"tokens={train_tokens(ins, resp)}")
         elif fix_exponents(ins)[1] or fix_exponents(resp)[1]:
             # kaybolmuş üs ("1.99 x 1030 kg")
             reason = ("exponent_loss", "")
