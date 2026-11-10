@@ -87,7 +87,9 @@ def run_se(job: dict) -> list[dict]:
                     "raw_example_id": f"{job['job_id']}_{k:02d}", "job_id": job["job_id"],
                     "source_document": it["rid"], "source_url": it["url"], "source_name": "stackexchange_space_qa",
                     "split_hint": None, "planned_task_type": "question_answering",
-                    "generation_method": "stackexchange_original_verbatim"})
+                    "generation_method": "stackexchange_original_verbatim",
+                    # lisans sürümü cevabın tarihinden (09); kaynak veri setinde yazar adı yok
+                    "source_license": it.get("license"), "source_answer_date": it.get("answer_date")})
     return out
 
 

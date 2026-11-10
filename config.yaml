@@ -220,13 +220,15 @@ instruction:
   refusal_per_job: 15
   # Asamali LLM yargic (Eda karari 10.11.2026; v1.0'da islerin %10'u): (1) islerin rastgele initial_fraction'i
   # (uretici model turu x is turune gore tabakali); (2) her grup (uretici turu flash/lite x gorev turu) icin hata
-  # orani hesaplanir; orani full_check_fail_rate veya ustu olan ya da asama 1'de min_group_examples'tan az ornegi olan
-  # grubun tum isleri degerlendirilir; digerlerinde durulur ve tahmini hata orani raporlanir. SE islerinin tamami
-  # her zaman degerlendirilir (seviye atamasi icin).
+  # oraninin tek yonlu `confidence` ust guven siniri (Clopper-Pearson, kesin binom) hesaplanir; bir grup YALNIZ bu
+  # ust sinir full_check_fail_rate'in ALTINDAYSA durdurulur (orn. %95 guvenle %5: 0 hatada >= 59, 1 hatada >= 93
+  # ornek gerekir), aksi hâlde grubun tum isleri degerlendirilir. (Ilk kural "gozlenen oran < %5 ve >= 20 ornek",
+  # gercek hatasi %8 olan 30 ornekli grubu %30 olasilikla yanlislikla durduruyordu; 10.11.2026 denetimi.)
+  # SE islerinin tamami her zaman degerlendirilir (seviye atamasi icin).
   judge:
     initial_fraction: 0.20
     full_check_fail_rate: 0.05
-    min_group_examples: 20
+    confidence: 0.95
   evidence_min_overlap: 0.6     # destekleyen alintinin kelime 5-gram'larinin en az %60'i kaynakta olmali
   temperature: 0.7
   judge_temperature: 0.0

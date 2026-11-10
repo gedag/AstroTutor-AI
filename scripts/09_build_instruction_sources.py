@@ -82,6 +82,46 @@ def se_text_issue(q: str, ans: str) -> str | None:
     return None
 
 
+# Cevapta asistana uymayan insan sesi (Eda kararı 10.11.2026; seçilen 502 cevabın 107'sinde kişisel ses/forum dili,
+# 41'inde zamana bağlı ifade vardı). Model "kişisel anısı olan bir forum kullanıcısı" gibi konuşmayı veya eskimiş
+# "currently" bilgisini öğrenmesin diye bu cevaplar ALINMAZ (metin düzeltilmez). Yalnız CEVAPTA aranır: soru
+# kullanıcının ağzındandır, orada kişisel ifade doğaldır.
+SE_VOICE = [
+    ("personal_experience", re.compile(
+        r"\bI (?:worked|work|was|have been|remember|recall|used to|built|saw|watched|wrote|did|tried|measured|observed|"
+        r"once)\b|\b[Ww]hen I\b|\b[Mm]y (?:own|experience|career|job|colleague|telescope|camera|son|daughter|wife|"
+        r"husband|friend|father|mother|kids?)\b|\b[Ii]n my (?:experience|opinion|view)\b|\bI'?ve (?:seen|done|worked|"
+        r"been|written|used)\b")),
+    ("personal_opinion", re.compile(r"\bI (?:think|believe|suspect|guess|doubt|assume|imagine|feel|reckon)\b")),
+    ("forum_language", re.compile(r"\bOP\b|\bOP's\b|\b(?:the OP|your question|you asked|good question|great question|"
+                                  r"as others have|other posters?|hope this helps|thank you)\b|\bthanks\b(?! to)", re.I)),
+    ("chat_abbreviation", re.compile(r"\b(?:IIRC|AFAIK|AFAICT|IMHO|IMO|FWIW)\b|\bTL;?DR\b", re.I)),
+    ("time_dependent", re.compile(r"\b(?:currently|recently|nowadays|these days|right now|at the moment|at present|"
+                                  r"this year|last year|next year|as of (?:19|20)\d\d)\b", re.I)),
+]
+
+
+def se_voice_issue(ans: str) -> str | None:
+    for name, pat in SE_VOICE:
+        m = pat.search(ans)
+        if m:
+            return f"{name}:{m.group(0)[:40]}"
+    return None
+
+
+def se_license(answer_date) -> str:
+    """Stack Exchange içerik lisansı gönderi tarihine göre: 2011-04-08 öncesi CC BY-SA 2.5, 2018-05-02 öncesi
+    CC BY-SA 3.0, sonrası CC BY-SA 4.0 (Stack Exchange lisans geçmişi). Tarih bilinmiyorsa 'CC BY-SA (sürüm belirsiz)'."""
+    import pandas as pd
+
+    t = pd.to_datetime(answer_date, errors="coerce", utc=True)
+    if pd.isna(t):
+        return "CC BY-SA (version unknown)"
+    if t < pd.Timestamp("2011-04-08", tz="UTC"):
+        return "CC BY-SA 2.5"
+    return "CC BY-SA 3.0" if t < pd.Timestamp("2018-05-02", tz="UTC") else "CC BY-SA 4.0"
+
+
 # Sızıntı kontrolüne girmeyen sütunlar: kimlik/etiket alanları ve Hubble MCQ'nun soruların üretildiği bağlam pasajı
 # (source_document; corpus ile örtüşmesi validate_datasets.py'de ayrıca raporlanır)
 EVAL_ID_COLS = {"uid", "id", "model_id", "mcq_source", "labels", "permutation_idx", "answerable"}
@@ -160,13 +200,19 @@ def build_se(removed: RemovalLog, grams: set, n_target: int) -> list[dict]:
         if issue:
             removed.add(rid, "not_usable_verbatim", "stackexchange", issue)
             continue
+        voice = se_voice_issue(ans)
+        if voice:
+            removed.add(rid, "human_voice", "stackexchange", voice)
+            continue
         if grams and overlaps(q + " " + ans, grams, I["decontam_ngram"]) > 0:
             removed.add(rid, "eval_overlap", "stackexchange")
             continue
-        # Metin olduğu gibi: yalnız baştaki/sondaki boşluk atılır
+        # Metin olduğu gibi: yalnız baştaki/sondaki boşluk atılır. Lisans sürümü cevabın tarihinden; kaynak veri
+        # setinde yazar adı yok (atıf: soru bağlantısı + lisans; bkz. kart)
         cands.append({"rid": rid, "site": row.site, "url": row.url, "qscore": int(row.question_score or 0),
                       "question": q.strip(), "answer": ans.strip(),
-                      "tags": sorted(tags), "accepted": bool(row.answer_accepted)})
+                      "tags": sorted(tags), "accepted": bool(row.answer_accepted),
+                      "answer_date": str(row.answer_creation_date)[:10], "license": se_license(row.answer_creation_date)})
     log.info(f"StackExchange: {len(df)} kayıt -> {len(cands)} uygun aday")
     # site dengesi (config: se_site_share), her sitede soru puanına göre en iyiler (eşitlikte kimlik sırası), sonra karıştır
     r = rng(9)

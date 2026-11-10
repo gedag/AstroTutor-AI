@@ -794,3 +794,32 @@ Corpus, instruction, kod ve belgeler gereksinim listesiyle karşılaştırıldı
   girmez; bütün örnekler aynı prompt ve yöntemle üretilsin). İş listesi yeniden kuruldu: 287 doküman işi (3.192
   örnek), 51 Stack Exchange işi (502 soru, kurala takılan 0), 12 kapsam dışı işi (180 örnek); doküman ve kapsam dışı
   işleri pilottakiyle birebir aynı (seçim tekrar üretilebilir).
+
+## 10.11.2026 — Denetim: tekrar üretilebilirlik, yargıç eşiği, Stack Exchange lisansı ve insan sesi
+Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü durduruldu (o ana kadar doküman işi
+üretilmemişti: 51 SE + 9 kapsam dışı işi; yarım çalışma `data/interim/run_v2.0_aborted_20261110/`).
+- **Tekrar üretilebilirlik (hata):** 09, config'teki satır SIRASINA bağlıydı: görev kotaları ve kaynak payları
+  sözlük sırasıyla rastgele sayı tüketiyordu; içerik aynıyken anahtarlar alfabetik sıralanınca 283, config sırasıyla
+  287 doküman işi çıkıyordu (aynı config dosyasıyla sonuç sabitti, ama satır sırasına duyarlıydı). 09 sözlükleri artık
+  ada göre sıralı okur. `scripts/tests/test_reproducibility.py`: 09 üç farklı config sırası ve üç farklı
+  PYTHONHASHSEED ile bit bit aynı iş listesini veriyor. Corpus tarafında veriyi etkileyen benzer bağımlılık yok
+  (06 sıralı; 03'teki yalnız temizleme örnekleri raporunu etkiler).
+- **Yargıç eşiği (yanıltıcıydı):** "gözlenen hata < %5 ve ≥ 20 örnek ise dur" kuralı, gerçek hatası %8 olan 30
+  örnekli grubu %30, 60 örnekli grubu %13 olasılıkla yanlışlıkla durduruyordu (aşama 1'de gruplar ~15–120 örnek;
+  ayrıca pilotta yargıcın hoşgörülü olduğu görüldü ve aynı işin örnekleri bağımsız değil). **Eda'nın kararı:** grup
+  YALNIZ hata oranının tek yönlü %95 üst güven sınırı (Clopper–Pearson, kesin binom) %5'in altındaysa durdurulur
+  (0 hatada ≥ 59, 1 hatada ≥ 93, 2 hatada ≥ 124 örnek); aksi hâlde tamamı. Sınır standart kütüphaneyle hesaplanıyor
+  (scipy ile fark < 1e-15). Raporda kalan hata hem nokta tahmini hem üst sınırla verilir.
+- **Stack Exchange lisansı (yanlıştı):** hepsine "CC BY-SA 4.0" yazılıyordu; Stack Exchange içeriğinin lisansı gönderi
+  tarihine bağlı (2011-04-08 öncesi 2.5, 2018-05-02 öncesi 3.0, sonrası 4.0). Seçilen 502 cevabın ~270'i 3.0.
+  Lisans artık cevabın tarihinden her örneğe yazılıyor. **Eda'nın kararı:** yazar adı API'den alınmaz; kaynak veri
+  setinde (juliensimon/stackexchange-space-qa) yazar adı yok, atıf soru bağlantısı + lisansla yapılır, kartta yazılır.
+- **İnsan sesi (Eda'nın kararı: dışla):** seçilen cevapların 107/502'sinde kişisel deneyim ("I remember", "my
+  daughter"), kişisel görüş ("I think"), forum dili ("the OP", "TL;DR", "thanks") ve 41'inde zamana bağlı ifade
+  ("currently", "recently") vardı; model kişisel anısı olan bir forum kullanıcısı gibi konuşmayı veya eskimiş bilgiyi
+  öğrenebilirdi. Bu cevaplar artık alınmıyor (`human_voice`; yalnız cevapta aranır, metin düzeltilmez; "thanks to",
+  "OPERA" gibi zararsız kullanımlar serbest). Temiz aday 5.007 → 3.777.
+- **Yeniden kurulan iş listesi:** 283 doküman işi (3.192 örnek; NASA 92, Wikipedia 82, OpenStax 69, arXiv 40),
+  51 SE işi (502 soru; 270 CC BY-SA 3.0, 232 CC BY-SA 4.0), 12 kapsam dışı işi; canlı liste testteki listeyle bit bit
+  aynı. Testler: SE filtresi/ses/lisans 41 vaka, doğrulama kuralları, çoktan seçmeli 21 vaka, uçtan uca 47/47,
+  tekrar üretilebilirlik; hepsi geçti.

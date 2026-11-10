@@ -9,9 +9,10 @@
    örnekleri orijinal metin olduğu için (cevabın kendisi kaynak) bu kontrolden geçmez.
 3) Aşamalı LLM yargıç (Gemini, sıcaklık 0, ayrı çağrı; Eda kararı 10.11.2026; ayarlar config: instruction.judge)
    Aşama 1: işlerin rastgele initial_fraction'ı (iş türü x üretici türüne göre tabakalı, sabit seed; dosyaya sabitlenir)
-   Karar  : grup = (üretici türü flash/lite, görev türü). Aşama 1'de hata oranı >= full_check_fail_rate olan ya da
-            min_group_examples'tan az örneği olan grubun TÜM işleri değerlendirilir; diğerlerinde durulur ve tahmini
-            hata oranı raporlanır. Karar aşama 1 bitince data/interim/instruction_judge_plan.json'a sabitlenir.
+   Karar  : grup = (üretici türü flash/lite, görev türü). Grup YALNIZ hata oranının tek yönlü üst güven sınırı
+            (Clopper-Pearson, config judge.confidence) full_check_fail_rate'in altındaysa durdurulur; aksi hâlde
+            grubun TÜM işleri değerlendirilir. Durdurulan gruplarda tahmini hata oranı raporlanır. Karar aşama 1
+            bitince data/interim/instruction_judge_plan.json'a sabitlenir.
    Stack Exchange işlerinin tamamı her zaman değerlendirilir: yargıç seviyeyi de atar; seviyesi atanamayan SE örneği
    sete girmez (level_unassigned).
    Ölçütler: supported / correct / follows_instruction / instruction_clear / fluent_english -> pass/fail
@@ -25,6 +26,7 @@ import argparse
 import json
 import re
 from collections import Counter, defaultdict
+from math import comb
 
 from datasketch import MinHash, MinHashLSH
 from pydantic import BaseModel
@@ -265,6 +267,28 @@ def evidence_ok(evidence: str, source: str) -> tuple[bool, str]:
     return ratio >= I["evidence_min_overlap"], f"overlap={ratio:.2f}"
 
 
+def upper_bound(k: int, n: int, conf: float) -> float:
+    """Hata oranı için tek yönlü Clopper-Pearson (kesin binom) üst güven sınırı: n örnekte k hata görüldüyse, gerçek
+    oranın `conf` güvenle altında kaldığı en küçük u (P(X <= k | n, u) = 1 - conf). n = 0 ise 1.0 (bilgi yok).
+    Standart kütüphaneyle ikiye bölme; scipy.stats.beta.ppf(conf, k + 1, n - k) ile aynı sonucu verir (testli)."""
+    if n == 0:
+        return 1.0
+    if k >= n:
+        return 1.0
+
+    def cdf(u: float) -> float:
+        return sum(comb(n, i) * u ** i * (1 - u) ** (n - i) for i in range(k + 1))
+
+    lo, hi = 0.0, 1.0
+    for _ in range(60):
+        mid = (lo + hi) / 2
+        if cdf(mid) > 1 - conf:
+            lo = mid
+        else:
+            hi = mid
+    return hi
+
+
 def judge_failed(jd: dict) -> list[str]:
     """Başarısız ölçütler (boşsa geçti)."""
     failed = [k for k in CRIT if not jd[k]]
@@ -379,12 +403,15 @@ def main() -> int:
                     stats[group(x)][0] += 1
                     stats[group(x)][1] += bool(judge_failed(jd))
         all_groups = {group(x) for jid in by_job if jid not in se_jobs for x in by_job[jid]}
-        full = sorted(g for g in all_groups
-                      if stats[g][0] < J["min_group_examples"] or stats[g][1] / stats[g][0] >= J["full_check_fail_rate"])
+        # Grup YALNIZ hata oranının üst güven sınırı eşiğin altındaysa durdurulur (değerlendirilmemiş grup: tamamı)
+        ub = {g: upper_bound(stats[g][1], stats[g][0], J["confidence"]) for g in all_groups}
+        full = sorted(g for g in all_groups if ub[g] >= J["full_check_fail_rate"])
         plan = {"decided_at": now_iso(), "initial_fraction": J["initial_fraction"],
-                "full_check_fail_rate": J["full_check_fail_rate"], "min_group_examples": J["min_group_examples"],
+                "full_check_fail_rate": J["full_check_fail_rate"], "confidence": J["confidence"],
+                "rule": "stop only if one-sided Clopper-Pearson upper bound of the fail rate < full_check_fail_rate",
                 "stage1_groups": {g: {"judged": stats[g][0], "fail": stats[g][1],
-                                      "fail_rate": round(stats[g][1] / stats[g][0], 4) if stats[g][0] else None}
+                                      "fail_rate": round(stats[g][1] / stats[g][0], 4) if stats[g][0] else None,
+                                      "upper_bound": round(ub[g], 4)}
                                   for g in sorted(all_groups)},
                 "full_check_groups": full}
         plan_f.write_text(json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -502,11 +529,12 @@ def main() -> int:
 
     # Aşama 1'de durulan gruplarda değerlendirilmeden kalan örnekler ve tahmini hata (aşama 1 oranıyla)
     unj = Counter(group(x) for x in verified if not x["llm_judged"])
-    est = 0.0
+    est, est_ub = 0.0, 0.0   # nokta tahmini ve üst güven sınırına göre (en kötü durum) tahmin
     if plan:
         for g, n in unj.items():
-            rate = (plan["stage1_groups"].get(g) or {}).get("fail_rate")
-            est += (rate or 0) * n
+            s = plan["stage1_groups"].get(g) or {}
+            est += (s.get("fail_rate") or 0) * n
+            est_ub += s.get("upper_bound", 1.0) * n
     reasons = Counter(x["reason"] for x in removed.rows if x["stage"] == "verify")
     gave_up = [j for j in sorted(sample_jobs | se_jobs | fjobs) if unjudged(j) and attempts[j] >= JUDGE_MAX_ATTEMPTS]
     summary = {"verified": len(verified), "judged_examples": sum(phase_n.values()),
@@ -516,6 +544,8 @@ def main() -> int:
                "plan": plan, "unjudged_examples_by_group": dict(unj),
                "estimated_errors_remaining": round(est, 1),
                "estimated_error_rate_remaining": round(est / len(verified), 4) if verified else None,
+               # en kötü durum: durdurulan gruplarda hata oranı üst güven sınırında olsaydı
+               "estimated_error_rate_remaining_upper": round(est_ub / len(verified), 4) if verified else None,
                "judge_gave_up_jobs": len(gave_up), "removed_by_reason": dict(reasons),
                "rule_fixes": dict(Counter(q for x in verified if x.get("postprocess") for q in x["postprocess"].split("+")))}
     (p("reports") / "instruction_verification_summary.json").write_text(

@@ -40,5 +40,36 @@ for q, a, want in cases:
     k = got.split(":")[0] if got else None
     bad += k != want
     print("ok  " if k == want else "FAIL", want, "|", got)
+
+# Cevapta insan sesi (Eda kararı 10.11.2026): kişisel deneyim, kişisel görüş, forum dili, sohbet kısaltması, zamana bağlı
+voice = [
+    ("A pulsar is a rotating neutron star; its beams sweep past Earth.", None),
+    ("I remember watching the launch from Florida.", "personal_experience"),
+    ("When I measured it with my telescope, the period was 2 s.", "personal_experience"),
+    ("I think the answer is that tidal forces dominate.", "personal_opinion"),
+    ("As the OP noted, the orbit is elliptical.", "forum_language"),
+    ("Great question! The orbit is elliptical.", "forum_language"),
+    ("Hope this helps.", "forum_language"),
+    ("TL;DR: it is gravity.", "chat_abbreviation"),
+    ("IIRC the mission launched in 1977.", "chat_abbreviation"),
+    ("The probe is currently 160 AU from the Sun.", "time_dependent"),
+    ("As of 2019 there were 4000 known exoplanets.", "time_dependent"),
+    ("Thanks to tidal locking, the same face always points to Earth.", None),   # "thanks to" sorun değil
+    ("The OPERA experiment measured neutrino speeds.", None),                  # "OPERA" -> OP değil
+    ("Optical depth (tau) measures opacity; the Sun's photosphere is where tau is about 2/3.", None),
+]
+for a, want in voice:
+    got = b9.se_voice_issue(a)
+    k = got.split(":")[0] if got else None
+    bad += k != want
+    print("ok  " if k == want else "FAIL", "ses:", want, "|", got)
+
+# Lisans sürümü cevap tarihine göre
+for d, want in (("2010-05-01T10:00:00Z", "CC BY-SA 2.5"), ("2013-07-17T08:00:00Z", "CC BY-SA 3.0"),
+                ("2018-05-01T23:59:59Z", "CC BY-SA 3.0"), ("2018-05-02T00:00:00Z", "CC BY-SA 4.0"),
+                ("2024-03-20T12:00:00Z", "CC BY-SA 4.0"), (None, "CC BY-SA (version unknown)")):
+    got = b9.se_license(d)
+    bad += got != want
+    print("ok  " if got == want else "FAIL", "lisans:", d, want, "|", got)
 print("hata:", bad)
 sys.exit(1 if bad else 0)

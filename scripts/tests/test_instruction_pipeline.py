@@ -30,7 +30,8 @@ cfg = yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))
 for k in ("interim", "final", "samples", "reports", "qc", "logs"):
     cfg["paths"][k] = str(TMP / k)
 cfg["instruction"]["target_total"] = 400
-cfg["instruction"]["judge"]["min_group_examples"] = 3
+# küçük test setinde grupların bir kısmı durabilsin diye eşik gevşek (gerçek ayar: %5, %95 güven)
+cfg["instruction"]["judge"]["full_check_fail_rate"] = 0.5
 cfg["qc"]["instruction_sample"] = 30
 (TMP / "config.yaml").write_text(yaml.safe_dump(cfg, allow_unicode=True), encoding="utf-8")
 os.environ["ASTROTUTOR_CONFIG"] = str(TMP / "config.yaml")
@@ -235,17 +236,17 @@ check("SE kaynak elemeleri kayıtlı (not_usable_verbatim)", src_reasons.get("no
       str(dict(src_reasons.most_common(4))))
 plan = json.load(open(TMP / "interim" / "instruction_judge_plan.json", encoding="utf-8"))
 full = set(plan["full_check_groups"])
+v11 = importlib.import_module("11_verify_instructions")
 J = cfg["instruction"]["judge"]
-rule = {g: (s["judged"] < J["min_group_examples"] or s["fail"] / s["judged"] >= J["full_check_fail_rate"])
+rule = {g: (v11.upper_bound(s["fail"], s["judged"], J["confidence"]) >= J["full_check_fail_rate"])
         for g, s in plan["stage1_groups"].items()}
-check("grup kararı kurala birebir uyuyor (az örnek veya hata >= eşik -> tam kontrol)",
+check("grup kararı kurala birebir uyuyor (üst güven sınırı >= eşik -> tam kontrol)",
       all((g in full) == want for g, want in rule.items()), str(plan["stage1_groups"]))
 check("hata veren lite grupları tam kontrolde", any(g.startswith("lite") and s["fail"] for g, s in plan["stage1_groups"].items())
       and all(g in full for g, s in plan["stage1_groups"].items() if s["fail"]))
 check("tam kontrole alınmayan grup var (aşamalı karar gerçekten ayırıyor)", any(not w for w in rule.values()))
 ver = [json.loads(x) for x in open(TMP / "interim" / "instructions_verified.jsonl", encoding="utf-8")]
 sample = set(json.load(open(TMP / "interim" / "instruction_judge_sample.json", encoding="utf-8")))
-v11 = importlib.import_module("11_verify_instructions")
 grp = lambda x: f"{v11.tier(x.get('generator_model'))}|{x['task_type']}"  # noqa: E731
 unj_full = [x for x in ver if not x["llm_judged"] and grp(x) in full]
 check("tam kontrol grubunda değerlendirilmemiş örnek yok", not unj_full, str(len(unj_full)))
@@ -263,6 +264,7 @@ check("11 tekrar çalıştırma", run("11_verify_instructions") == 0)
 check("11 tekrar çalıştırınca çıktı birebir aynı", (TMP / "interim" / "instructions_verified.jsonl").read_bytes() == before)
 
 check("12 ayrım", run("12_split_instructions") == 0)
+x_date = {f"SE_{r.site}_{r.qid}": r.answer_creation_date for r in se_df.itertuples(index=False)}
 ins = [json.loads(x) for x in open(TMP / "final" / "instruction_v2.0.jsonl", encoding="utf-8")]
 check("final örnek sayısı = doğrulanan", len(ins) == len(ver), f"{len(ins)}")
 check("final seviyeleri geçerli", all(x["level"] in cfg["instruction"]["levels"] for x in ins))
@@ -272,7 +274,8 @@ check("doküman örneği corpus kümesini miras aldı",
 own = {}
 check("bir kaynak doküman tek kümede", all(own.setdefault(x["source_document"], x["split"]) == x["split"] for x in ins))
 check("messages biçimi", all([m["role"] for m in x["messages"]] == ["user", "assistant"] for x in ins))
-check("SE lisansı ve verified_by", all(x["license"].startswith("CC BY-SA 4.0") and x["verified_by"] == "rules+llm_judge"
+check("SE lisansı tarihe göre ve verified_by", all(x["license"].split(" (")[0] == b9.se_license(x_date[x["source_document"]])
+                                                   and x["verified_by"] == "rules+llm_judge"
                                        for x in ins if x["source_name"] == "stackexchange_space_qa"))
 check("doküman örneklerinde kanıt kontrolü yazılı", all("evidence" in x["verified_by"] for x in ins
                                                         if x["generation_method"] == "llm_synthetic_from_source_document"))
