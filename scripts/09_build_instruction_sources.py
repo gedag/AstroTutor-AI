@@ -55,6 +55,12 @@ SE_DANGLING = re.compile(r"\b(?:this|the following|the above|that|here is a|see 
                          r"page|image|picture|graph|diagram|figure|video|spreadsheet|table|chart|plot)\b|"
                          r"\bclick here\b|\bsee (?:here|below|above)\b|\bother answers?\b|\bcomments?\b|\bEDIT\b|"
                          r"\bupdate:|\bupvote|\bdownvote", re.I)
+# Soruda silinmiş görsele/videoya/bağlantıya atıf ("pictures ... such as this:", "In the video ...", "this graph").
+# Tek başına "image"/"video" kelimesi aranmaz ("Looking at an image of the orbiter" zararsız). 10.11.2026 pilotunda
+# seçilen 502 sorunun 67'sinde soruda boşta atıf vardı (önce yalnız cevap kontrol ediliyordu).
+SE_Q_MEDIA = re.compile(r"\b(?:such as|like|see|as in|as shown in|shown in) this\s*[:.]|\bthis:\s*(?:\n|\.\.\.)|"
+                        r"\b(?:in|from|watching) (?:the|this) (?:video|clip)\b|"
+                        r"\bthis (?:video|clip|picture|image|photo|screenshot|graph|diagram|figure|plot|chart)\b", re.I)
 
 
 def se_text_issue(q: str, ans: str) -> str | None:
@@ -68,6 +74,9 @@ def se_text_issue(q: str, ans: str) -> str | None:
     m = SE_DANGLING.search(ans)
     if m:
         return f"dangling_reference:{m.group(0)[:40]}"
+    m = SE_DANGLING.search(q) or SE_Q_MEDIA.search(q)
+    if m:
+        return f"dangling_reference_in_question:{m.group(0)[:40]}"
     if exponent_loss(both)[1]:
         return "exponent_loss"
     return None
