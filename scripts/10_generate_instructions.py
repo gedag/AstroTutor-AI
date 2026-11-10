@@ -93,8 +93,22 @@ def run_se(job: dict) -> list[dict]:
     return out
 
 
+MISCONCEPTIONS_PER_JOB = 5
+
+
+def job_misconceptions(job: dict) -> list[str]:
+    """Kapsam dışı işine atanan yanlış kanılar (prompts/<sürüm>/misconceptions.json): JOB_REF_k işi k*5..k*5+4
+    sıradakileri alır; 12 iş x 5 = 60 kanı, tekrar yok. (İlk sürümde prompt'taki örnek sorular her işte aynen
+    kopyalanıyordu; 10.11.2026.)"""
+    items = json.loads(load_prompt("misconceptions.json"))
+    k = int(job["job_id"].rsplit("_", 1)[1])
+    return [items[(k * MISCONCEPTIONS_PER_JOB + i) % len(items)] for i in range(MISCONCEPTIONS_PER_JOB)]
+
+
 def run_refusal(job: dict, llm: Gemini) -> list[dict]:
-    prompt = fill(load_prompt("generate_refusal.txt"), n=job["n"], themes="; ".join(job["themes"]))
+    mis = job_misconceptions(job)
+    prompt = fill(load_prompt("generate_refusal.txt"), n=job["n"], themes="; ".join(job["themes"]),
+                  misconceptions="\n".join(f"  - {m}" for m in mis))
     res = llm.generate_json(load_prompt("system_generate.txt"), prompt, list[Example])
     out = []
     for k, ex in enumerate(res):
@@ -102,7 +116,7 @@ def run_refusal(job: dict, llm: Gemini) -> list[dict]:
         rid = f"{job['job_id']}_{k:02d}"
         out.append({**ex, "task_type": "out_of_scope_refusal", "raw_example_id": rid,
                     "job_id": job["job_id"], "source_document": f"NOSRC_{rid}", "source_url": None,
-                    "source_name": "none", "split_hint": None, "themes": job["themes"],
+                    "source_name": "none", "split_hint": None, "themes": job["themes"], "misconceptions": mis,
                     "planned_task_type": "out_of_scope_refusal",
                     "generation_method": "llm_synthetic_out_of_scope"})
     return out

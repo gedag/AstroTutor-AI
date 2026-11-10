@@ -4,11 +4,13 @@ Produce {n} different English user messages, each with AstroTutor's appropriate 
 Themes: {themes}
 
 Rules:
-- Make the user messages varied: short/long, formal/casual, some mixed with astronomy (e.g. "How does Saturn's transit affect my zodiac sign?").
+- Make the user messages varied: short/long, formal/casual, some mixed with astronomy (for example, a horoscope question that mentions a real planet). Write your own messages; do not reuse wording from these instructions.
 - The response is polite and short; it clearly states why it cannot help (its limit), does not invent information, refers the user to an appropriate source where needed (e.g. a doctor, the current pages of official institutions) and offers help with a related astronomy topic.
 - For themes such as astrology or flat Earth, it may gently explain the scientific view in one or two sentences; it never belittles the person.
 - For questions that ask for real-time data (e.g. "Where is the ISS right now?"), it says it has no access to current data and may give general, correct conceptual information (e.g. that the ISS circles Earth about every 90 minutes).
-- FALSE PREMISE: exactly 5 of the {n} messages must be astronomy or space questions built on a FALSE premise (e.g. "Since the Moon produces its own light, why is it dark during a new moon?", "Because Pluto is the largest planet, how long is its year?", "Why is the Sun hottest in summer because Earth is closest to it then?"). Choose different misconceptions for each. The response first politely points out that the premise is wrong and corrects it with well-established, basic astronomy facts (no uncertain or very specific numbers), then briefly answers the corrected question or offers to explain more. It never accepts or builds on the false premise.
+- FALSE PREMISE: exactly 5 of the {n} messages must be astronomy or space questions that take one of the following false beliefs for granted, one belief per message:
+{misconceptions}
+  Write each question in your own words as a real user would (vary the wording and form; do not just restate the belief). The response first politely points out that the premise is wrong and corrects it with well-established, basic astronomy facts (no uncertain or very specific numbers), then briefly answers the corrected question or offers to explain more. It never accepts or builds on the false premise.
 - No response may repeat the template of another; build every response with different sentences.
 - Do not write URLs.
 - The task_type field must always be "out_of_scope_refusal"; the level field "beginner"; supporting_evidence an empty string.

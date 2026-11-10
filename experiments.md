@@ -846,3 +846,10 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
 - **Final Adım 1 notu:** test kümesinde planlanan örnek görev başına 6–25 (adım adım ~6, sınıflandırma ~10, özetleme
   ~11); her türün 15'e tamamlanması Rehber'in istediği ≥ 50 elle yazılmış soruyla yapılacak.
 - Testler: kurallar (uzunluk dahil), SE filtresi, çoktan seçmeli, uçtan uca 49/49, tekrar üretilebilirlik; hepsi geçti.
+- **Düzeltme (aynı gün):** yeni prompt'la üretilen ilk 4 kapsam dışı işinde (lite) yanlış öncüllü 5 sorunun 3'ü
+  prompt'taki örnek cümlelerin neredeyse aynısıydı (her işte tekrar → tekrar kontrolü eler, çeşitlilik kaybolur).
+  Örnek cümleler kaldırıldı; yerine `prompts/v2.0/misconceptions.json` (iyi bilinen, düzeltmesi tartışmasız 60
+  astronomi yanlış kanısı) eklendi: JOB_REF_k işine k*5..k*5+4 sıradakiler atanır (12 iş × 5 = 60, tekrar yok),
+  model soruyu kendi cümleleriyle yazar; atanan kanılar her örneğe `misconceptions` alanıyla kaydedilir. Prompt'taki
+  diğer örnek soru da genel tarife çevrildi. Bu 4 iş canlı dosyalardan çıkarıldı (yedek:
+  `data/interim/run_v2.0_aborted_20261110/ref_copied_examples/`), yeniden üretilecek. Uçtan uca test 49/49.
