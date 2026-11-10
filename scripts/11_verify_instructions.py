@@ -69,12 +69,15 @@ UNSEEN = re.compile(r"\b(?:according to the " + _DOC + r"|according to the sourc
 # Sınıflandırma talimatlarında öğeler sayıldığı hâlde kalan atıf ifadeleri ("Classify the objects mentioned in the text:
 # Mercury, Venus ..."): görev çözülebilir, ama kullanıcının görmediği metne atıf öğretmesin diye ifade silinir (v1.0'da
 # 35 talimat; silme sonrası hepsi doğal okunuyordu).
+# "provided / given / above / source" sıfatlarıyla da (10.11.2026 denetimi: "based on their descriptions in the
+# provided text" silinmeden kalmıştı)
+_ADJ = r"(?:(?:provided|given|above|source|original)\s+)?"
 REF_PATTERNS = [
-    re.compile(r"\s*\b(?:that are |which are )?(?:mentioned|listed|named|described|discussed) in the (?:source )?"
+    re.compile(r"\s*\b(?:that are |which are )?(?:mentioned|listed|named|described|discussed) in the " + _ADJ +
                r"(?:text|passage|document|article|source)\b", re.I),
-    re.compile(r",?\s*\baccording to the (?:source )?(?:text|passage|document|article|source)\b,?", re.I),
-    re.compile(r",?\s*\bbased on the (?:source )?(?:text|passage|document|article|source)\b,?", re.I),
-    re.compile(r"\s*\b(?:from|in) the (?:source )?(?:text|passage|document|article)\b", re.I),
+    re.compile(r",?\s*\baccording to the " + _ADJ + r"(?:text|passage|document|article|source)\b,?", re.I),
+    re.compile(r",?\s*\bbased on the " + _ADJ + r"(?:text|passage|document|article|source)\b,?", re.I),
+    re.compile(r"\s*\b(?:from|in) the " + _ADJ + r"(?:text|passage|document|article)\b", re.I),
 ]
 
 
@@ -206,9 +209,11 @@ def rule_checks(rows: list[dict], removed: RemovalLog, det, grams: set) -> list[
             reason = ("exponent_loss", "")
         elif not is_se and t not in TEXT_TYPES and UNSEEN.search(ins):
             reason = ("references_unseen_text", UNSEEN.search(ins).group(0))
-        elif t == "classification" and not has_passage(ins) and UNSEEN.search(ins) and n_list_items(ins) < 3:
-            # "Classify the molecules mentioned in the text": talimatta ne metin ne öğe listesi var
-            reason = ("references_unseen_text", "classification_items_missing:" + UNSEEN.search(ins).group(0))
+        elif t == "classification" and not has_passage(ins) and UNSEEN.search(ins):
+            # "Classify the molecules mentioned in the text": talimatta ne metin ne öğe listesi var; ya da atıf silme
+            # kalıplarına uymayan bir ifade kaldı (güvenlik ağı: talimatta görülmeyen metne atıf hiç kalmasın)
+            kind = "classification_items_missing:" if n_list_items(ins) < 3 else "unseen_reference_left:"
+            reason = ("references_unseen_text", kind + UNSEEN.search(ins).group(0))
         elif not is_se and (t not in TEXT_TYPES or (t == "classification" and not has_passage(ins))) and UNSEEN.search(resp):
             # Kullanıcı metin vermediği hâlde cevap "according to the text" diyor: model görünmeyen bir kaynağa atıf
             # yapmayı öğrenir (v1.0'da 89 örnek; prompt v2.0 kural 9)

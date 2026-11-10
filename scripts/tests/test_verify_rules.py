@@ -44,6 +44,13 @@ strip = {
         "Classify Ceres, Pluto, Eris and Vesta as dwarf planets or asteroids.",
     "Sort the missions from the passage (Voyager 1, Cassini, Juno, New Horizons) into flybys and orbiters.":
         "Sort the missions (Voyager 1, Cassini, Juno, New Horizons) into flybys and orbiters.",
+    # 10.11.2026 canlı üretimde bulunan kalıp
+    "Classify the following moons: Nereid, Triton, Mimas and Phoebe based on their descriptions in the provided text "
+    "as either regular or irregular satellites.":
+        "Classify the following moons: Nereid, Triton, Mimas and Phoebe based on their descriptions as either regular "
+        "or irregular satellites.",
+    "Classify Phobos, Deimos, Mars and Earth into planets or moons based on the provided document.":
+        "Classify Phobos, Deimos, Mars and Earth into planets or moons.",
 }
 for s, want in strip.items():
     got = v11.strip_unseen_ref(s)

@@ -853,3 +853,10 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
   model soruyu kendi cümleleriyle yazar; atanan kanılar her örneğe `misconceptions` alanıyla kaydedilir. Prompt'taki
   diğer örnek soru da genel tarife çevrildi. Bu 4 iş canlı dosyalardan çıkarıldı (yedek:
   `data/interim/run_v2.0_aborted_20261110/ref_copied_examples/`), yeniden üretilecek. Uçtan uca test 49/49.
+- **Ara denetim (10.11.2026 14:40; 189 iş / 2.078 örnek):** dosya tutarlılığı temiz (iş listesi birebir, tekrar/yetim
+  kayıt yok). Canlı üretimin kopyasında kural + kanıt kontrolü (yargıçsız): doküman/kapsam dışı örneklerinin %6,7'si
+  elendi (Flash %0, 3.1-lite %5, 3.5-lite %14); elemeler tek tek okundu, yanlış eleme görülmedi. **Bulunan açık:**
+  sınıflandırma talimatında "based on their descriptions in the provided text" ifadesi atıf silme kalıplarına uymadı
+  ("provided" sıfatı) ve sınıflandırmada talimat kontrolü yalnız öğe sayısı < 3 iken yapılıyordu → 1 talimat görülmeyen
+  metne atıfla geçiyordu. Kalıplar "provided/given/above/source/original" sıfatlarını kapsayacak şekilde genişletildi
+  ve güvenlik ağı eklendi (silme sonrası atıf kalırsa `references_unseen_text`). Yeniden denetimde kalan atıf 0.
