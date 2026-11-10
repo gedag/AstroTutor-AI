@@ -774,3 +774,23 @@ Corpus, instruction, kod ve belgeler gereksinim listesiyle karşılaştırıldı
   orijinalle birebir; bilerek eklenen kusurlar yakalandı; lite grupları tam kontrole alındı, hatasız ve yeterli
   örnekli Flash gruplarında durdu; 11 tekrar çalışınca çıktı birebir aynı; küme sızıntısı yok). Gerçek veride corpus
   raporları yeniden üretildi; yalnız beklenen farklar (kart bağlantısı, hız oranı) var.
+
+## 10.11.2026 — Instruction v2.0 pilotu (Adım 3) ve tam üretim hazırlığı
+- **Pilot:** 2 doküman işi (Wikipedia "Marsquake", "Rotating reference frame"), 1 Stack Exchange işi, 1 kapsam dışı işi
+  = 53 örnek (3 başarılı üretim çağrısı; Gemini 3.6/3.5 Flash). Kural ve kanıt kontrolü 53/53; LLM yargıç 39/39 geçti
+  (birçok 503 yoğunluk hatası, otomatik model değişimiyle aşıldı). Üretim bitmediği için örneklem ve grup kararı
+  sabitlenmedi (beklendiği gibi). Yapay zekâ destekli ön inceleme: kontrol edilen bütün sayı ve olgular kaynakta var;
+  bir örnek kaynaktan biraz fazlasını söylüyor ("Mars'ta aktif levha yayılması yok"; kaynak: "bu bölgede belirgin
+  sırt bulunamadı") ve yargıç bunu geçirdi (yargıç hoşgörülü; 150 örneklik elle inceleme bu yüzden önemli).
+- **Bulunan hata:** Stack Exchange'de boşta kalan atıf kontrolü yalnız cevaba uygulanıyordu; seçilen 502 sorunun 50'si
+  silinmiş görsel/video/bağlantıya veya başka cevaba atıf içeriyordu ("such as this:", "In the video ...", "This
+  answer notes ..."). Kontrol sorulara da uygulandı (`dangling_reference_in_question`; tek başına "image"/"video"
+  kelimesi aranmaz); temiz aday 5.557 → 5.007 (testler: `scripts/tests/test_se_filter.py`).
+- **Eda'nın kararları:** pilot onaylandı; üretim prompt'una (v2.0 kural 11) "örnekleri astronomi/uzay bağlamında tut,
+  Dünya'nın hava durumu, rüzgârları, okyanusları, iklimi ve jeolojisi üzerine örnek yazma" kuralı eklendi (pilotta
+  "Rotating reference frame" dokümanından rüzgâr/okyanus akıntısı örnekleri çıktı; Tasarım'da Dünya bilimleri kapsam
+  dışı); tam üretim Windows Görev Zamanlayıcı ile çalışacak.
+- **Tam üretime temiz başlangıç:** pilot dosyaları `data/interim/pilot_v2.0/` altına taşındı (pilot örnekleri sete
+  girmez; bütün örnekler aynı prompt ve yöntemle üretilsin). İş listesi yeniden kuruldu: 287 doküman işi (3.192
+  örnek), 51 Stack Exchange işi (502 soru, kurala takılan 0), 12 kapsam dışı işi (180 örnek); doküman ve kapsam dışı
+  işleri pilottakiyle birebir aynı (seçim tekrar üretilebilir).
