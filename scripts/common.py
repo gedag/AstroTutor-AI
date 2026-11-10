@@ -13,6 +13,7 @@ import csv
 import hashlib
 import json
 import logging
+import os
 import random
 import re
 import sys
@@ -34,7 +35,10 @@ for _stream in (sys.stdout, sys.stderr):
 
 
 def load_config() -> dict:
-    with open(ROOT / "config.yaml", encoding="utf-8") as f:
+    # ASTROTUTOR_CONFIG yalnız testlerde kullanılır (scripts/tests/test_instruction_pipeline.py): ayrı yollara yazan
+    # bir yapılandırmayla pipeline gerçek veriye dokunmadan denenir. Ayarlı değilse her zaman proje config.yaml'ı.
+    path = os.environ.get("ASTROTUTOR_CONFIG") or (ROOT / "config.yaml")
+    with open(path, encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 

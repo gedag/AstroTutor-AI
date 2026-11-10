@@ -20,7 +20,7 @@ from common import CFG, get_logger, instruction_file, p, read_jsonl, rng
 log = get_logger("13_sample_for_review")
 CORPUS_CRIT = ["okunabilir", "dogru_domain", "extraction_dogru", "header_footer_temiz", "bozuk_karakter_yok",
                "metadata_dogru"]
-INS_CRIT = ["talimat_anlasilir", "kaynakla_tutarli", "talimati_karsiliyor", "gorev_turu_dogru", "turkce_akici"]
+INS_CRIT = ["talimat_anlasilir", "kaynakla_tutarli", "talimati_karsiliyor", "gorev_turu_dogru", "ingilizce_akici"]
 CLAUDE_TAIL = ["claude_karar", "claude_hata_turu", "claude_gerekce"]
 HUMAN = ["son_karar", "son_hata_turu", "insan_notu"]
 

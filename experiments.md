@@ -731,3 +731,46 @@ Corpus, instruction, kod ve belgeler gereksinim listesiyle karşılaştırıldı
 - **Sonuç (Corpus v2.0):** 14.683 doküman, 13.438.685 token (Qwen2.5-7B), train 13.223 / validation 735 / test 725;
   dil %100 İngilizce; `validate_datasets.py --corpus-only` başarılı. Düzeltmelerden sonra 02 → 07 zinciri baştan iki kez
   çalıştırıldı, final ve cleaned dosyaları birebir aynı (tekrar üretilebilirlik).
+
+## 10.11.2026 — Instruction v2.0 (İngilizce) için pipeline uyarlandı (Adım 2; Gemini'ye istek gönderilmedi)
+- **Eda'nın kararları:** hedef 3.800 üretim (elemelerden sonra ≥ 3.000); Stack Exchange seviyesini LLM yargıç atar;
+  yargıç **aşamalı**: önce işlerin rastgele %20'si (iş türü × üretici türü tabakalı), sonra aşama 1'de hata oranı
+  ≥ %5 olan ya da 20'den az örneği olan grubun (üretici türü flash/lite × görev türü) tamamı; Stack Exchange'in tamamı.
+  Gerekçe (v1.0 ölçümü): üretimin %86'sı lite modelle yapıldı, lite örneklerinin %12,6'sı yargıçtan kaldı; Flash'ta 30
+  örnekte 0 hata (az örnek, kesin değil). Yargıç günde ~22–25 iş değerlendirebiliyor: hepsini kontrol ~2,5–3 hafta,
+  aşamalı yöntemle ilk sonuç ~4 günde. Grup kararı aşama 1 bitince `instruction_judge_plan.json`'a sabitlenir.
+- **Türkçe v1.0 dosyaları arşive:** çalışma dosyaları `data/interim/archive_instruction_v1.0/` (önce
+  `data/archive_v1.0` ile hash karşılaştırması: hepsi aynı), raporlar ve kart `reports/archive_v1.0/` (git mv; kartın
+  bağlantıları düzeltildi, v1.0'a ait olanlar GitHub `v1.0` etiketine gider), `logs/instruction_loop.DONE` →
+  `instruction_loop.v1.0.DONE`. v1.0'a özgü `turkish_check.py`, `requeue_jobs.py`, `run_extended_judge.py` kaldırıldı.
+- **İngilizce adlar:** görev türleri `definition_explanation, leveled_explanation, mcq_generation, question_answering,
+  comparison, cause_effect, summarization, step_by_step_problem_solving, classification, out_of_scope_refusal` (oranlar
+  v1.0 ile aynı); seviyeler `beginner / intermediate / advanced`; çoktan seçmeli JSON
+  `{"questions": [{"question", "options": {A–D}, "answer", "explanation"}]}`.
+- **prompts/v2.0:** v1.2'nin kuralları İngilizceye aktarıldı (görülmeyen metne atıf yok, çoktan seçmeli soruda cevap
+  talimatta yok, sınıflandırmada öğeler açıkça sayılır, üsler 10^30, LaTeX yok, kelimesi kelimesine alıntı); Türkçeye
+  özgü kurallar (Türkçe harfler, terim karşılıkları) çıkarıldı. Stack Exchange prompt'u yok.
+- **Stack Exchange (Gemini yok, metin değiştirilmez):** v1.0 filtrelerine ek olarak LaTeX, e-posta/telefon,
+  @kullanıcı, bağlantı, HTML/kod, dipnot, kaybolmuş üs ve boşta kalan atıf ("this answer", "see below", "EDIT",
+  "comments") içeren kayıtlar elenir (`not_usable_verbatim`). Ölçüm: 10.568 adaydan ~5.700 temiz; gereken ~500.
+  v1.0'daki üs düzeltmesi yerine üs kaybı olan kayıt elenir (metin değiştirilmesin diye).
+- **Kaynak payları:** NASA Science %30, Wikipedia %30, OpenStax %25, arXiv %15 (config `source_share`; APOD'da
+  3.000 karakteri geçen doküman yok). Config'teki Gemini model adları API listesinden doğrulandı (üretim kotası harcanmadı).
+- **Doğrulama (11):** İngilizce dil kontrolü; kısa talimatlarda dil tespiti güvenilmediği için ("What is a pulsar?" →
+  İspanyolca, "Compare Mars and Venus." → Fransızca) cevap her zaman, talimat yalnız ≥ 8 kelimeyse kontrol edilir.
+  "according to the text" türü atıf kalıpları, sınıflandırmada atıf silme ve çoktan seçmeli sızıntı kontrolü
+  (`mcq_check.py`) İngilizceye uyarlandı; Türkçe karakter ve "Adım" düzeltmeleri kaldırıldı. Yargıç ölçütü
+  `fluent_english`; Stack Exchange'de kanıt kontrolü yok (cevap kaynağın kendisi), seviyesi atanamayan SE örneği
+  sete girmez (`level_unassigned`).
+- **Bulunan ve düzeltilen hatalar:** `check_gemini.py` argümansız çalışınca config'te olmayan `generator_model`
+  anahtarını okuyordu (v1.0'dan); 14 yeniden çalışınca `verified_by` ekini ikinci kez yazacaktı; 09'da düzenli ifade
+  bayrağı (`(?m)`) kalıbın ortasındaydı (Python 3.13'te yükleme hatası); SE filtresi e-posta adresini kaçırıyordu.
+  Commit 6649780'deki kartta PyMuPDF hız oranı "74 kat" yazıyordu, karşılaştırma raporu "64 kat" (son yeniden
+  çalıştırmada rapor güncellenmiş, kart yeniden üretilmemişti); kart yeniden üretildi. Envanterdeki Stack Exchange
+  kayıt sayısı (33.519) özet dosyası yokken ham dosyadan okunuyor.
+- **Testler (Gemini'siz, geçici klasörde):** `scripts/tests/test_verify_rules.py` (İngilizce kurallar; 0 hata),
+  `mcq_check.py` (21 vaka; 0 hata), SE filtresi (15 vaka; 0 hata) ve `scripts/tests/test_instruction_pipeline.py`:
+  gerçek corpus alt kümesi ve sahte modelle 09 → 10 → 11 → 12 → 13 → 14 → validate; 44 kontrolün hepsi geçti (SE metni
+  orijinalle birebir; bilerek eklenen kusurlar yakalandı; lite grupları tam kontrole alındı, hatasız ve yeterli
+  örnekli Flash gruplarında durdu; 11 tekrar çalışınca çıktı birebir aynı; küme sızıntısı yok). Gerçek veride corpus
+  raporları yeniden üretildi; yalnız beklenen farklar (kart bağlantısı, hız oranı) var.

@@ -12,7 +12,9 @@ Bu depo, projenin iki veri setini üreten yeniden çalıştırılabilir pipeline
 | **Instruction Dataset v2.0** (İngilizce, hazırlanıyor) | Modele İngilizce talimat takip etme, seviyeye göre anlatım ve çoktan seçmeli soru üretme davranışı kazandırmak | SFT (QLoRA) | v2.0 kartı set üretilince yazılacak |
 
 **Sürümler:** Vizede teslim edilen sürüm v1.0'dır (Domain Corpus v1.0: İngilizce + Türkçe, 16.284 doküman; Türkçe
-Instruction Dataset v1.0: 3.388 örnek, [INSTRUCTION_CARD.md](INSTRUCTION_CARD.md)); Git etiketi `v1.0` ile korunur.
+Instruction Dataset v1.0: 3.388 örnek, [reports/archive_v1.0/INSTRUCTION_CARD_v1.0.md](reports/archive_v1.0/INSTRUCTION_CARD_v1.0.md));
+Git etiketi `v1.0` ile korunur. v1.0 instruction raporları `reports/archive_v1.0/`, çalışma dosyaları
+`data/interim/archive_instruction_v1.0/` altındadır.
 09.11.2026'da AstroTutor AI'ın **İngilizce konuşan** bir model olmasına karar verildi: corpus yalnız İngilizce (v2.0)
 ve instruction seti tamamen İngilizce olarak yeniden üretiliyor (v2.0). Sürüm numaraları `config.yaml → project`.
 
@@ -39,7 +41,7 @@ data/
   eval_reference/ değerlendirme setleri (yalnız sızıntı kontrolü)   [Git'e girmez]
   samples/        her veri setinden küçük örnekler                   [Git'te]
 scripts/          01_download.py … 16_make_samples.py, validate_datasets.py
-prompts/          instruction üretimi ve LLM yargıç prompt'ları, sürümlü: v1/, v1.1/, v1.2/ (kullanılan: config.yaml → prompt_version)
+prompts/          instruction üretimi ve LLM yargıç prompt'ları, sürümlü: v1/, v1.1/, v1.2/ (Türkçe v1.0), v2.0/ (İngilizce; kullanılan: config.yaml → prompt_version)
 reports/          kaynak envanteri, istatistikler, kalite kontrol, temizleme örnekleri, grafikler
 notebooks/        keşifsel analiz defteri (gözle kontrol; Jupyter ile açılır, `pip install notebook`)
 config.yaml       tüm yollar, eşikler, seed ve model adları
@@ -91,26 +93,24 @@ log yazar ve sonunda kaç dokümanın işlendiğini özetler. Rastgelelik içere
 | `06b_repost_dedup.py` | İkinci geçiş (kalite kontrolünde bulunanlar): kaybolmuş üsler, NASA künye/kişisel veri, APOD duyuru satırları, yeniden yayın tekrarları, arXiv alt konuları; kimlik ve kümeler korunur | `data/final/*.jsonl`, `reports/dedup2_summary.json` |
 | `07_token_count.py` | Qwen2.5 tokenizer ile token sayımı + split sonrası paragraf sınırında chunk (chunk metni dokümanın birebir alt dizisi, `char_start`/`char_end`) | `reports/token_stats.json`, `data/final/chunks/` |
 | `08_statistics.py` | Sayısal özet, veri erimesi, dağılımlar, grafikler | `reports/statistics.md` |
-| `09_build_instruction_sources.py` | StackExchange temizliği, kaynak doküman seçimi, görev kotaları (`--part se_ref / doc / doc_supplement`) | `data/interim/instruction_jobs.jsonl` |
-| `10_generate_instructions.py` | Gemini ile Türkçe örnek üretimi; Türkçe karakteri eksik iş çıktısı reddedilir | `data/interim/instructions_raw.jsonl` |
-| `11_verify_instructions.py` | Kural kontrolleri + kanıt kontrolü + %10 LLM yargıç (örneklem `instruction_judge_sample.json`'da sabit) + sızıntı kontrolü; `--extended`: örneklem dışındaki lite üretimlerini de değerlendirir (v1.1 için) | `data/interim/instructions_verified.jsonl` |
-| `12_split_instructions.py` | Kaynak dokümana göre gruplu ayrım | `data/final/instruction_v1.0.jsonl` |
+| `09_build_instruction_sources.py` | Stack Exchange seçimi (orijinal metin, değiştirilmeden; kullanılamayanlar nedeniyle elenir), kaynak doküman seçimi, görev kotaları (`--part se_ref / doc / doc_supplement`) | `data/interim/instruction_jobs.jsonl` |
+| `10_generate_instructions.py` | Gemini ile İngilizce örnek üretimi (doküman ve kapsam dışı işleri); Stack Exchange işleri Gemini'siz kaydedilir; çoktan seçmeli sızıntısı olan iş yeniden denenir | `data/interim/instructions_raw.jsonl` |
+| `11_verify_instructions.py` | Kural kontrolleri + kanıt kontrolü + aşamalı LLM yargıç (önce işlerin %20'si; hata oranı ≥ %5 olan grubun tamamı; Stack Exchange'in tamamı ve seviyesi) + sızıntı kontrolü | `data/interim/instructions_verified.jsonl`, `reports/instruction_verification_summary.json` |
+| `12_split_instructions.py` | Kaynak dokümana göre gruplu ayrım | `data/final/instruction_v<sürüm>.jsonl` |
 | `13_sample_for_review.py` | Manuel kontrol için 100 corpus + 150 instruction rastgele örnek | `reports/qc/*_review.csv` |
 | `14_qc_report.py` | Otomatik + manuel kalite raporu | `reports/quality_control_report.md` |
-| `15_write_cards.py` | Kartları gerçek sayılarla üretir | `DATASET_CARD.md`, `INSTRUCTION_CARD.md` |
+| `15_write_cards.py` | Kartları gerçek sayılarla üretir (instruction kartı yalnız geçerli sürüm üretildiyse) | `DATASET_CARD.md`, `INSTRUCTION_CARD.md` |
 | `16_make_samples.py` | Depoya girecek küçük örnekler (seed 42; final dosyalardan değiştirilmeden) | `data/samples/*.jsonl` |
 | `validate_datasets.py` | Şema, sızıntı, HF yükleme, chat template testi, değerlendirme setleriyle örtüşme | `reports/validation_report.md`, `reports/eval_contamination.csv` |
-| `requeue_jobs.py` | Türkçe karakteri eksik (`--reason turkce`) veya çoktan seçmeli sorusu talimatta verilmiş (`--reason mcq`) işleri arşivleyip yeniden kuyruğa alır (bakım; döngü dururken) | `data/interim/archive/` |
 
 Yardımcı modüller: `common.py` (config, log, JSONL, RemovalLog, Türkçe sayı ekleri), `llm.py` (Gemini istemcisi: model kademeleri,
-kota/yoğunluk yönetimi), `check_gemini.py` (anahtarı ve model erişimini test eder; anahtarı ekrana yazmaz), `domain_lexicon.py` (alan terimleri, Wikipedia kategori kuralı), `turkish_check.py`
-(Türkçe karakter kontrolü), `mcq_check.py` (çoktan seçmeli talimatta soru/şık/cevap sızıntısı), `exponent_fix.py` (kaybolmuş üsler), `html_residue.py` (HTML etiket/entity kalıntıları),
+kota/yoğunluk yönetimi), `check_gemini.py` (anahtarı ve model erişimini test eder; anahtarı ekrana yazmaz), `domain_lexicon.py` (alan terimleri, Wikipedia kategori kuralı), `mcq_check.py` (çoktan seçmeli talimatta soru/şık/cevap sızıntısı), `exponent_fix.py` (kaybolmuş üsler), `html_residue.py` (HTML etiket/entity kalıntıları),
 `press_boilerplate.py` (NASA basın künyesi ve kişisel iletişim bilgisi temizliği). Kural modüllerinin her biri
 doğrudan çalıştırıldığında kendi testlerini çalıştırır (ör. `python scripts/exponent_fix.py`).
 
-### Ek LLM yargıcı (Instruction v1.1 hazırlığı)
-
-`python run_extended_judge.py` örneklem dışındaki lite üretimi işleri, v1.0 dosyalarına dokunmadan `data/interim/extended_judge/` altında değerlendirir (kota dolunca bekleyip devam eder). Bitince kararlar `data/interim/` altına kopyalanıp 11 → 12 → 14 → 08 → 15 → 16 → `validate_datasets.py` çalıştırılarak v1.1 üretilir.
+Testler (Gemini'ye istek göndermez, gerçek veriye dokunmaz): `python scripts/tests/test_verify_rules.py` (İngilizce
+doğrulama kuralları) ve `python scripts/tests/test_instruction_pipeline.py` (sahte modelle 09 → 10 → 11 → 12 → 13 → 14 →
+`validate_datasets.py`; geçici klasörde, `ASTROTUTOR_CONFIG` ile).
 
 ### Instruction üretimini arka planda sürdürme (Windows)
 
@@ -136,10 +136,10 @@ Unregister-ScheduledTask -TaskName "AstroTutorInstructionLoop" -Confirm:$false
 - [reports/quality_control_report.md](reports/quality_control_report.md) — kalite kontrol raporu
 - [reports/validation_report.md](reports/validation_report.md) — teslim öncesi doğrulama (şema, sızıntı, HF yükleme, chat template)
 - [reports/eval_contamination.csv](reports/eval_contamination.csv) — corpus ile örtüşen değerlendirme soruları
-- [reports/removed_documents.csv](reports/removed_documents.csv), [reports/removed_instructions.csv](reports/removed_instructions.csv) — elenen her kayıt ve nedeni
+- [reports/removed_documents.csv](reports/removed_documents.csv), `reports/removed_instructions.csv` (instruction v2.0 üretimiyle oluşur) — elenen her kayıt ve nedeni
 - [reports/cleaning_rules.md](reports/cleaning_rules.md), [reports/cleaning_examples.md](reports/cleaning_examples.md) — temizleme kuralları ve öncesi/sonrası
 - [reports/extraction_tool_comparison.md](reports/extraction_tool_comparison.md) — PyMuPDF / pdfplumber karşılaştırması
-- [reports/instruction_taxonomy.md](reports/instruction_taxonomy.md) — görev türü taksonomisi
+- [reports/archive_v1.0/](reports/archive_v1.0/) — Türkçe Instruction Dataset v1.0'ın kartı, taksonomisi ve raporları (vize teslimi)
 - [reports/AstroTutor_AI_Vize_Sunumu.pptx](reports/AstroTutor_AI_Vize_Sunumu.pptx) — vize sunumu (16 slayt, konuşma notları slayt notlarında)
 - [reports/sunum_taslagi.md](reports/sunum_taslagi.md) — sunum taslağı ve "neden?" sorularına hazırlık
 - [experiments.md](experiments.md) — karar günlüğü
@@ -150,5 +150,6 @@ Her doküman ve örnek kendi kaynağının lisansını `license` alanında taş�
 ticari olmayan amaçla hazırlanmıştır; OpenStax Astronomy 2e (CC BY-NC-SA 4.0) ve Wikipedia/Stack Exchange
 (CC BY-SA 4.0) içeriklerinin türevleri aynı koşullarla paylaşılmalıdır. Kişisel veri en aza indirilmiştir: arXiv yazar
 adları ve Stack Exchange kullanıcı adları alınmadı; NASA basın bültenlerindeki iletişim bilgileri (ad, e-posta,
-telefon) temizlendi (kalan e-posta/telefon: 0). Instruction örnekleri Google Gemini API ile üretildi; kalite kontrol
+telefon) temizlendi (kalan e-posta/telefon: 0). Instruction örnekleri Google Gemini API ile üretilir (Stack Exchange örnekleri
+v2.0'da orijinal metinle, Gemini'siz alınır); kalite kontrol
 ön incelemesinde yapay zekâ desteği kullanıldı, nihai kararları grup üyesi verdi (bkz. kartlar ve kalite raporu).

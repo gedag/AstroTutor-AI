@@ -1,0 +1,17 @@
+SOURCE DOCUMENT
+Title: {title}
+Source: {source_name}
+Language: {language}
+---
+{text}
+---
+
+Based on this document, produce the following {n} examples IN THIS ORDER. Each example must match the task type and level in the list.
+
+{task_list}
+
+Task type definitions:
+{task_defs}
+
+If the document does not contain enough information for an example's task type, still produce that example but limit its scope to the information in the document; never invent information.
+In every example, fill the task_type and level fields with exactly the values from the list.

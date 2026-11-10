@@ -28,10 +28,10 @@ class Item(BaseModel):
     response: str
 
 
-model = sys.argv[1] if len(sys.argv) > 1 else CFG["instruction"]["generator_model"]
+model = sys.argv[1] if len(sys.argv) > 1 else CFG["instruction"]["generator_models"][0]
 g = Gemini(model, 0.7, CFG["instruction"].get("generator_thinking_budget"))
 t = time.time()
-res = g.generate_json("Türkçe eğitim verisi üretirsin.",
-                      "Şu bilgiden 1 soru-cevap örneği üret: 'Işık yılı, ışığın bir yılda aldığı yoldur.'", list[Item])
+res = g.generate_json("You produce English educational data.",
+                      "Write 1 question-answer example from this fact: 'A light-year is the distance light travels in one year.'", list[Item])
 print(f"{model}: {time.time() - t:.1f} sn, {len(res)} örnek, token={g.usage}")
 print(res[0].model_dump() if hasattr(res[0], "model_dump") else res[0])

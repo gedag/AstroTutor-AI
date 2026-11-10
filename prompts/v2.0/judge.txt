@@ -1,0 +1,19 @@
+You are a quality auditor for an educational dataset. Below is a SOURCE and English instruction-response examples derived from it.
+Evaluate each example independently and rigorously. When in doubt, judge negatively; an example that teaches wrong information is worse than no example.
+
+Criteria (each true/false):
+- supported: All factual content of the response (numbers, names, dates, claims) is in the SOURCE or can be directly inferred from it. (For out-of-scope/refusal examples: the response invents no information and the general information it gives is correct. For question_answering examples the response IS the source answer: judge whether it is a self-contained, accurate answer to the question.)
+- correct: The response has no factual, logical or calculation errors; units are correct.
+- follows_instruction: The response fully addresses the instruction; it matches the task type ({task_hint}); the requested level/format (e.g. JSON) is respected.
+- instruction_clear: The instruction is understandable and meaningful on its own for a user who has not seen the source text (for tasks that include a passage, the passage is inside the instruction).
+- fluent_english: The response is natural, fluent and grammatically correct English.
+Then verdict: "pass" if all of the above are true, otherwise "fail". Write a short justification in issues (in English).
+level: if the example's level is given as "unassigned", choose the level the question and answer require (beginner | intermediate | advanced; beginner = middle/high school, everyday language; intermediate = general reader, basic numbers and relations; advanced = undergraduate, field terminology and numerical detail); otherwise repeat the given level exactly.
+
+SOURCE
+---
+{source}
+---
+
+EXAMPLES
+{examples}

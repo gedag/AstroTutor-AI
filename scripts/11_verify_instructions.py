@@ -1,15 +1,23 @@
-"""11 — Üretilen instruction örneklerini doğrular; doğrulanamayanları nedeniyle eler (Vize Rehberi §11, §12).
+"""11 — Üretilen instruction örneklerini doğrular; doğrulanamayanları nedeniyle eler (Instruction v2.0, İngilizce).
 
-1) Kural tabanlı otomatik kontroller
-   llm_skipped, length, task_type_mismatch, wrong_language, references_unseen_text, invalid_mcq_json,
-   mcq_answer_in_instruction (soru/şık/cevap veya öğrenciye sorulacak soru talimatta verilmiş), invalid_mcq_json /
-   ogretim_metni_yok (talimatta öğretim metni yok), turkish_chars_missing (ASCII'leşmiş veya "ı" harfi düşmüş metin),
-   response_references_unseen_text, contains_url, duplicate, near_duplicate, eval_overlap.
-   Düzeltme (eleme değil): sınıflandırma talimatında öğeler sayılmışken baştaki "Metinde adı geçen" gibi atıf silinir.
-2) LLM yargıç (Gemini, sıcaklık 0, ayrı çağrı): her örnek KAYNAĞIYLA birlikte değerlendirilir
-   supported / correct / follows_instruction / instruction_clear / fluent_turkish -> pass/fail
+1) Kural tabanlı otomatik kontroller (tüm örnekler)
+   llm_skipped, invalid_level, length, task_type_mismatch, wrong_language (İngilizce değil), exponent_loss,
+   references_unseen_text, response_references_unseen_text, invalid_mcq_json / no_teaching_passage,
+   mcq_answer_in_instruction, contains_url, contains_pii, latex_artifact, duplicate, near_duplicate, eval_overlap.
+   Düzeltme (eleme değil): sınıflandırma talimatında öğeler sayılmışken "mentioned in the text" gibi atıf silinir.
+2) Kanıt kontrolü (kaynak dokümanı olan Gemini örnekleri): destekleyen alıntı kaynakta geçmeli. Stack Exchange
+   örnekleri orijinal metin olduğu için (cevabın kendisi kaynak) bu kontrolden geçmez.
+3) Aşamalı LLM yargıç (Gemini, sıcaklık 0, ayrı çağrı; Eda kararı 10.11.2026; ayarlar config: instruction.judge)
+   Aşama 1: işlerin rastgele initial_fraction'ı (iş türü x üretici türüne göre tabakalı, sabit seed; dosyaya sabitlenir)
+   Karar  : grup = (üretici türü flash/lite, görev türü). Aşama 1'de hata oranı >= full_check_fail_rate olan ya da
+            min_group_examples'tan az örneği olan grubun TÜM işleri değerlendirilir; diğerlerinde durulur ve tahmini
+            hata oranı raporlanır. Karar aşama 1 bitince data/interim/instruction_judge_plan.json'a sabitlenir.
+   Stack Exchange işlerinin tamamı her zaman değerlendirilir: yargıç seviyeyi de atar; seviyesi atanamayan SE örneği
+   sete girmez (level_unassigned).
+   Ölçütler: supported / correct / follows_instruction / instruction_clear / fluent_english -> pass/fail
    Kararlar data/interim/instruction_judgments.jsonl'de saklanır (kaldığı yerden devam).
-Çıktı: data/interim/instructions_verified.jsonl, reports/removed_instructions.csv (stage=verify)
+Çıktı: data/interim/instructions_verified.jsonl, reports/removed_instructions.csv (stage=verify),
+       reports/instruction_verification_summary.json
 """
 from __future__ import annotations
 
@@ -25,14 +33,17 @@ from common import CFG, ROOT, RemovalLog, append_jsonl, fill, get_logger, now_is
 from exponent_fix import fix_exponents
 from mcq_check import PASSAGE_MIN_CHARS as MCQ_PASSAGE_MIN_CHARS, mcq_in_instruction, mcq_passage_chars
 from press_boilerplate import EMAIL, PHONE
-from turkish_check import dotless_i_missing, missing_turkish_chars
 
 log = get_logger("11_verify_instructions")
 I = CFG["instruction"]
+J = I["judge"]
 PD = ROOT / CFG["paths"]["prompts"] / I["prompt_version"]
-TEXT_TYPES = {"ozetleme", "coktan_secmeli_soru_uretimi", "siniflandirma"}
-PASSAGE_MIN_CHARS = 300   # özetleme/çoktan seçmeli talimatlarının en kısası 206/282 karakter; sınıflandırmada pasaj
+TEXT_TYPES = {"summarization", "mcq_generation", "classification"}
+SE_METHOD = "stackexchange_original_verbatim"
+SE_UNASSIGNED_LEVEL = "unassigned"
+PASSAGE_MIN_CHARS = 300   # özetleme/çoktan seçmeli talimatlarında pasaj; sınıflandırmada pasaj varsa atıf serbest
 JUDGE_MAX_ATTEMPTS = 2    # kota dışı nedenle tamamlanamayan yargıç işi en fazla bu kadar denenir
+CRIT = ("supported", "correct", "follows_instruction", "instruction_clear", "fluent_english")
 
 
 def has_passage(ins: str) -> bool:
@@ -40,24 +51,29 @@ def has_passage(ins: str) -> bool:
 
 
 def n_list_items(ins: str) -> int:
-    """Talimatta sayılan öğe ayırıcıları (virgül, 've', madde/numara satırı)."""
-    return len(re.findall(r",\s|\sve\s|\n\s*[-*•]|\n\s*\d+[.)]", ins))
-UNSEEN = re.compile(r"\b(metne göre|metinde|dokümanda|dokümana göre|kaynakta|kaynağa göre|yukarıdaki (metin|yazı)|"
-                    r"verilen metin|bu makalede|bu yazıda|kaynaktaki|metindeki|dokümandaki|kaynak metn\w*|"
-                    r"kaynak metin\w*)\b", re.I)  # "kaynaktan" alınmadı: çoğunlukla "ışık kaynağından" anlamında
+    """Talimatta sayılan öğe ayırıcıları (virgül, 'and', madde/numara satırı)."""
+    return len(re.findall(r",\s|\sand\s|\n\s*[-*•]|\n\s*\d+[.)]", ins))
 
-# Sınıflandırma talimatlarında öğeler sayıldığı hâlde başta kalan atıf ifadeleri ("Metinde adı geçen 16 Cygni, 51 Pegasi
-# ... sınıflandır"): görev çözülebilir, ama kullanıcının görmediği metne atıf öğretmesin diye ifade silinir.
-# 25.10.2026: 35 talimat; silme sonrası hepsi doğal okunuyor, kalan atıf 0 (bkz. experiments.md).
+
+# Kullanıcının GÖRMEDİĞİ bir metne atıf (v1.0'daki "metne göre", "kaynakta" ... kalıplarının İngilizcesi)
+_DOC = r"(?:text|passage|document|article|excerpt|source text|source material|reading|material provided)"
+UNSEEN = re.compile(r"\b(?:according to the " + _DOC + r"|according to the source|in the (?:above |given |provided )?"
+                    + _DOC + r"|(?:the|this) " + _DOC + r" (?:says|states|mentions|describes|notes|explains)|"
+                    r"(?:mentioned|described|stated|discussed|listed|noted|given) in the " + _DOC + r"|"
+                    r"based on the (?:" + _DOC + r"|source|provided|given) |the (?:provided|given|above) "
+                    r"(?:text|passage|information|document|excerpt)|as (?:stated|described|mentioned|noted) above)\b",
+                    re.I)
+
+# Sınıflandırma talimatlarında öğeler sayıldığı hâlde kalan atıf ifadeleri ("Classify the objects mentioned in the text:
+# Mercury, Venus ..."): görev çözülebilir, ama kullanıcının görmediği metne atıf öğretmesin diye ifade silinir (v1.0'da
+# 35 talimat; silme sonrası hepsi doğal okunuyordu).
 REF_PATTERNS = [
-    re.compile(r"\b(?:kaynak\s+)?metin(?:de|deki)\s+(?:adı\s+)?(?:geçen|bahsedilen|yer\s+alan|sözü\s+edilen|anılan)\s+", re.I),
-    re.compile(r"\bkaynakta\s+(?:adı\s+)?(?:geçen|bahsedilen|yer\s+alan)\s+", re.I),
-    re.compile(r",?\s*\b(?:kaynak\s+)?metne\s+(?:göre|dayanarak|dayalı\s+olarak)\b,?", re.I),
-    re.compile(r"^(?:kaynak\s+)?metinde\s+", re.I),
+    re.compile(r"\s*\b(?:that are |which are )?(?:mentioned|listed|named|described|discussed) in the (?:source )?"
+               r"(?:text|passage|document|article|source)\b", re.I),
+    re.compile(r",?\s*\baccording to the (?:source )?(?:text|passage|document|article|source)\b,?", re.I),
+    re.compile(r",?\s*\bbased on the (?:source )?(?:text|passage|document|article|source)\b,?", re.I),
+    re.compile(r"\s*\b(?:from|in) the (?:source )?(?:text|passage|document|article)\b", re.I),
 ]
-
-
-ADIM = re.compile(r"\b([Aa])dim\b")
 
 
 def strip_unseen_ref(ins: str) -> str:
@@ -66,10 +82,10 @@ def strip_unseen_ref(ins: str) -> str:
         out = pat.sub(" ", out)
     out = re.sub(r"[ \t]{2,}", " ", out).strip()
     out = re.sub(r"\s+([,.;:?!])", r"\1", out)
-    return ({"i": "İ", "ı": "I"}.get(out[0], out[0].upper()) + out[1:]) if out else out
+    return (out[0].upper() + out[1:]) if out else out
 
 
-# LaTeX/MathJax artigi: icinde LaTeX karakteri (\x5c ^ _ { }) olan $...$ bloklari veya \x5ctimes, \x5crm ... komutlari
+# LaTeX/MathJax artığı: içinde LaTeX karakteri (\x5c ^ _ { }) olan $...$ blokları veya \x5ctimes, \x5crm ... komutları
 LATEX = re.compile(r"\$[^$\n]{0,80}[\x5c^_{}][^$\n]{0,80}\$|\x5c(times|rm|frac|odot|mathrm|cdot|sim|approx)\b")
 
 
@@ -79,7 +95,8 @@ class Judgment(BaseModel):
     correct: bool
     follows_instruction: bool
     instruction_clear: bool
-    fluent_turkish: bool
+    fluent_english: bool
+    level: str
     verdict: str
     issues: str
 
@@ -95,89 +112,92 @@ def check_mcq(resp: str) -> str | None:
             obj = json.loads(m.group(0))
         except Exception:
             return "json_parse"
-    qs = obj.get("sorular") if isinstance(obj, dict) else None
+    qs = obj.get("questions") if isinstance(obj, dict) else None
     if not isinstance(qs, list) or not 1 <= len(qs) <= 3:
-        return "soru_sayisi"
+        return "question_count"
     for q in qs:
-        opts = q.get("secenekler", {})
-        if set(opts) != {"A", "B", "C", "D"} or any(not str(v).strip() for v in opts.values()):
-            return "secenekler"
+        if not isinstance(q, dict):
+            return "question_format"
+        opts = q.get("options", {})
+        if not isinstance(opts, dict) or set(opts) != {"A", "B", "C", "D"} or any(not str(v).strip() for v in opts.values()):
+            return "options"
         if len({str(v).strip().lower() for v in opts.values()}) < 4:
-            return "tekrar_eden_secenek"
-        if q.get("dogru_cevap") not in ("A", "B", "C", "D") or not str(q.get("soru", "")).strip():
-            return "dogru_cevap"
+            return "duplicate_option"
+        if q.get("answer") not in ("A", "B", "C", "D") or not str(q.get("question", "")).strip():
+            return "answer"
     return None
 
 
-def rule_checks(rows: list[dict], removed: RemovalLog, det, grams: set) -> list[dict]:
+def tier(model: str | None) -> str:
+    """Üretici türü: 'flash', 'lite' veya Stack Exchange için 'none' (Gemini yok)."""
+    if not model:
+        return "none"
+    return "lite" if "lite" in model else "flash"
+
+
+LANG_MIN_WORDS = 8   # daha kısa talimatlarda dil tespiti güvenilmez ("What is a pulsar?" -> İspanyolca, 10.11.2026 testi)
+
+
+def is_english(det, resp: str, ins: str) -> bool:
+    """Cevap her zaman, talimat yalnız en az LANG_MIN_WORDS kelimeyse kontrol edilir."""
     from lingua import Language
 
-    def is_tr(s: str) -> bool:
-        return det.detect_language_of(s) == Language.TURKISH
+    if det.detect_language_of(resp[:1500]) != Language.ENGLISH:
+        return False
+    return len(ins.split()) < LANG_MIN_WORDS or det.detect_language_of(ins[:600]) == Language.ENGLISH
 
+
+def rule_checks(rows: list[dict], removed: RemovalLog, det, grams: set) -> list[dict]:
     ok = []
     seen = set()
     for r in rows:
         rid, t = r["raw_example_id"], r["task_type"]
-        # Model görev türü alanına seviyeyi de yazmış ("karsilastirma, level=ileri"): biçim hatası, içerik değil.
-        # Virgülden önceki kısım planlanan türle birebir aynıysa düzeltilir (25.10.2026: 2 örnek; yazım hatalı tür
-        # "sviyeli_anlatim" düzeltilmez, task_type_mismatch ile elenir).
+        # Model görev türü alanına seviyeyi de yazmışsa ("comparison, level=advanced"): biçim hatası, içerik değil.
         if r.get("planned_task_type") and t != r["planned_task_type"] and t.split(",")[0].strip() == r["planned_task_type"]:
             t = r["task_type"] = r["planned_task_type"]
         ins, resp = (r.get("instruction") or "").strip(), (r.get("response") or "").strip()
-        # seviye alanı normalleştirilir (bir lite çıktısında " ileri" gibi baş boşluğu görüldü)
         r["level"] = (r.get("level") or "").strip().lower()
-        # 12 çoktan seçmeli talimatı sonda tek başına "{" ile bitiyordu (model JSON yazmaya başlamış): atılır
+        # Talimat sonda tek başına "{" ile bitiyorsa (model JSON yazmaya başlamış): atılır (v1.0'da 12 talimat)
         if re.search(r"\s[{\[]\s*$", ins):
             ins = re.sub(r"\s*[{\[]\s*$", "", ins)
             r["instruction"] = ins
-        # Yalnız öğeler talimatta sayılmışsa (≥3): öğesiz "Metinde geçen molekülleri sınıflandır" düzeltilmez, aşağıda elenir
-        if t == "siniflandirma" and not has_passage(ins) and UNSEEN.search(ins) and n_list_items(ins) >= 3:
+        # Yalnız öğeler talimatta sayılmışsa (≥3) atıf silinir; öğesiz "Classify the objects in the text" aşağıda elenir
+        if t == "classification" and not has_passage(ins) and UNSEEN.search(ins) and n_list_items(ins) >= 3:
             new = strip_unseen_ref(ins)
             if new != ins:
                 ins = new
                 r["instruction"] = ins
-                r["postprocess"] = "kaynak_atfi_silindi"
-        # "Adim 1:" (lite çıktılarında "Adım" yerine; 26.10.2026: 20 cevap, metnin geri kalanı düzgün Türkçe):
-        # tek kelimelik kesin düzeltme, örnek elenmez
-        if ADIM.search(resp) or ADIM.search(ins):
-            resp, ins = ADIM.sub(lambda m: m.group(1) + "dım", resp), ADIM.sub(lambda m: m.group(1) + "dım", ins)
-            r["response"], r["instruction"] = resp, ins
-            r["postprocess"] = "+".join(filter(None, [r.get("postprocess"), "adim_yazimi_duzeltildi"]))
+                r["postprocess"] = "unseen_reference_removed"
+        is_se = r.get("generation_method") == SE_METHOD
         reason = None
         if r.get("skip"):
             reason = ("llm_skipped", r.get("skip_reason"))
-        elif r["level"] not in ("baslangic", "orta", "ileri"):
+        elif r["level"] not in I["levels"] and not (is_se and r["level"] == SE_UNASSIGNED_LEVEL):
             reason = ("invalid_level", r["level"][:30])
         elif len(ins) < 10 or not (I["min_response_chars"] <= len(resp) <= I["max_response_chars"]):
             reason = ("length", f"ins={len(ins)} resp={len(resp)}")
         elif r.get("planned_task_type") and t != r["planned_task_type"]:
             reason = ("task_type_mismatch", f"{t}!={r['planned_task_type']}")
-        elif det.detect_language_of(resp[:1500]) != Language.TURKISH or \
-                det.detect_language_of(re.split(r"[:\n]", ins)[0][:300] or ins[:300]) != Language.TURKISH:
+        elif not is_english(det, resp, ins):
             reason = ("wrong_language", "")
-        elif missing_turkish_chars(ins, resp):
-            reason = ("turkish_chars_missing", missing_turkish_chars(ins, resp))
-        elif dotless_i_missing(ins, is_tr) or dotless_i_missing(resp, is_tr):
-            reason = ("turkish_chars_missing", dotless_i_missing(ins, is_tr) or dotless_i_missing(resp, is_tr))
         elif fix_exponents(ins)[1] or fix_exponents(resp)[1]:
-            # kaybolmuş üs ("1.99 x 1030 kg"): kaynak metin üretim sırasında üssüz verilmişti (06b'de düzeltildi)
+            # kaybolmuş üs ("1.99 x 1030 kg")
             reason = ("exponent_loss", "")
-        elif t not in TEXT_TYPES and UNSEEN.search(ins):
+        elif not is_se and t not in TEXT_TYPES and UNSEEN.search(ins):
             reason = ("references_unseen_text", UNSEEN.search(ins).group(0))
-        elif t == "siniflandirma" and not has_passage(ins) and UNSEEN.search(ins) and n_list_items(ins) < 3:
-            # "Metinde geçen molekülleri sınıflandır": talimatta ne metin ne öğe listesi var (24.10.2026, 39 örnek)
-            reason = ("references_unseen_text", "siniflandirma_ogeleri_yok:" + UNSEEN.search(ins).group(0))
-        elif (t not in TEXT_TYPES or (t == "siniflandirma" and not has_passage(ins))) and UNSEEN.search(resp):
-            # Kullanıcı metin vermediği hâlde cevap "kaynakta verilen bilgiye göre" diyor: model görünmeyen bir
-            # kaynağa atıf yapmayı öğrenir (24.10.2026: 52 + 37 örnek; prompt v1.2 kural 11)
+        elif t == "classification" and not has_passage(ins) and UNSEEN.search(ins) and n_list_items(ins) < 3:
+            # "Classify the molecules mentioned in the text": talimatta ne metin ne öğe listesi var
+            reason = ("references_unseen_text", "classification_items_missing:" + UNSEEN.search(ins).group(0))
+        elif not is_se and (t not in TEXT_TYPES or (t == "classification" and not has_passage(ins))) and UNSEEN.search(resp):
+            # Kullanıcı metin vermediği hâlde cevap "according to the text" diyor: model görünmeyen bir kaynağa atıf
+            # yapmayı öğrenir (v1.0'da 89 örnek; prompt v2.0 kural 9)
             reason = ("response_references_unseen_text", UNSEEN.search(resp).group(0))
-        elif t == "coktan_secmeli_soru_uretimi" and (check_mcq(resp) or len(ins) < 250
-                                                     or mcq_passage_chars(ins) < MCQ_PASSAGE_MIN_CHARS):
-            reason = ("invalid_mcq_json", check_mcq(resp) or "ogretim_metni_yok")
-        elif t == "coktan_secmeli_soru_uretimi" and mcq_in_instruction(ins, resp):
+        elif t == "mcq_generation" and (check_mcq(resp) or len(ins) < 250
+                                        or mcq_passage_chars(ins) < MCQ_PASSAGE_MIN_CHARS):
+            reason = ("invalid_mcq_json", check_mcq(resp) or "no_teaching_passage")
+        elif t == "mcq_generation" and mcq_in_instruction(ins, resp):
             reason = ("mcq_answer_in_instruction", mcq_in_instruction(ins, resp))
-        elif re.search(r"https?://|www\.", resp):
+        elif re.search(r"https?://|www\.", ins + " " + resp):
             reason = ("contains_url", "")
         elif EMAIL.search(ins + " " + resp) or PHONE.search(ins + " " + resp):
             reason = ("contains_pii", "")  # kişisel iletişim bilgisi (e-posta/telefon)
@@ -212,21 +232,22 @@ def rule_checks(rows: list[dict], removed: RemovalLog, det, grams: set) -> list[
     return keep
 
 
-def source_for(job_rows: list[dict], docs: dict, se_items: dict) -> str:
+def source_for(job_rows: list[dict], docs: dict) -> str:
     r = job_rows[0]
-    if r["source_name"] == "stackexchange_space_qa":
-        return "\n\n".join(f"[{x['source_document']}]\nQUESTION: {se_items[x['source_document']]['question']}\n"
-                           f"ANSWER: {se_items[x['source_document']]['answer']}" for x in job_rows)
+    if r.get("generation_method") == SE_METHOD:
+        return ("(Stack Exchange: each example is an ORIGINAL user question and its top-voted answer, used verbatim. "
+                "There is no separate source document: judge whether the answer is accurate, complete and "
+                "self-contained for the question, and assign its level.)")
     if r["source_name"] == "none":
-        return "(Kaynak yok: bunlar kapsam dışı / bilgi yetersizliği örnekleri. Cevabın sınırını doğru bildirip " \
-               "bildirmediğini, uydurma bilgi içerip içermediğini ve verdiği genel bilgilerin doğruluğunu değerlendir.)"
+        return ("(No source: these are out-of-scope / insufficient-information examples. Judge whether the response "
+                "states its limit correctly, contains no invented information, and whether the general information "
+                "it gives is correct.)")
     d = docs[r["source_document"]]
-    return f"Başlık: {d['title']}\n{d['text'][: I['source_doc_max_chars']]}"
+    return f"Title: {d['title']}\n{d['text'][: I['source_doc_max_chars']]}"
 
 
 def _w5(text: str) -> list[tuple]:
-    # "^" yok sayılır: corpus'ta üsler sonradan geri yazıldı ("108" -> "10^8", 06b); üretim sırasında modele
-    # eski metin verildiği için alıntılarda "108" kalmış olabilir. İkisi de "108" olarak karşılaştırılır.
+    # "^" yok sayılır: modelin alıntısında "10^8" ile "108" aynı sayılır
     w = re.findall(r"\w+", text.replace("^", "").lower())
     return [tuple(w[i:i + 5]) for i in range(len(w) - 4)]
 
@@ -237,40 +258,35 @@ def evidence_ok(evidence: str, source: str) -> tuple[bool, str]:
     en az evidence_min_overlap oranı kaynakta bulunmalı. API çağrısı gerektirmez."""
     frags = [f for f in re.split(r"\.\.\.|…|\n|\|", evidence or "") if len(f.split()) >= 8]
     if not frags:
-        return False, "alinti_yok_veya_cok_kisa"
+        return False, "quote_missing_or_too_short"
     src = set(_w5(source))
     g = [x for f in frags for x in _w5(f)]
     ratio = sum(1 for x in g if x in src) / max(len(g), 1)
     return ratio >= I["evidence_min_overlap"], f"overlap={ratio:.2f}"
 
 
-def source_text(r: dict, docs: dict, se_items: dict) -> str | None:
-    if r["source_name"] == "stackexchange_space_qa":
-        it = se_items.get(r["source_document"])
-        return f"{it['question']}\n{it['answer']}" if it else None
-    if r["source_name"] == "none":
-        return None
-    d = docs.get(r["source_document"])
-    return d["text"] if d else None
+def judge_failed(jd: dict) -> list[str]:
+    """Başarısız ölçütler (boşsa geçti)."""
+    failed = [k for k in CRIT if not jd[k]]
+    if not failed and jd["verdict"] != "pass":
+        failed = ["verdict"]
+    return failed
 
 
 def main() -> int:
-    """Çıkış kodu: 0 = tamam, 2 = yargıç örnekleminde kota nedeniyle bekleyen iş var."""
-    import json as _json
+    """Çıkış kodu: 0 = tamam, 2 = yargıçta kota/yoğunluk nedeniyle bekleyen iş var."""
     import random as _random
 
     from lingua import Language, LanguageDetectorBuilder
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-judge", action="store_true", help="LLM yargıcı çalıştırma (yalnız kural + kanıt kontrolü)")
-    ap.add_argument("--extended", action="store_true",
-                    help="örneklem dışındaki lite üretimi işleri de değerlendir (ek yargıç; hata oranı tahminine katılmaz)")
     a = ap.parse_args()
     import importlib
 
     b9 = importlib.import_module("09_build_instruction_sources")
-    det = LanguageDetectorBuilder.from_languages(Language.TURKISH, Language.ENGLISH, Language.AZERBAIJANI,
-                                                 Language.GERMAN).build()
+    det = LanguageDetectorBuilder.from_languages(Language.ENGLISH, Language.TURKISH, Language.GERMAN,
+                                                 Language.FRENCH, Language.SPANISH).build()
     grams = b9.eval_ngrams(I["decontam_ngram"])
     # Bir iş, örnekleri yazıldıktan sonra "tamamlandı" kaydı yazılamadan kesilirse yeniden üretilir;
     # aynı raw_example_id'den yalnızca EN SON üretilen tutulur.
@@ -286,20 +302,16 @@ def main() -> int:
     for s in ("train", "validation", "test"):
         for d in read_jsonl(p("final") / f"{s}.jsonl"):
             docs[d["document_id"]] = d
-    se_items = {}
-    for j in read_jsonl(p("interim") / "instruction_jobs.jsonl"):
-        for it in j.get("items", []):
-            se_items[it["rid"]] = it
 
-    # ---- 2) kanıt kontrolü (kaynak dokümanı olan her örnek)
+    # ---- 2) kanıt kontrolü (kaynak dokümanı olan Gemini örnekleri)
     kept = []
     for r in rows:
-        src = source_text(r, docs, se_items)
-        if r["source_name"] != "none":
-            if src is None:
+        if r["source_name"] not in ("none", "stackexchange_space_qa"):
+            d = docs.get(r["source_document"])
+            if d is None:
                 removed.add(r["raw_example_id"], "source_missing", r["source_name"], r["source_document"])
                 continue
-            ok, detail = evidence_ok(r.get("supporting_evidence", ""), src)
+            ok, detail = evidence_ok(r.get("supporting_evidence", ""), d["text"])
             if not ok:
                 removed.add(r["raw_example_id"], "evidence_not_in_source", r["source_name"], detail)
                 continue
@@ -307,161 +319,206 @@ def main() -> int:
     log.info(f"Kanıt kontrolünden geçen: {len(kept)}")
     rows = kept
 
-    # ---- 3) LLM yargıç: işlerin rastgele örneklemi (iş türüne göre tabakalı, sabit seed)
+    # ---- 3) aşamalı LLM yargıç
     by_job = defaultdict(list)
     for r in rows:
         by_job[r["job_id"]].append(r)
-    rnd = _random.Random(CFG["project"]["random_seed"] + 111)
-    kinds = defaultdict(list)
-    for jid in sorted(by_job):
-        kinds[jid.split("_")[1]].append(jid)
-    # Örneklem ilk hesaplandığında dosyaya sabitlenir: sonradan eklenen bir kural bir işin bütün örneklerini elerse iş
-    # listesi kısalır ve rastgele seçim baştan değişirdi (25.10.2026: 2 iş tamamen elendi; değerlendirilmiş 15 iş
-    # örneklemden çıkabilirdi). Örnekleri kalmayan iş örneklemde kalır ama değerlendirilecek örneği yoktur.
+    job_tier = {jid: tier(rs[0].get("generator_model")) for jid, rs in by_job.items()}
+    se_jobs = {jid for jid, rs in by_job.items() if rs[0].get("generation_method") == SE_METHOD}
+    # Aşama 1 örneklemi ilk hesaplandığında dosyaya sabitlenir (sonradan eklenen bir kural bir işin bütün örneklerini
+    # elerse rastgele seçim baştan değişmesin). Tabaka: iş türü (doc/refusal) x üretici türü (flash/lite).
     sample_f = p("interim") / "instruction_judge_sample.json"
     if sample_f.exists():
-        sample_planned = set(_json.loads(sample_f.read_text(encoding="utf-8")))
+        sample_planned = set(json.loads(sample_f.read_text(encoding="utf-8")))
     else:
+        rnd = _random.Random(CFG["project"]["random_seed"] + 111)
+        strata = defaultdict(list)
+        for jid in sorted(by_job):
+            if jid not in se_jobs:
+                strata[(jid.split("_")[1], job_tier[jid])].append(jid)
         sample_planned = set()
-        for k, js in kinds.items():
-            sample_planned.update(rnd.sample(js, max(1, round(len(js) * I["judge_sample_fraction"]))))
-        sample_f.write_text(_json.dumps(sorted(sample_planned), indent=0), encoding="utf-8")
+        for _, js in sorted(strata.items()):
+            sample_planned.update(rnd.sample(js, max(1, round(len(js) * J["initial_fraction"]))))
+        sample_f.write_text(json.dumps(sorted(sample_planned), indent=0), encoding="utf-8")
     sample_jobs = {j for j in sample_planned if j in by_job}
     judged = {r["raw_example_id"]: r for r in read_jsonl(p("interim") / "instruction_judgments.jsonl")}
-    # Kota dışı nedenle (bozuk JSON, eksik index) tamamlanamayan iş en fazla JUDGE_MAX_ATTEMPTS kez denenir;
-    # yoksa döngü aynı işi her saat yeniden dener ve hiç bitmez. Değerlendirilemeyen örnekler sette kalır
-    # (llm_judged=False) ve sayıları özete yazılır.
     attempts_f = p("interim") / "instruction_judge_attempts.jsonl"
     attempts = Counter(r["job_id"] for r in read_jsonl(attempts_f))
 
     def unjudged(jid: str) -> bool:
         return any(x["raw_example_id"] not in judged for x in by_job[jid])
 
-    # Ek yargıç (26.10.2026 kararı): örneklemde lite üretimlerinin %16,8'i, Flash üretimlerinin %0'ı başarısızdı.
-    # Örneklem dışındaki lite işleri de değerlendirilir; bunların sonuçları hata oranı TAHMİNİNE katılmaz (tahmin
-    # yalnız rastgele örneklemden), elenenler ayrı nedenle (judge_ext_fail) kaydedilir.
-    ext_jobs = sorted(j for j in by_job if j not in sample_planned
-                      and any("lite" in (x.get("generator_model") or "") for x in by_job[j]))
+    def pending(jobs) -> list[str]:
+        return [j for j in sorted(jobs) if unjudged(j) and attempts[j] < JUDGE_MAX_ATTEMPTS]
 
-    def pending_jobs(jobs=None) -> list[str]:
-        return [j for j in sorted(sample_jobs if jobs is None else jobs)
-                if unjudged(j) and attempts[j] < JUDGE_MAX_ATTEMPTS]
+    def group(r: dict) -> str:
+        return f"{tier(r.get('generator_model'))}|{r['task_type']}"
+
+    plan_f = p("interim") / "instruction_judge_plan.json"
+
+    def make_plan() -> dict | None:
+        """Aşama 1 bittiyse (bekleyen örneklem işi yoksa) grup kararını hesaplar ve dosyaya sabitler."""
+        if plan_f.exists():
+            return json.loads(plan_f.read_text(encoding="utf-8"))
+        if pending(sample_jobs):
+            return None
+        stats = defaultdict(lambda: [0, 0])  # grup -> [değerlendirilen, başarısız]
+        for jid in sample_jobs:
+            for x in by_job[jid]:
+                jd = judged.get(x["raw_example_id"])
+                if jd is not None:
+                    stats[group(x)][0] += 1
+                    stats[group(x)][1] += bool(judge_failed(jd))
+        all_groups = {group(x) for jid in by_job if jid not in se_jobs for x in by_job[jid]}
+        full = sorted(g for g in all_groups
+                      if stats[g][0] < J["min_group_examples"] or stats[g][1] / stats[g][0] >= J["full_check_fail_rate"])
+        plan = {"decided_at": now_iso(), "initial_fraction": J["initial_fraction"],
+                "full_check_fail_rate": J["full_check_fail_rate"], "min_group_examples": J["min_group_examples"],
+                "stage1_groups": {g: {"judged": stats[g][0], "fail": stats[g][1],
+                                      "fail_rate": round(stats[g][1] / stats[g][0], 4) if stats[g][0] else None}
+                                  for g in sorted(all_groups)},
+                "full_check_groups": full}
+        plan_f.write_text(json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8")
+        log.info(f"Aşama 1 bitti; tamamı değerlendirilecek gruplar: {full}")
+        return plan
+
+    def full_jobs(plan: dict | None) -> set[str]:
+        if plan is None:
+            return set()
+        fg = set(plan["full_check_groups"])
+        return {jid for jid in by_job if jid not in se_jobs and jid not in sample_jobs
+                and any(group(x) in fg for x in by_job[jid])}
 
     if not a.no_judge:
         from llm import Gemini, QuotaExhausted, TransientError
 
-        llm = Gemini(I["judge_models"], I["judge_temperature"], I.get("judge_thinking_budget"))
+        llm = None
         tmpl = (PD / "judge.txt").read_text(encoding="utf-8")
-        todo = pending_jobs() + (pending_jobs(ext_jobs) if a.extended else [])
         busy = 0
-        log.info(f"Yargıç örneklemi: {len(sample_jobs)} iş; değerlendirilecek: {len(todo)}"
-                 + (f" (ek yargıç: {len(ext_jobs)} lite işi, bekleyen {len(pending_jobs(ext_jobs))})" if a.extended else ""))
-        for jid in todo:
-            rs = by_job[jid]
-            exs = "\n\n".join(f"[{i}] (görev türü: {x['task_type']}, seviye: {x['level']})\nTALİMAT:\n{x['instruction']}"
-                              f"\nCEVAP:\n{x['response']}" for i, x in enumerate(rs))
-            prompt = fill(tmpl, task_hint="her örneğin başında belirtilen görev türü",
-                          source=source_for(rs, docs, se_items), examples=exs)
-            try:
-                res = llm.generate_json("Titiz bir veri kalite denetçisisin. Yalnızca istenen JSON'u döndür.",
-                                        prompt, list[Judgment], exclude={x["generator_model"] for x in rs})
-            except QuotaExhausted as e:
-                if len(llm.exhausted) == len(llm.models):
-                    log.error(f"Tüm yargıç modellerinin günlük kotası doldu; yarın kaldığı yerden devam: {e}")
+        stop = False
+        # Önce aşama 1 ve SE işleri; aşama 1 bitince grup kararı verilir ve tam kontrol işleri eklenir
+        for phase in ("stage1", "full"):
+            plan = make_plan()
+            if phase == "stage1":
+                todo = pending(sample_jobs) + pending(se_jobs)
+            else:
+                if plan is None:
                     break
-                continue  # bu işin uygun yargıcı kalmadı; başka modelle üretilmiş işlere devam
-            except TransientError as e:
-                # 503/bağlantı: işin kusuru değil, deneme sayılmaz; üst üste 3 kez olursa kota yanmasın diye durulur
-                busy += 1
-                log.warning(f"{jid} yargıç geçici hata ({busy}/3): {str(e)[:150]}")
-                if busy >= 3:
-                    log.error("Üst üste 3 geçici hata; yargıç bu çalıştırmada durduruldu, sonra kaldığı yerden devam")
-                    break
-                continue
-            except Exception as e:
-                log.error(f"{jid} yargıç hatası: {str(e)[:200]}")
+                todo = pending(full_jobs(plan))
+            log.info(f"Yargıç ({phase}): değerlendirilecek iş {len(todo)} "
+                     f"(örneklem {len(sample_jobs)}, SE {len(se_jobs)}, tam kontrol {len(full_jobs(plan))})")
+            if todo and llm is None:
+                llm = Gemini(I["judge_models"], I["judge_temperature"], I.get("judge_thinking_budget"))
+            for jid in todo:
+                rs = by_job[jid]
+                exs = "\n\n".join(f"[{i}] (task type: {x['task_type']}, level: {x['level']})\nINSTRUCTION:\n"
+                                  f"{x['instruction']}\nRESPONSE:\n{x['response']}" for i, x in enumerate(rs))
+                prompt = fill(tmpl, task_hint="the task type given at the start of each example",
+                              source=source_for(rs, docs), examples=exs)
+                try:
+                    res = llm.generate_json("You are a rigorous data quality auditor. Return only the requested JSON.",
+                                            prompt, list[Judgment], exclude={x["generator_model"] for x in rs} - {None})
+                except QuotaExhausted as e:
+                    if len(llm.exhausted) == len(llm.models):
+                        log.error(f"Tüm yargıç modellerinin günlük kotası doldu; kaldığı yerden devam: {e}")
+                        stop = True
+                        break
+                    continue  # bu işin uygun yargıcı kalmadı; başka modelle üretilmiş işlere devam
+                except TransientError as e:
+                    # 503/bağlantı: işin kusuru değil, deneme sayılmaz; üst üste 3 kez olursa kota yanmasın diye durulur
+                    busy += 1
+                    log.warning(f"{jid} yargıç geçici hata ({busy}/3): {str(e)[:150]}")
+                    if busy >= 3:
+                        log.error("Üst üste 3 geçici hata; yargıç bu çalıştırmada durduruldu, sonra kaldığı yerden devam")
+                        stop = True
+                        break
+                    continue
+                except Exception as e:
+                    log.error(f"{jid} yargıç hatası: {str(e)[:200]}")
+                    attempts[jid] += 1
+                    append_jsonl(attempts_f, {"job_id": jid, "result": "error", "detail": str(e)[:200], "at": now_iso()})
+                    continue
+                busy = 0
+                seen_idx = set()
+                for jd in res:
+                    jd = jd.model_dump() if hasattr(jd, "model_dump") else jd
+                    if 0 <= jd["index"] < len(rs) and jd["index"] not in seen_idx:
+                        seen_idx.add(jd["index"])
+                        jd["verdict"] = str(jd["verdict"]).strip().lower()
+                        jd["level"] = str(jd["level"]).strip().lower()
+                        rec = {"raw_example_id": rs[jd["index"]]["raw_example_id"], **jd, "judge_model": llm.last_model,
+                               "judge_phase": "se" if jid in se_jobs else phase}
+                        judged[rec["raw_example_id"]] = rec
+                        append_jsonl(p("interim") / "instruction_judgments.jsonl", rec)
                 attempts[jid] += 1
-                append_jsonl(attempts_f, {"job_id": jid, "result": "error", "detail": str(e)[:200], "at": now_iso()})
-                continue
-            busy = 0
-            seen_idx = set()
-            for jd in res:
-                jd = jd.model_dump() if hasattr(jd, "model_dump") else jd
-                if 0 <= jd["index"] < len(rs) and jd["index"] not in seen_idx:
-                    seen_idx.add(jd["index"])
-                    jd["verdict"] = str(jd["verdict"]).strip().lower()
-                    rec = {"raw_example_id": rs[jd["index"]]["raw_example_id"], **jd, "judge_model": llm.last_model}
-                    judged[rec["raw_example_id"]] = rec
-                    append_jsonl(p("interim") / "instruction_judgments.jsonl", rec)
-            attempts[jid] += 1
-            missing = sum(1 for x in rs if x["raw_example_id"] not in judged)
-            append_jsonl(attempts_f, {"job_id": jid, "result": "ok" if not missing else "partial",
-                                      "missing": missing, "model": llm.last_model, "at": now_iso()})
-            if missing:
-                log.warning(f"{jid}: yargıç {len(rs)} örneğin {missing} tanesini değerlendirmedi "
-                            f"(deneme {attempts[jid]}/{JUDGE_MAX_ATTEMPTS})")
+                missing = sum(1 for x in rs if x["raw_example_id"] not in judged)
+                append_jsonl(attempts_f, {"job_id": jid, "result": "ok" if not missing else "partial",
+                                          "missing": missing, "model": llm.last_model, "at": now_iso()})
+                if missing:
+                    log.warning(f"{jid}: yargıç {len(rs)} örneğin {missing} tanesini değerlendirmedi "
+                                f"(deneme {attempts[jid]}/{JUDGE_MAX_ATTEMPTS})")
+            if stop:
+                break
 
     # ---- 4) sonuç
-    crit = ("supported", "correct", "follows_instruction", "instruction_clear", "fluent_turkish")
-    verified, n_judged, n_fail, fail_by = [], 0, 0, Counter()
-    n_ext, n_ext_fail, ext_fail_by = 0, 0, Counter()
-    by_gen = {"lite": [0, 0], "flash": [0, 0]}  # örneklemde üretici türüne göre [değerlendirilen, başarısız]
+    plan = make_plan() if not a.no_judge else (json.loads(plan_f.read_text(encoding="utf-8")) if plan_f.exists() else None)
+    fjobs = full_jobs(plan)
+    verified, fail_by, phase_n = [], Counter(), Counter()
     for r in rows:
         jd = judged.get(r["raw_example_id"])
+        is_se = r["job_id"] in se_jobs
         if jd is not None:
-            in_sample = r["job_id"] in sample_jobs
-            n_judged += in_sample
-            n_ext += not in_sample
-            gen = "lite" if "lite" in (r.get("generator_model") or "") else "flash"
-            if in_sample:
-                by_gen[gen][0] += 1
-                by_gen[gen][1] += jd["verdict"] != "pass" or not all(jd[k] for k in crit)
-            if jd["verdict"] != "pass" or not all(jd[k] for k in crit):
-                failed = [k for k in crit if not jd[k]] or ["verdict"]
-                if in_sample:
-                    n_fail += 1
-                    fail_by[failed[0]] += 1
-                else:
-                    n_ext_fail += 1
-                    ext_fail_by[failed[0]] += 1
-                removed.add(r["raw_example_id"], ("judge_fail:" if in_sample else "judge_ext_fail:") + failed[0],
-                            r["source_name"], jd["issues"])
+            phase_n[jd.get("judge_phase", "?")] += 1
+            failed = judge_failed(jd)
+            if failed:
+                fail_by[failed[0]] += 1
+                removed.add(r["raw_example_id"], "judge_fail:" + failed[0], r["source_name"], jd["issues"])
                 continue
+            if is_se:
+                if jd["level"] not in I["levels"]:
+                    removed.add(r["raw_example_id"], "level_unassigned", r["source_name"], f"judge level={jd['level']}")
+                    continue
+                r["level"] = jd["level"]
+                r["level_source"] = "llm_judge"
+        elif is_se:
+            # Seviyesi atanmamış SE örneği yayınlanmaz (yargıç bu işi tamamlayamadı ya da henüz değerlendirmedi)
+            removed.add(r["raw_example_id"], "level_unassigned", r["source_name"], "not judged")
+            continue
         verified.append({**r, "auto_verified": True, "llm_judged": jd is not None,
-                         "judge": {k: jd[k] for k in ("verdict", "issues", "judge_model")} if jd else None})
+                         "judge": {k: jd[k] for k in ("verdict", "issues", "judge_model", "judge_phase")} if jd else None})
     removed.save()
     write_jsonl(p("interim") / "instructions_verified.jsonl", verified)
+
+    # Aşama 1'de durulan gruplarda değerlendirilmeden kalan örnekler ve tahmini hata (aşama 1 oranıyla)
+    unj = Counter(group(x) for x in verified if not x["llm_judged"])
+    est = 0.0
+    if plan:
+        for g, n in unj.items():
+            rate = (plan["stage1_groups"].get(g) or {}).get("fail_rate")
+            est += (rate or 0) * n
     reasons = Counter(x["reason"] for x in removed.rows if x["stage"] == "verify")
-    gave_up = [j for j in sorted(sample_jobs) if unjudged(j) and attempts[j] >= JUDGE_MAX_ATTEMPTS]
-    n_unjudged = sum(1 for j in gave_up for x in by_job[j] if x["raw_example_id"] not in judged)
-    summary = {"verified": len(verified), "judged_examples": n_judged, "judge_fail": n_fail,
-               "judge_fail_rate": round(n_fail / n_judged, 4) if n_judged else None,
-               "judge_fail_by_criterion": dict(fail_by), "removed_by_reason": dict(reasons),
-               "judge_by_generator": {k: {"judged": v[0], "fail": v[1]} for k, v in by_gen.items()},
-               "rule_fixes": dict(Counter(p for x in verified if x.get("postprocess") for p in x["postprocess"].split("+"))),
-               "sample_jobs": len(sample_jobs), "sample_jobs_planned": len(sample_planned),
-               "judge_gave_up_jobs": len(gave_up),
-               "judge_unjudged_examples_in_sample": n_unjudged,
-               "extended_jobs_total": len(ext_jobs),
-               "extended_jobs_judged": sum(1 for j in ext_jobs if not unjudged(j)),
-               "extended_judged_examples": n_ext, "extended_judge_fail": n_ext_fail,
-               "extended_judge_fail_by_criterion": dict(ext_fail_by)}
+    gave_up = [j for j in sorted(sample_jobs | se_jobs | fjobs) if unjudged(j) and attempts[j] >= JUDGE_MAX_ATTEMPTS]
+    summary = {"verified": len(verified), "judged_examples": sum(phase_n.values()),
+               "judged_by_phase": dict(phase_n), "judge_fail_by_criterion": dict(fail_by),
+               "judge_fail": sum(fail_by.values()),
+               "stage1_jobs": len(sample_jobs), "se_jobs": len(se_jobs), "full_check_jobs": len(fjobs),
+               "plan": plan, "unjudged_examples_by_group": dict(unj),
+               "estimated_errors_remaining": round(est, 1),
+               "estimated_error_rate_remaining": round(est / len(verified), 4) if verified else None,
+               "judge_gave_up_jobs": len(gave_up), "removed_by_reason": dict(reasons),
+               "rule_fixes": dict(Counter(q for x in verified if x.get("postprocess") for q in x["postprocess"].split("+")))}
     (p("reports") / "instruction_verification_summary.json").write_text(
-        _json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
-    log.info(f"Doğrulanan: {len(verified)}; yargıç örneklemi {n_judged} örnek, başarısız {n_fail}; "
+        json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
+    log.info(f"Doğrulanan: {len(verified)}; yargıç {summary['judged_examples']} örnek {dict(phase_n)}, "
+             f"başarısız {summary['judge_fail']}; değerlendirilmeyen {sum(unj.values())} (tahmini hata {est:.1f}); "
              f"elenen: {dict(reasons)}")
     if gave_up:
-        log.warning(f"Yargıç {len(gave_up)} işte {JUDGE_MAX_ATTEMPTS} denemede tamamlanamadı; "
-                    f"{n_unjudged} örnek değerlendirilmeden sette kaldı (llm_judged=False)")
-    if n_ext:
-        log.info(f"Ek yargıç: {summary['extended_jobs_judged']}/{len(ext_jobs)} lite işi, {n_ext} örnek, başarısız {n_ext_fail}")
-    pending = len(pending_jobs())
-    if pending and not a.no_judge:
-        log.info(f"Yargıç örnekleminde bekleyen iş: {pending} (kota yenilenince devam)")
-        return 2
-    if a.extended and not a.no_judge and pending_jobs(ext_jobs):
-        log.info(f"Ek yargıçta bekleyen iş: {len(pending_jobs(ext_jobs))} (kota yenilenince devam)")
-        return 2
+        log.warning(f"Yargıç {len(gave_up)} işte {JUDGE_MAX_ATTEMPTS} denemede tamamlanamadı")
+    if not a.no_judge:
+        left = pending(sample_jobs) + pending(se_jobs) + (pending(fjobs) if plan else [])
+        if left or plan is None:
+            log.info(f"Yargıçta bekleyen iş: {len(left)} (kota yenilenince devam)")
+            return 2
     return 0
 
 

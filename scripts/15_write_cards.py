@@ -186,7 +186,8 @@ def dataset_card() -> None:
           "pretraining (CPT / DAPT)** aşamasında kullanılmak üzere hazırlanmıştır. Model ailesi olarak Qwen2.5-7B "
           "hedeflenmektedir. Genel amaçlı bir corpus değildir; soru-cevap davranışı için ayrı hazırlanan "
           "Instruction Dataset kullanılır (İngilizce v2.0 hazırlanıyor; vizede teslim edilen Türkçe v1.0: "
-          "[INSTRUCTION_CARD.md](INSTRUCTION_CARD.md), Git etiketi `v1.0`).", "",
+          "[reports/archive_v1.0/INSTRUCTION_CARD_v1.0.md](reports/archive_v1.0/INSTRUCTION_CARD_v1.0.md), Git etiketi "
+          "`v1.0`).", "",
           "## Kapsam",
           "**Kapsam içi:** Güneş Sistemi; gezegenler ve uydular; yıldızların özellikleri ve yıldız evrimi; gökadalar; "
           "temel kozmoloji; ötegezegenler; uzay araçları ve keşif görevleri; gözlemevleri ve teleskoplar.", "",
@@ -632,7 +633,13 @@ def source_inventory() -> None:
         tok[d["source"]] += d.get("token_count") or 0
     ext = json.loads((R / "extraction_summary.json").read_text(encoding="utf-8"))["per_source"]
     raw_n = {("openstax_astronomy_2e" if k == "openstax" else k): v["raw"] for k, v in ext.items()}
-    se_sum = json.loads((R / "instruction_sources_summary.json").read_text(encoding="utf-8"))
+    se_f = R / "instruction_sources_summary.json"
+    se_sum = json.loads(se_f.read_text(encoding="utf-8")) if se_f.exists() else {}
+    if not se_sum.get("stackexchange_total"):  # özet henüz yoksa kayıt sayısı doğrudan ham dosyadan
+        import pyarrow.parquet as pq
+
+        se_raw = ROOT / "data/raw/stackexchange_space_qa/data/stackexchange_space_qa.parquet"
+        se_sum["stackexchange_total"] = pq.ParquetFile(se_raw).metadata.num_rows if se_raw.exists() else ""
     rows = [
         ("nasa_science", "https://science.nasa.gov/", "HTML", "en", "Domain Corpus: güvenilir birincil kaynak; görev başına en fazla 150 sayfa"),
         ("nasa_apod", "https://science.nasa.gov/apod/archive/", "HTML", "en", "Domain Corpus: popüler bilim düzeyinde kısa açıklamalar; yıl başına 85 örnek (API çalışmadığı için site sayfalarından)"),

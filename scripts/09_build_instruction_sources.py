@@ -1,12 +1,16 @@
-"""09 — Instruction üretimi için kaynakları ve üretim işlerini (job) hazırlar.
+"""09 — Instruction üretimi için kaynakları ve üretim işlerini (job) hazırlar (Instruction v2.0, İngilizce).
 
-A) StackExchange Space/Astronomy (CC BY-SA 4.0) -> 'soru_cevap' görev türü için aday Q&A çiftleri
+A) StackExchange Space/Astronomy (CC BY-SA 4.0) -> 'question_answering' görev türü. v2.0'da Gemini KULLANILMAZ:
+   orijinal İngilizce soru (başlık + gövde) ve en iyi cevap metni DEĞİŞTİRİLMEDEN alınır (Eda kararı 09.11.2026).
    - cevapsız / düşük puanlı / çok kısa-uzun kayıtlar elenir
    - kapsam dışı etiketler (roket mühendisliği, şirketler, yazılım, maliyet, hukuk...) elenir
    - görsele dayanan sorular ("identify this object", "this image") elenir
-   - üs kaybı düzeltmesi: "1.989 × 1030 kg" -> "1.989 × 10^30 kg" (veri kümesinde <sup> kaybolmuş)
+   - metni değiştirmeden kullanılamayacak kayıtlar elenir: LaTeX/MathJax, @kullanıcı, bağlantı, HTML/kod kalıntısı,
+     dipnot numarası, kaybolmuş üs ("1.989 × 1030 kg"), boşta kalan atıf ("this answer", "see below", "EDIT",
+     "comments") (10.11.2026 ölçümü: v1.0 filtrelerinden geçen 10.568 kaydın ~5.700'ü temiz)
    - değerlendirme setleriyle (Astro-mcqa, astro-mcq, HST-MCQ, Astrobench) 8-gram örtüşmesi olanlar elenir
-B) Domain Corpus v1.0 -> diğer görev türleri için kaynak doküman seçimi (kaynak/alt konu dengeli) ve
+   Seviyeyi LLM yargıç atar (11).
+B) Domain Corpus -> diğer görev türleri için kaynak doküman seçimi (kaynak/alt konu dengeli; paylar config'te) ve
    her dokümana taksonomi kotalarına göre görev türü ataması.
 C) Kapsam dışı / bilgi yetersizliği örnekleri için tema listesi (kaynak dokümansız).
 
@@ -24,6 +28,8 @@ import pyarrow.parquet as pq
 
 from common import CFG, ROOT, RemovalLog, get_logger, p, read_jsonl, rng, write_jsonl
 from domain_lexicon import domain_score
+from exponent_fix import fix_exponents as exponent_loss
+from press_boilerplate import EMAIL, PHONE
 
 log = get_logger("09_build_instruction_sources")
 I = CFG["instruction"]
@@ -38,11 +44,33 @@ SE_DENY_TAGS = {"spacex", "rockets", "launch", "falcon-9", "engines", "engine-de
                 "telescope-making", "camera", "astrophotography", "light-pollution-filter", "food", "toilet",
                 "medical", "health", "spacex-dragon", "starlink", "rocket-lab", "ula", "boeing", "virgin-galactic"}
 IMAGE_HINT = re.compile(r"(this (image|picture|photo|video)|attached (image|picture)|see (the )?image|!\[)", re.I)
-EXP_FIX = re.compile(r"(\d(?:\.\d+)?)\s?[×x]\s?10(-?[1-9]\d{0,2})\b")
+# v2.0: metin değiştirilmediği için bu öğeleri içeren kayıtlar düzeltilmez, ELENİR (neden removed_instructions.csv'de)
+SE_LATEX = re.compile(r"\$[^$\n]+\$|\\(?:frac|mathrm|times|sqrt|rm|odot|cdot|Delta|alpha|text|left|right)\b")
+SE_MENTION = re.compile(r"(?<![\w.])@\w+")
+SE_URL = re.compile(r"https?://|www\.", re.I)
+SE_MARKUP = re.compile(r"(?m)<[a-zA-Z/][^>]*>|&[a-z]+;|`|^\s*>")
+SE_FOOTNOTE = re.compile(r"\[\d+\]")
+# Cevapta, metinde olmayan bir şeye (silinmiş bağlantı, başka cevap, yorumlar, görsel) ya da düzenleme geçmişine atıf
+SE_DANGLING = re.compile(r"\b(?:this|the following|the above|that|here is a|see this) (?:link|answer|blog|article|post|"
+                         r"page|image|picture|graph|diagram|figure|video|spreadsheet|table|chart|plot)\b|"
+                         r"\bclick here\b|\bsee (?:here|below|above)\b|\bother answers?\b|\bcomments?\b|\bEDIT\b|"
+                         r"\bupdate:|\bupvote|\bdownvote", re.I)
 
 
-def fix_exponents(t: str) -> str:
-    return EXP_FIX.sub(lambda m: f"{m.group(1)} × 10^{m.group(2)}", t)
+def se_text_issue(q: str, ans: str) -> str | None:
+    """Metni değiştirmeden kullanılamayacak bir öğe varsa nedenini döndürür (v2.0)."""
+    both = q + "\n" + ans
+    for name, pat in (("latex", SE_LATEX), ("email", EMAIL), ("phone", PHONE), ("user_mention", SE_MENTION),
+                      ("url", SE_URL), ("markup", SE_MARKUP), ("footnote", SE_FOOTNOTE)):
+        m = pat.search(both)
+        if m:
+            return f"{name}:{m.group(0)[:40]}"
+    m = SE_DANGLING.search(ans)
+    if m:
+        return f"dangling_reference:{m.group(0)[:40]}"
+    if exponent_loss(both)[1]:
+        return "exponent_loss"
+    return None
 
 
 # Sızıntı kontrolüne girmeyen sütunlar: kimlik/etiket alanları ve Hubble MCQ'nun soruların üretildiği bağlam pasajı
@@ -119,18 +147,23 @@ def build_se(removed: RemovalLog, grams: set, n_target: int) -> list[dict]:
         if domain_score(q + " " + ans) < 8:
             removed.add(rid, "out_of_domain", "stackexchange")
             continue
+        issue = se_text_issue(q, ans)
+        if issue:
+            removed.add(rid, "not_usable_verbatim", "stackexchange", issue)
+            continue
         if grams and overlaps(q + " " + ans, grams, I["decontam_ngram"]) > 0:
             removed.add(rid, "eval_overlap", "stackexchange")
             continue
+        # Metin olduğu gibi: yalnız baştaki/sondaki boşluk atılır
         cands.append({"rid": rid, "site": row.site, "url": row.url, "qscore": int(row.question_score or 0),
-                      "question": fix_exponents(q.strip()), "answer": fix_exponents(ans.strip()),
+                      "question": q.strip(), "answer": ans.strip(),
                       "tags": sorted(tags), "accepted": bool(row.answer_accepted)})
     log.info(f"StackExchange: {len(df)} kayıt -> {len(cands)} uygun aday")
-    # site dengesi: astronomy %65 / space %35, her sitede soru puanına göre en iyiler, sonra karıştır
+    # site dengesi (config: se_site_share), her sitede soru puanına göre en iyiler (eşitlikte kimlik sırası), sonra karıştır
     r = rng(9)
     pick = []
-    for site, share in (("astronomy", 0.65), ("space", 0.35)):
-        cs = sorted([c for c in cands if c["site"] == site], key=lambda c: -c["qscore"])
+    for site, share in I["se_site_share"].items():
+        cs = sorted([c for c in cands if c["site"] == site], key=lambda c: (-c["qscore"], c["rid"]))
         pick += cs[: int(n_target * share) + 1]
     r.shuffle(pick)
     return pick
@@ -142,17 +175,16 @@ def build_doc_jobs(quota: dict[str, int], exclude_docs: frozenset = frozenset(),
     per_type_cap: bir dokümandan aynı görev türünden en fazla kaç örnek istenir."""
     docs = []
     for split in ("train", "validation", "test"):
-        # 12-14 örnek çıkarabilmek için uzun dokümanlar (arXiv özetleri doğası gereği kısa: >= 1000)
+        # 12-14 örnek çıkarabilmek için uzun dokümanlar (arXiv özetleri doğası gereği kısa: ayrı sınır)
         docs += [d for d in read_jsonl(p("final") / f"{split}.jsonl")
-                 if d["char_count"] >= (1000 if d["source"] == "arxiv_astro_ph" else 3000)
+                 if d["char_count"] >= (I["arxiv_min_chars"] if d["source"] == "arxiv_astro_ph" else I["doc_min_chars"])
                  and d["document_id"] not in exclude_docs]
     r = rng(seed_offset)
     by_src = defaultdict(list)
     for d in docs:
         by_src[d["source"]].append(d)
-    # her kaynaktan hedef doküman payı (öğretici kaynaklar ağırlıklı, arXiv ileri seviye için az)
-    share = {"openstax_astronomy_2e": 0.22, "nasa_science": 0.26, "wikipedia_en": 0.22, "wikipedia_tr": 0.12,
-             "nasa_apod": 0.10, "arxiv_astro_ph": 0.08}
+    # her kaynaktan hedef doküman payı (config: source_share; öğretici kaynaklar ağırlıklı, arXiv ileri seviye için az)
+    share = I["source_share"]
     total_examples = sum(quota.values())
     # Aday doküman sayısı bilerek fazla tutulur (ortalama ~11,7 örnek/doküman yerine 8 varsayılır): işler
     # sırayla oluşturulur ve görev türü kotaları dolunca kalan adaylar iş almaz. İlk sürüm 12 varsayınca
@@ -182,7 +214,7 @@ def build_doc_jobs(quota: dict[str, int], exclude_docs: frozenset = frozenset(),
     r.shuffle(chosen)
     remaining = dict(quota)
     jobs = []
-    text_types = {"ozetleme", "coktan_secmeli_soru_uretimi", "siniflandirma"}
+    text_types = {"summarization", "mcq_generation", "classification"}
     for d in chosen:
         ep = I["examples_per_doc_job"]
         n = ep["long"] if d["char_count"] >= 6000 else ep["medium"] if d["char_count"] >= 3000 else ep["short"]
@@ -192,8 +224,8 @@ def build_doc_jobs(quota: dict[str, int], exclude_docs: frozenset = frozenset(),
         for _ in range(n):
             avail = {t: c for t, c in remaining.items() if c > 0 and types.count(t) < per_type_cap}
             if d["source"] == "arxiv_astro_ph":  # özetler kısa: anlatım/özet/neden-sonuç/ileri tanım
-                avail = {t: c for t, c in avail.items() if t in ("tanim_aciklama", "seviyeli_anlatim", "ozetleme",
-                                                                 "neden_sonuc", "coktan_secmeli_soru_uretimi")}
+                avail = {t: c for t, c in avail.items() if t in ("definition_explanation", "leveled_explanation",
+                                                                 "summarization", "cause_effect", "mcq_generation")}
             if not avail:
                 break
             t = r.choices(list(avail), weights=list(avail.values()))[0]
@@ -204,9 +236,9 @@ def build_doc_jobs(quota: dict[str, int], exclude_docs: frozenset = frozenset(),
         levels = []
         for t in types:
             if d["source"] == "arxiv_astro_ph":
-                levels.append("ileri")
+                levels.append("advanced")
             else:
-                levels.append(r.choice(["baslangic", "orta", "ileri"]))
+                levels.append(r.choice(I["levels"]))
         jobs.append({"job_id": f"JOB_DOC_{d['document_id']}", "kind": "doc", "source_document": d["document_id"],
                      "source_url": d["url"], "source_name": d["source"], "language": d["language"],
                      "split": d["split"], "title": d["title"], "subtopic": d["subtopic"],
@@ -217,23 +249,26 @@ def build_doc_jobs(quota: dict[str, int], exclude_docs: frozenset = frozenset(),
     return jobs
 
 
-REFUSAL_THEMES = [
-    "astroloji ve burç yorumu", "kişisel fal / gelecek tahmini", "kripto para ve borsa fiyatı",
-    "uzay şirketlerinin hisse fiyatı", "anlık konum (ISS şu an nerede gibi gerçek zamanlı veri)",
-    "bugünkü hava durumu ve gözlem koşulu (gerçek zamanlı)", "tıbbi teşhis veya ilaç önerisi",
-    "siyasi görüş ve seçim tahmini", "henüz gerçekleşmemiş görevlerin kesin sonucu",
-    "kaynakta bulunmayan çok yeni keşif hakkında kesin sayı", "kişisel veriler / ünlülerin özel hayatı",
-    "UFO komplo teorilerini doğrulama talebi", "düz dünya iddiasını kanıtlama talebi",
-    "kesin olmayan bilimsel konuda kesin hüküm isteme (örn. evrende kesin olarak yaşam var mı)",
-    "ödev/sınavda kopya isteme (cevapları doğrudan verme yerine öğretme)", "spor, yemek tarifi gibi alan dışı konular",
-    "uzay temalı oyun hilesi isteme", "astronomik olmayan matematik ödevi",
+REFUSAL_THEMES = [  # v1.0 temalarının İngilizcesi
+    "astrology and horoscope readings", "personal fortune telling / predicting the future",
+    "cryptocurrency and stock prices", "share prices of space companies",
+    "real-time position (e.g. where the ISS is right now)", "today's weather and observing conditions (real-time)",
+    "medical diagnosis or medication advice", "political opinions and election predictions",
+    "the definite outcome of missions that have not happened yet",
+    "exact figures about very recent discoveries it has no reliable information on",
+    "personal data / private lives of celebrities", "requests to confirm UFO conspiracy theories",
+    "requests to prove the flat Earth claim",
+    "demanding a definitive verdict on an unsettled scientific question (e.g. is there definitely life elsewhere)",
+    "asking for answers to cheat on homework or an exam (teach instead of giving answers)",
+    "off-topic subjects such as sports or recipes", "cheats for space-themed video games",
+    "non-astronomy math homework",
 ]
 
 
 def quotas() -> tuple[dict, int, int]:
     total = I["target_total"]
     quota = {k: round(v * total) for k, v in I["taxonomy"].items()}
-    return quota, quota.pop("soru_cevap"), quota.pop("bilgi_yetersizligi_kapsam_disi")
+    return quota, quota.pop("question_answering"), quota.pop("out_of_scope_refusal")
 
 
 def write_summary(jobs: list[dict], removed: RemovalLog) -> None:
@@ -260,7 +295,7 @@ def write_summary(jobs: list[dict], removed: RemovalLog) -> None:
 def main() -> None:
     """İki parça hâlinde çalışır; böylece corpus beklenirken kota boşa gitmez:
       --part se_ref : StackExchange + kapsam dışı işleri (corpus'a bağlı DEĞİL) -> iş listesini oluşturur
-      --part doc    : corpus dokümanı işleri (Corpus v1.0 final olduktan sonra) -> iş listesine EKLER
+      --part doc    : corpus dokümanı işleri (Corpus final olduktan sonra) -> iş listesine EKLER
     Var olan işler asla değiştirilmez (üretilmiş örneklerin job_id'leri ile uyumu korunur).
     """
     import argparse
@@ -312,7 +347,7 @@ def main() -> None:
             log.info("Doküman işleri zaten var; değiştirilmedi")
             return
         if not (p("final") / "train.jsonl").exists():
-            raise SystemExit("Corpus v1.0 (data/final/train.jsonl) yok; önce 01-08 çalıştırılmalı")
+            raise SystemExit("Corpus (data/final/train.jsonl) yok; önce 01-08 çalıştırılmalı")
         new = build_doc_jobs(quota)  # target_total zaten eleme payını içeriyor
     jobs += new
     # Üretim döngüsü dosyayı okurken yarım dosya görmesin: önce geçici dosyaya yaz, sonra tek adımda değiştir

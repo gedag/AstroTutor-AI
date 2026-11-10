@@ -7,7 +7,7 @@ verdi). Bu yüzden tüm modellerin kotası dolunca sabah beklenmez, saatte bir y
        çıkış 0 -> tüm işler bitti, 2. adıma geç
        çıkış 2 -> tüm modellerin kotası doldu, 60 dk (veya Pasifik gece yarısına kadar, hangisi önceyse) bekle
        çıkış 3 -> kalan iş var (503 yoğunluğu, reddedilen ya da Flash'a ertelenen işler), 45 dk bekle, tekrar dene
-  2. 11_verify_instructions.py (kural + kanıt kontrolü + %10 LLM yargıç örneklemi), aynı bekleme mantığıyla
+  2. 11_verify_instructions.py (kural + kanıt kontrolü + aşamalı LLM yargıç), aynı bekleme mantığıyla
   3. 12_split_instructions.py ve 13_sample_for_review.py
 
 Bilgisayar açık ve uyku modunda değilken çalışmalıdır. Kapanırsa aynı komutla yeniden başlatın;
@@ -115,18 +115,18 @@ if __name__ == "__main__":
     _lock = single_instance()
     keep_awake()
     if not (ROOT / "data/interim/instruction_jobs.jsonl").exists():
-        sys.exit("Önce scripts/09_build_instruction_sources.py çalıştırılmalı (Corpus v1.0 bittikten sonra).")
+        sys.exit("Önce scripts/09_build_instruction_sources.py çalıştırılmalı (Corpus bittikten sonra).")
     loop("10_generate_instructions.py")
     import json
 
     kinds = {json.loads(l)["kind"] for l in open(ROOT / "data/interim/instruction_jobs.jsonl", encoding="utf-8")}
     if "doc" not in kinds:
-        say("SE ve kapsam dışı işleri bitti. Doküman işleri henüz eklenmedi: Corpus v1.0 bitince "
+        say("SE ve kapsam dışı işleri bitti. Doküman işleri henüz eklenmedi: Corpus bitince "
             "'python scripts/09_build_instruction_sources.py --part doc' çalıştırıp bu script'i yeniden başlatın.")
         sys.exit(0)
     loop("11_verify_instructions.py")
     for s in ("12_split_instructions.py", "13_sample_for_review.py"):
         if run(s) != 0:
             sys.exit(f"{s} başarısız")
-    say("Instruction Dataset v1.0 hazır. Sıradaki adım: reports/qc/instruction_review.csv manuel kontrolü.")
+    say("Instruction Dataset hazır. Sıradaki adım: reports/qc/instruction_review.csv manuel kontrolü.")
     DONE.write_text(datetime.now(TR).isoformat(), encoding="utf-8")

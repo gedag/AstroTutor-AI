@@ -196,21 +196,37 @@ tokenizer:
   name: Qwen/Qwen2.5-7B        # Tasarim raporundaki ana model ailesi (base ve instruct ayni tokenizer)
 
 instruction:
-  language: tr
-  target_total: 3400          # 1 haftalik takvim + ucretsiz katman: elemeler sonrasi >= 3000 hedefi
+  # v2.0 (10.11.2026): Instruction Dataset tamamen Ingilizce (AstroTutor AI Ingilizce konusan bir model; Eda karari
+  # 09.11.2026). v1.0 (Turkce) ayarlari Git etiketi v1.0'da; v1.0 calisma dosyalari data/interim/archive_instruction_v1.0/.
+  language: en
+  target_total: 3800          # kural ve yargic elemelerinden sonra >= 3000 kalsin diye (Eda karari 10.11.2026)
   provider: gemini
-  # 22.10.2026 tespitleri: gemini-2.5-flash yeni kullanicilara kapali (404); ucretsiz katman MODEL BASINA
-  # GUNDE 20 istek (generate_content_free_tier_requests, limit 20). Bu yuzden dort Flash modeli havuz olarak
+  # 22.10.2026 tespitleri: ucretsiz katman MODEL BASINA GUNDE 20 istek. Bu yuzden dort Flash modeli havuz olarak
   # kullanilir; bir modelin gunluk kotasi dolunca siradakine gecilir. Tum Flash kotalari bitince lite modellere
-  # gecilir (23.10.2026 karari); hepsi doluysa run_instruction_loop.py 30-60 dk sonra yeniden dener (kota kayan
-  # 24 saat penceresi gibi davraniyor). Her ornekte gercekte kullanilan model ve prompt surumu kaydedilir.
-  # Yargic, ornegi ureten modelden FARKLI bir model secilir (kendi ciktisini kayirma egilimini azaltir).
+  # gecilir (Eda karari: once Flash, sonra lite); hepsi doluysa run_instruction_loop.py 30-60 dk sonra yeniden dener.
+  # Her ornekte gercekte kullanilan model ve prompt surumu kaydedilir. Yargic, ornegi ureten modelden FARKLI bir
+  # model secilir (kendi ciktisini kayirma egilimini azaltir). Model adlari 10.11.2026'da API listesinden dogrulandi.
   generator_models: [gemini-3.6-flash, gemini-3.5-flash, gemini-3.7-flash, gemini-3.8-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite]  # lite: yalniz Flash kotalari bitince
   judge_models: [gemini-3.7-flash, gemini-3.8-flash, gemini-3.6-flash, gemini-3.5-flash]
   examples_per_doc_job: {long: 14, medium: 10, short: 6, arxiv: 5}  # long >= 6000, medium >= 3000 karakter
-  se_items_per_job: 10
+  doc_min_chars: 3000         # kaynak dokuman alt siniri (APOD aciklamalari bu siniri gecmez; v1.0'da da kullanilmadi)
+  arxiv_min_chars: 1000       # arXiv ozetleri kisa: ayri sinir, is basina az ornek
+  source_share: {nasa_science: 0.30, wikipedia_en: 0.30, openstax_astronomy_2e: 0.25, arxiv_astro_ph: 0.15}  # Eda onayi 10.11.2026
+  # Stack Exchange (question_answering): Gemini YOK. Orijinal Ingilizce soru + en iyi cevap metni degistirilmeden
+  # alinir; LaTeX, @kullanici, baglanti veya bosta kalan atif ("this answer", "see below", "EDIT") iceren kayitlar
+  # elenir (09). Seviyeyi yargic atar (Eda karari 10.11.2026).
+  se_site_share: {astronomy: 0.65, space: 0.35}
+  se_items_per_job: 10        # yargicin tek cagrida degerlendirdigi SE ornegi sayisi
   refusal_per_job: 15
-  judge_sample_fraction: 0.10   # LLM yargic islerin %10'luk rastgele orneklemi uzerinde (hata orani tahmini)
+  # Asamali LLM yargic (Eda karari 10.11.2026; v1.0'da islerin %10'u): (1) islerin rastgele initial_fraction'i
+  # (uretici model turu x is turune gore tabakali); (2) her grup (uretici turu flash/lite x gorev turu) icin hata
+  # orani hesaplanir; orani full_check_fail_rate veya ustu olan ya da asama 1'de min_group_examples'tan az ornegi olan
+  # grubun tum isleri degerlendirilir; digerlerinde durulur ve tahmini hata orani raporlanir. SE islerinin tamami
+  # her zaman degerlendirilir (seviye atamasi icin).
+  judge:
+    initial_fraction: 0.20
+    full_check_fail_rate: 0.05
+    min_group_examples: 20
   evidence_min_overlap: 0.6     # destekleyen alintinin kelime 5-gram'larinin en az %60'i kaynakta olmali
   temperature: 0.7
   judge_temperature: 0.0
@@ -220,35 +236,21 @@ instruction:
   requests_per_minute: 8
   quota_recheck_minutes: 30   # kotasi dolan model bu sure sonra yeniden denenir (kayan 24 saat penceresi)
   request_timeout_seconds: 600  # tek Gemini istegi icin ust sinir (normal cagri 1-3 dk; 25.10'da cevapsiz kalan istek donguyu durdurdu)
-  # 23.10.2026: kural+kanit dogrulamasindan sonra tahmini toplam ~3.190 (yargic ve insan kontrolunden once);
-  # coktan secmeli sorularda lite bozuk JSON uretiyor (verim %74). 3.000 alt sinirinin guvenle asilmasi ve
-  # tur dagiliminin hedefe yaklasmasi icin henuz kullanilmamis dokumanlardan ek paket (bkz. experiments.md).
-  supplement:                 # ek doküman paketleri (09 --part doc_supplement); var olan paket yeniden eklenmez
-    - name: ek1
-      per_type_cap: 4
-      quota: {coktan_secmeli_soru_uretimi: 150, tanim_aciklama: 30, seviyeli_anlatim: 25, karsilastirma: 25,
-              neden_sonuc: 15, ozetleme: 20, adim_adim_problem_cozme: 25, siniflandirma: 15}
-    # 24.10.2026: 107 cevabı talimatta verilmiş çoktan seçmeli örnek elendi (pay %13,5 -> %10,6); hedef %14
-    - name: ek2
-      per_type_cap: 5
-      quota: {coktan_secmeli_soru_uretimi: 170}
-    # 24.10.2026: görünmeyen metne atıf yapan sınıflandırma/problem çözme örnekleri elendi (%4 -> %2,2 ve %7 -> %5,4)
-    - name: ek3
-      per_type_cap: 4
-      quota: {siniflandirma: 90, adim_adim_problem_cozme: 75}
-  prompt_version: v1.2          # v1.1: çoktan seçmeli "talimatta soru/şık/cevap yer almaz" + Türkçe harf kuralı; v1.2: cevapta "metne göre" yok, sınıflandırmada öğeler açıkça sayılır (24.10.2026)
+  supplement: []              # ek dokuman paketleri (09 --part doc_supplement); v1.0'daki ek1-ek3 Git etiketi v1.0'da
+  prompt_version: v2.0          # prompts/v2.0: Ingilizce; v1.0'da ogrenilen kurallar korunarak (bkz. experiments.md)
   source_doc_max_chars: 9000   # 12 ornek icin yeterli kaynak metin (~2.300 token)
-  taxonomy:                   # hedef oranlar
-    tanim_aciklama: 0.16
-    seviyeli_anlatim: 0.15
-    coktan_secmeli_soru_uretimi: 0.14
-    soru_cevap: 0.12
-    karsilastirma: 0.10
-    neden_sonuc: 0.10
-    ozetleme: 0.08
-    adim_adim_problem_cozme: 0.07
-    siniflandirma: 0.04
-    bilgi_yetersizligi_kapsam_disi: 0.04
+  taxonomy:                   # hedef oranlar (v1.0 ile ayni; gorev adlari Ingilizce)
+    definition_explanation: 0.16
+    leveled_explanation: 0.15
+    mcq_generation: 0.14
+    question_answering: 0.12
+    comparison: 0.10
+    cause_effect: 0.10
+    summarization: 0.08
+    step_by_step_problem_solving: 0.07
+    classification: 0.04
+    out_of_scope_refusal: 0.04
+  levels: [beginner, intermediate, advanced]
   min_response_chars: 40
   max_response_chars: 6000
   decontam_ngram: 8

@@ -1,7 +1,9 @@
 # AstroTutor AI Türkçe Instruction Dataset v1.0
 
+> **Arşiv (v1.0):** Bu kart, vizede teslim edilen Türkçe Instruction Dataset v1.0'ı anlatır. 09.11.2026'da AstroTutor AI'ın İngilizce konuşan bir model olmasına karar verildi; instruction seti İngilizce olarak yeniden üretiliyor (v2.0). v1.0'ın raporları bu klasörde, veri dosyaları ve kartın teslim hâli Git etiketi `v1.0`'dadır.
+
 ## Amaç
-Bu veri seti, [Domain Corpus](DATASET_CARD.md) ile alana uyarlanacak modele **supervised fine-tuning (SFT)** ile şu davranışları kazandırmak için hazırlanmıştır: kullanıcının seviyesine (başlangıç / orta / ileri) göre Türkçe konu anlatımı, verilen öğretim metninden JSON biçiminde dört seçenekli soru üretme, astronomi terminolojisiyle doğru açıklama ve bilgisi/kapsamı dışındaki sorularda sınırını bildirme.
+Bu veri seti, [Domain Corpus](https://github.com/gedag/AstroTutor-AI/blob/v1.0/DATASET_CARD.md) ile alana uyarlanacak modele **supervised fine-tuning (SFT)** ile şu davranışları kazandırmak için hazırlanmıştır: kullanıcının seviyesine (başlangıç / orta / ileri) göre Türkçe konu anlatımı, verilen öğretim metninden JSON biçiminde dört seçenekli soru üretme, astronomi terminolojisiyle doğru açıklama ve bilgisi/kapsamı dışındaki sorularda sınırını bildirme.
 
 ## Format
 JSONL; her satır bir örnektir. SFT için `messages` alanı kullanılır (`user` / `assistant`). İzlenebilirlik alanları: `id`, `source_document` (corpus `document_id`'si veya Stack Exchange soru kimliği), `source_url`, `task_type`, `level`, `supporting_evidence` (cevabı destekleyen kaynak alıntısı), `generation_method`, `generator_model`, `prompt_version`, `auto_verified`, `llm_judged`, `judge_model`, `human_verified`, `verified_by`, `license`, `split`, `raw_example_id` (üretim kaydı), `postprocess` (kural tabanlı metin düzeltmesi, ör. `kaynak_atfi_silindi`; yoksa boş).
@@ -24,7 +26,7 @@ Dosyalar: `data/final/instruction_v1.0.jsonl` (tamamı) ve `data/final/instructi
 | Bilgi yetersizliği / kapsam dışı (`bilgi_yetersizligi_kapsam_disi`) | 147 | %4,3 | %4 |
 | **Toplam** | **3.388** | %100 | |
 
-Taksonominin gerekçesi ve her türden örnekler: [reports/instruction_taxonomy.md](reports/instruction_taxonomy.md).
+Taksonominin gerekçesi ve her türden örnekler: [instruction_taxonomy.md](instruction_taxonomy.md).
 
 Seviye dağılımı: başlangıç (`baslangic`) 1.188 (%35,1), orta (`orta`) 1.129 (%33,3), ileri (`ileri`) 1.071 (%31,6).
 
@@ -32,7 +34,7 @@ Seviye dağılımı: başlangıç (`baslangic`) 1.188 (%35,1), orta (`orta`) 1.1
 - **Kaynaklar:** Domain Corpus'tan 320 doküman (2.840 örnek), Stack Exchange Space/Astronomy soru-cevapları (401 örnek; 449 seçilmiş soru) ve kaynak dokümansız kapsam dışı örnekler (147).
 - **Yöntem:** LLM destekli sentetik üretim. Her çağrıda tek bir kaynak doküman ve o dokümana atanmış görev türleri/seviyeler verilir; model yalnızca kaynaktaki bilgiyi kullanmak ve cevabı destekleyen alıntıyı kaynaktan kelimesi kelimesine kopyalamak zorundadır. Stack Exchange örneklerinde soru ve kabul edilmiş/en yüksek puanlı cevap Türkçeye aktarılıp düzenlenmiştir (kullanıcı adı, bağlantı ve kişisel yorumlar çıkarıldı).
 - **Model:** Google Gemini API (ücretsiz katman). Katmanın model başına günlük istek sınırı nedeniyle aynı aileden birden fazla Flash modeli havuz olarak kullanılmış, her örnekte gerçekte kullanılan model kaydedilmiştir: gemini-3.5-flash-lite (2.592), gemini-3.1-flash-lite (251), gemini-3.7-flash (220), gemini-3.6-flash (177), gemini-3.5-flash (108), gemini-3.8-flash (40).
-- **Parametreler:** sıcaklık 0,7, düşünme seviyesi `low`, en fazla 16.384 çıktı token'ı. Prompt sürümleri (örnek sayısı): `v1` (2.964), `v1.1` (138), `v1.2` (286). Prompt metinleri: [prompts/v1/](prompts/v1/), [prompts/v1.1/](prompts/v1.1/), [prompts/v1.2/](prompts/v1.2/) (`system_generate.txt`, `generate_doc.txt`, `generate_se.txt`, `generate_refusal.txt`, `task_types.json`). Sürümler, doğrulamada bulunan kusurların kaynağında önlenmesi için eklendi: **v1.1** çoktan seçmeli görev tanımına 'talimatta soru, şık veya doğru cevap yer almaz', sistem prompt'una 'Türkçeye özgü harfleri (ç, ğ, ı, ö, ş, ü) ASCII karşılıklarıyla değiştirme'; **v1.2** ayrıca 'kullanıcı kaynağı görmediği için cevaplarda da "metne göre", "kaynakta" deme' ve sınıflandırmada öğelerin talimatta açıkça sayılması kurallarını ekler.
+- **Parametreler:** sıcaklık 0,7, düşünme seviyesi `low`, en fazla 16.384 çıktı token'ı. Prompt sürümleri (örnek sayısı): `v1` (2.964), `v1.1` (138), `v1.2` (286). Prompt metinleri: [prompts/v1/](../../prompts/v1/), [prompts/v1.1/](../../prompts/v1.1/), [prompts/v1.2/](../../prompts/v1.2/) (`system_generate.txt`, `generate_doc.txt`, `generate_se.txt`, `generate_refusal.txt`, `task_types.json`). Sürümler, doğrulamada bulunan kusurların kaynağında önlenmesi için eklendi: **v1.1** çoktan seçmeli görev tanımına 'talimatta soru, şık veya doğru cevap yer almaz', sistem prompt'una 'Türkçeye özgü harfleri (ç, ğ, ı, ö, ş, ü) ASCII karşılıklarıyla değiştirme'; **v1.2** ayrıca 'kullanıcı kaynağı görmediği için cevaplarda da "metne göre", "kaynakta" deme' ve sınıflandırmada öğelerin talimatta açıkça sayılması kurallarını ekler.
 - Üretim yöntemlerine göre: `llm_sentetik_kaynak_dokumandan` 2.840, `llm_ceviri_duzenleme_stackexchange` 401, `llm_sentetik_kapsam_disi` 147.
 
 ## Doğrulama
@@ -43,7 +45,7 @@ Toplam **3.962** örnek üretildi; doğrulamadan sonra **3.388** örnek kaldı. 
 3. **LLM yargıç** (işlerin %10'luk tabakalı rastgele örneklemi, 348 örnek): örneği üreten modelden **farklı** bir model, sıcaklık 0 ile her örneği kaynağıyla birlikte desteklenme, doğruluk, talimata uyma, anlaşılırlık ve Türkçe akıcılık açısından değerlendirdi. Başarısız oranı: **%11,5** (tüm set için tahmini hata oranı); başarısızlar elendi. Yargıçtan geçip final sette kalan 306 örneğin yargıç modelleri: gemini-3.8-flash (112), gemini-3.5-flash (84), gemini-3.6-flash (73), gemini-3.7-flash (37). Örneklem ilk çalıştırmada sabitlendi (sonradan eklenen kurallar örneklemi değiştirmesin diye). Lite üretimlerinde başarısız: 40/318 (%12,6); Flash üretimlerinde başarısız: 0/30 (%0,0).
 4. **Rastgele örneklem incelemesi:** 150 örnek (görev türü oranında tabakalı) kaynak metniyle karşılaştırılarak incelendi. Yapay zekâ destekli ön inceleme ölçüt bazında yapıldı; nihai kararı grup üyesi verdi. Ön incelemede uygun: %84,0; nihai kararda uygun: %84,0. Sorunlu bulunan 24 örnek setten çıkarıldı.
 
-**Elenen örnekler** (nedenleriyle: [reports/removed_instructions.csv](reports/removed_instructions.csv)):
+**Elenen örnekler** (nedenleriyle: [removed_instructions.csv](removed_instructions.csv)):
 
 | Neden | Adet |
 | --- | --- |
@@ -74,7 +76,7 @@ train 3.078 · validation 146 · test 164.
 
 ## Değerlendirme planı (final dönemi)
 Vize kapsamında ayrı bir değerlendirme seti hazırlanmadı; başarı şu şekilde ölçülecek:
-- **Dış değerlendirme setleri** (eğitime girmedi): AstroMLab Astrobench, Astro-mcqa, astro-mcq, HubbleSpaceTelescope-MCQ — çoktan seçmeli doğruluk. Corpus ile örtüşen sorular [reports/eval_contamination.csv](reports/eval_contamination.csv) dosyasında listelidir ve ayrıca raporlanacaktır.
+- **Dış değerlendirme setleri** (eğitime girmedi): AstroMLab Astrobench, Astro-mcqa, astro-mcq, HubbleSpaceTelescope-MCQ — çoktan seçmeli doğruluk. Corpus ile örtüşen sorular [reports/eval_contamination.csv](https://github.com/gedag/AstroTutor-AI/blob/v1.0/reports/eval_contamination.csv) dosyasında listelidir ve ayrıca raporlanacaktır.
 - **Bu setin test kümesi** (164 örnek; corpus kaynaklı olanlar yalnız corpus test dokümanlarından üretildi): Türkçe talimat takibi, seviyeye uygunluk ve JSON soru üretiminin geçerliliği (şema, tek doğru cevap, kaynakla tutarlılık).
 - Üç sistem karşılaştırılacak: hazır instruct model, alana uyarlanmış (CPT) model, CPT + SFT.
 

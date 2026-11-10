@@ -22,7 +22,7 @@ log = get_logger("14_qc_report")
 R = p("reports")
 CORPUS_CRIT = ["okunabilir", "dogru_domain", "extraction_dogru", "header_footer_temiz", "bozuk_karakter_yok",
                "metadata_dogru"]
-INS_CRIT = ["talimat_anlasilir", "kaynakla_tutarli", "talimati_karsiliyor", "gorev_turu_dogru", "turkce_akici"]
+INS_CRIT = ["talimat_anlasilir", "kaynakla_tutarli", "talimati_karsiliyor", "gorev_turu_dogru", "ingilizce_akici"]
 OK = {"1", "evet", "e", "true", "uygun", "x", "✓", "yes"}
 BAD = {"0", "hayir", "hayır", "h", "false", "sorunlu", "no"}
 
@@ -160,7 +160,7 @@ def main() -> None:
 
     if ins:
         v11 = importlib.import_module("11_verify_instructions")
-        mcq = [x for x in ins_final if x["task_type"] == "coktan_secmeli_soru_uretimi"]
+        mcq = [x for x in ins_final if x["task_type"] == "mcq_generation"]
         own = {}
         clash = 0
         for x in ins_final:
@@ -219,7 +219,9 @@ def main() -> None:
             if r is not None:
                 h = norm(r.get("son_karar"))
                 x["human_verified"] = None if h is None else (h == "ok")
-                x["verified_by"] = "kural+kanit+claude_on_inceleme" + ("+insan_karari" if h else "")
+                # 14 yeniden çalışınca ek iki kez yazılmasın: önceki inceleme eki atılıp yeniden eklenir
+                base = (x.get("verified_by") or "rules").split("+claude_pre_review")[0]
+                x["verified_by"] = base + "+claude_pre_review" + ("+human_decision" if h else "")
             if x["raw_example_id"] in drop:
                 continue
             kept.append(x)
