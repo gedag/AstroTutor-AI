@@ -143,6 +143,18 @@ def main() -> int:
     done = {r["job_id"] for r in read_jsonl(p("interim") / "instruction_jobs_done.jsonl")}
     fails = Counter(r["job_id"] for r in read_jsonl(p("interim") / "instruction_jobs_failed.jsonl"))
     todo = [j for j in jobs if j["job_id"] not in done and (a.kind is None or j["kind"] == a.kind)]
+    # Kapsam incelemesinde grup üyesinin "cikar" dediği kaynakların işleri üretilmez (örnekleri 11'de zaten elenir;
+    # kota harcanmasın). "Tamamlandı (atlandı)" diye kaydedilir: üretimin bittiği bu sayede doğru anlaşılır (11).
+    from instruction_source_review import excluded_sources
+
+    excl = excluded_sources()
+    skip = [j for j in todo if j["kind"] == "doc" and j["source_document"] in excl]
+    for j in skip:
+        append_jsonl(p("interim") / "instruction_jobs_done.jsonl", {"job_id": j["job_id"], "n": 0,
+                                                                    "skipped": "out_of_scope_source", "at": now_iso()})
+    if skip:
+        log.info(f"Kapsam dışı kaynak: {len(skip)} iş atlandı (reports/qc/instruction_source_review.csv)")
+        todo = [j for j in todo if j not in skip]
     if a.limit:
         # pilot: her türden dengeli örnek
         by = {}

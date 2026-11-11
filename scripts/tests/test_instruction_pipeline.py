@@ -223,6 +223,16 @@ check("SE kayıtları benzersiz", len({it["rid"] for it in items}) == len(items)
 want_se = round(0.12 * 400)
 check("SE sayısı hedefin ~%10 fazlası", want_se <= len(items) <= int(want_se * 1.1) + 3, f"{len(items)} (hedef {want_se})")
 
+# Üretimden ÖNCE kapsam dışı işaretlenen kaynak: 10 bu işi Gemini'ye göndermeden atlamalı ve "atlandı" diye kaydetmeli
+check("kaynak inceleme tablosu (üretimden önce)", run("instruction_source_review") == 0)
+srf = TMP / "qc" / "instruction_source_review.csv"
+srows = list(csv.DictReader(open(srf, encoding="utf-8-sig")))
+PRE = srows[-1]["document_id"]
+srows[-1]["son_karar"] = "cikar"
+with open(srf, "w", encoding="utf-8-sig", newline="") as fh:
+    w = csv.DictWriter(fh, fieldnames=list(srows[0].keys()))
+    w.writeheader()
+    w.writerows(srows)
 # Pilot benzetimi: üretim bitmeden 11 çalışırsa yargıç örneklemi ve grup kararı dosyaya SABİTLENMEMELİ
 check("10 pilot (3 iş)", run("10_generate_instructions", "--limit", "3") == 0)
 check("11 pilot (üretim bitmeden)", run("11_verify_instructions") == 2)
@@ -237,8 +247,8 @@ check("doküman örneklerinde model kaydı", all(r["generator_model"] for r in r
 
 # Kapsam incelemesi: bir kaynak doküman "cikar" işaretlenir; örneklerinin hepsi out_of_scope_source ile elenmeli
 check("kaynak inceleme tablosu", run("instruction_source_review") == 0)
-srf = TMP / "qc" / "instruction_source_review.csv"
 srows = list(csv.DictReader(open(srf, encoding="utf-8-sig")))
+check("önceki karar korundu", any(r["document_id"] == PRE and r["son_karar"] == "cikar" for r in srows))
 check("tabloda her doküman işi bir satır", len(srows) == len(doc_jobs), f"{len(srows)} / {len(doc_jobs)}")
 EXCL = srows[0]["document_id"]
 srows[0]["son_karar"] = "cikar"
@@ -247,6 +257,10 @@ with open(srf, "w", encoding="utf-8-sig", newline="") as fh:
     w.writeheader()
     w.writerows(srows)
 n_excl = len({r["raw_example_id"] for r in raw if r["source_document"] == EXCL})
+done_rows = [json.loads(x) for x in open(TMP / "interim" / "instruction_jobs_done.jsonl", encoding="utf-8")]
+check("önceden çıkarılan kaynağın işi atlandı ve kaydedildi",
+      any(d["job_id"] == f"JOB_DOC_{PRE}" and d.get("skipped") == "out_of_scope_source" for d in done_rows))
+check("önceden çıkarılan kaynaktan hiç örnek üretilmedi", not any(r["source_document"] == PRE for r in raw))
 rc = run("11_verify_instructions")
 check("11 doğrulama (tüm yargıç işleri bitti)", rc == 0, f"çıkış kodu {rc}")
 rem = list(csv.DictReader(open(TMP / "reports" / "removed_instructions.csv", encoding="utf-8")))
@@ -275,8 +289,19 @@ sample = set(json.load(open(TMP / "interim" / "instruction_judge_sample.json", e
 grp = lambda x: f"{v11.tier(x.get('generator_model'))}|{x['task_type']}"  # noqa: E731
 unj_full = [x for x in ver if not x["llm_judged"] and grp(x) in full]
 check("tam kontrol grubunda değerlendirilmemiş örnek yok", not unj_full, str(len(unj_full)))
-unj_out = [x for x in ver if not x["llm_judged"] and x["job_id"] not in sample and grp(x) not in full]
-check("durulan gruplarda değerlendirilmemiş örnekler var (aşamalı yargıç çalışıyor)", len(unj_out) > 0, str(len(unj_out)))
+# Yargıç iş bazında çalışır: örneklemde olmayan, SE olmayan ve tam kontrol grubundan HİÇ örnek içermeyen işler
+# değerlendirilmemeli; diğer bütün işler değerlendirilmiş olmalı (rastlantıdan bağımsız kesin kontrol)
+by_job_v = {}
+for x in ver:
+    by_job_v.setdefault(x["job_id"], []).append(x)
+skip_jobs = {j for j, xs in by_job_v.items() if j not in sample and not j.startswith("JOB_SE_")
+             and not any(grp(x) in full for x in xs)}
+# (pilot sırasında verilmiş kararlar geçerli kalır: kota boşa gitmesin; bunlar "pilot" etiketlidir)
+check("tam kontrol dışındaki işler değerlendirilmedi (pilot kararları hariç)",
+      all(not x["llm_judged"] or x["judge"]["judge_phase"] == "pilot" for j in skip_jobs for x in by_job_v[j]),
+      f"{len(skip_jobs)} iş")
+check("diğer bütün işler değerlendirildi",
+      all(x["llm_judged"] for j, xs in by_job_v.items() if j not in skip_jobs for x in xs))
 check("SE örneklerinin hepsi değerlendirildi ve seviyeli",
       all(x["llm_judged"] and x["level"] in cfg["instruction"]["levels"] and x.get("level_source") == "llm_judge"
           for x in ver if x["source_name"] == "stackexchange_space_qa"))

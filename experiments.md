@@ -886,3 +886,26 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
 - **Testler:** `test_instruction_pipeline.py` kapsam incelemesini de deniyor (tablo geçici klasörde; "çıkar" denen
   kaynağın bütün örnekleri eleniyor, finalde yok): 53/53. Diğerleri: kural 50/50, SE filtresi 41/41, çoktan seçmeli
   21/21, tekrar üretilebilirlik 1/1.
+
+## 11.11.2026 — Kalite ölçümü: lite cevapları kısa → üretim tamamen Flash ile yenileniyor (Eda kararı)
+- **Ölçüm (kapsam içi Gemini örnekleri, kelime ortancası, lite / Flash):** seviyeli ders anlatımı 91 / 218, neden-sonuç
+  59 / 144, karşılaştırma 69 / 132, adım adım 66 / 133, çoktan seçmeli 89 / 140, tanım 56 / 85 (Flash örneği az: 39;
+  v1.0'da da aynı yön: ortalama cevap ~380'e karşı ~745 karakter). Lite cevapları doğru ama yüzeysel; yargıç kısa-doğru
+  cevabı geçirir. SFT modele en çok cevap biçimini/uzunluğunu/derinliğini öğrettiği için model sığ ders anlatımı
+  öğrenebilirdi. Talimat çeşitliliği sorun değil (3.089 talimatta 1.627 farklı ilk-4-kelime başlangıcı).
+- **Karar (Eda):** bütün doküman ve kapsam dışı işleri yalnız Flash ile yeniden üret. Lite çıktısı ve 29 yargıç kararı
+  `data/interim/run_v2.0_lite_20261111/` altına taşındı (SHA256SUMS.txt ile doğrulandı); iş listesi aynen (aynı
+  dokümanlar, görev türleri, seviyeler). `generator_models` yalnız 4 Flash modeli (kota dolunca lite'a geçilmez).
+- **10:** kapsam incelemesinde "cikar" kararlı 22 kaynağın işleri üretilmez, "atlandı" diye kaydedilir (kota harcanmaz;
+  11'in "üretim bitti mi" kontrolü doğru çalışır). Flash ile üretilecek: 261 doküman işi (2.927 örnek) + 12 kapsam dışı
+  işi (180); Stack Exchange 51 işi Gemini'siz, metin aynen. Beklenen final ~3.300–3.450.
+- **Süre (düzeltilmiş tahmin):** yargıç iş bazında çalışır ve her işte görev türleri karışıktır; küçük bir grup (ör.
+  sınıflandırma %4) aşama 1'de sıkı kuralı geçemezse o türü içeren hemen her iş yargıca gider. Bu yüzden aşamalı yargıç
+  pratikte örneklerin neredeyse tamamını kontrol edecek (~325 istek). Üretim ~273 + yargıç ~325 ≈ 600 Flash isteği;
+  gerçekleşen hız günde ~25–40 istek → toplam ~3–4 hafta.
+- **Görev Zamanlayıcı:** Eda'nın kararıyla devre dışı (Disable-ScheduledTask); üretim onun onayıyla başlatılacak.
+- **Testler:** `test_instruction_pipeline.py` üretimden önce kapsam dışı işaretlenen kaynağın atlandığını ve hiç örnek
+  üretilmediğini de deniyor; rastlantıya bağlı "durdurulan grupta değerlendirilmemiş örnek var" kontrolü, kesin bir
+  kontrolle değiştirildi (örneklemde olmayan ve tam kontrol grubundan örnek içermeyen işler değerlendirilmez, diğerleri
+  değerlendirilir; pilot kararları hariç). 58/58 (iki çalıştırmada aynı); kural 50/50, SE 41/41, çoktan seçmeli 21/21,
+  tekrar üretilebilirlik 1/1.

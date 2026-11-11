@@ -202,11 +202,15 @@ instruction:
   target_total: 3800          # kural ve yargic elemelerinden sonra >= 3000 kalsin diye (Eda karari 10.11.2026)
   provider: gemini
   # 22.10.2026 tespitleri: ucretsiz katman MODEL BASINA GUNDE 20 istek. Bu yuzden dort Flash modeli havuz olarak
-  # kullanilir; bir modelin gunluk kotasi dolunca siradakine gecilir. Tum Flash kotalari bitince lite modellere
-  # gecilir (Eda karari: once Flash, sonra lite); hepsi doluysa run_instruction_loop.py 30-60 dk sonra yeniden dener.
+  # kullanilir; bir modelin gunluk kotasi dolunca siradakine gecilir; hepsi doluysa run_instruction_loop.py
+  # 30-60 dk sonra yeniden dener. (10.11 ilk uretimde Flash kotalari bitince lite'a geciliyordu; 11.11'de kaldirildi.)
   # Her ornekte gercekte kullanilan model ve prompt surumu kaydedilir. Yargic, ornegi ureten modelden FARKLI bir
   # model secilir (kendi ciktisini kayirma egilimini azaltir). Model adlari 10.11.2026'da API listesinden dogrulandi.
-  generator_models: [gemini-3.6-flash, gemini-3.5-flash, gemini-3.7-flash, gemini-3.8-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite]  # lite: yalniz Flash kotalari bitince
+  # 11.11.2026 (Eda karari): YALNIZ Flash. Ilk tam uretimin %86si lite modeldendi; lite cevaplari dogru ama Flash'in
+  # yaklasik yarisi uzunlukta (seviyeli ders anlatimi medyan 91'e karsi 218 kelime). SFT modele cevap bicimini ve
+  # derinligini ogrettigi icin tum uretim Flash ile yenilendi; lite ciktisi data/interim/run_v2.0_lite_20261111/.
+  # Kota dolunca lite'a GECILMEZ: run_instruction_loop.py bekleyip devam eder.
+  generator_models: [gemini-3.6-flash, gemini-3.5-flash, gemini-3.7-flash, gemini-3.8-flash]
   judge_models: [gemini-3.7-flash, gemini-3.8-flash, gemini-3.6-flash, gemini-3.5-flash]
   examples_per_doc_job: {long: 14, medium: 10, short: 6, arxiv: 5}  # long >= 6000, medium >= 3000 karakter
   doc_min_chars: 3000         # kaynak dokuman alt siniri (APOD aciklamalari bu siniri gecmez; v1.0'da da kullanilmadi)
