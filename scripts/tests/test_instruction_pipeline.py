@@ -33,6 +33,8 @@ cfg["instruction"]["target_total"] = 400
 # küçük test setinde grupların bir kısmı durabilsin diye eşik gevşek (gerçek ayar: %5, %95 güven)
 cfg["instruction"]["judge"]["full_check_fail_rate"] = 0.5
 cfg["qc"]["instruction_sample"] = 30
+# kapsam inceleme tablosu da geçici klasörde (gerçek reports/qc tablosu okunmasın)
+cfg["instruction"]["source_review_file"] = str(TMP / "qc" / "instruction_source_review.csv")
 (TMP / "config.yaml").write_text(yaml.safe_dump(cfg, allow_unicode=True), encoding="utf-8")
 os.environ["ASTROTUTOR_CONFIG"] = str(TMP / "config.yaml")
 
@@ -233,6 +235,18 @@ check("SE ham örnekleri Gemini'siz", all(r["generator_model"] is None and r["le
                                          and r["generation_method"] == "stackexchange_original_verbatim" for r in se_raw))
 check("doküman örneklerinde model kaydı", all(r["generator_model"] for r in raw if r["source_name"] != "stackexchange_space_qa"))
 
+# Kapsam incelemesi: bir kaynak doküman "cikar" işaretlenir; örneklerinin hepsi out_of_scope_source ile elenmeli
+check("kaynak inceleme tablosu", run("instruction_source_review") == 0)
+srf = TMP / "qc" / "instruction_source_review.csv"
+srows = list(csv.DictReader(open(srf, encoding="utf-8-sig")))
+check("tabloda her doküman işi bir satır", len(srows) == len(doc_jobs), f"{len(srows)} / {len(doc_jobs)}")
+EXCL = srows[0]["document_id"]
+srows[0]["son_karar"] = "cikar"
+with open(srf, "w", encoding="utf-8-sig", newline="") as fh:
+    w = csv.DictWriter(fh, fieldnames=list(srows[0].keys()))
+    w.writeheader()
+    w.writerows(srows)
+n_excl = len({r["raw_example_id"] for r in raw if r["source_document"] == EXCL})
 rc = run("11_verify_instructions")
 check("11 doğrulama (tüm yargıç işleri bitti)", rc == 0, f"çıkış kodu {rc}")
 rem = list(csv.DictReader(open(TMP / "reports" / "removed_instructions.csv", encoding="utf-8")))
@@ -240,6 +254,8 @@ reasons = Counter(r["reason"].split(":")[0] for r in rem if r["stage"] == "verif
 for want in ("response_references_unseen_text", "evidence_not_in_source", "judge_fail", "level_unassigned",
              "too_long_for_training"):
     check(f"kusur yakalandı: {want}", reasons.get(want, 0) > 0, str(reasons.get(want, 0)))
+check("kapsam dışı kaynağın bütün örnekleri elendi", reasons.get("out_of_scope_source", 0) == n_excl > 0,
+      f"{reasons.get('out_of_scope_source', 0)} / {n_excl}")
 src_reasons = Counter(r["reason"] for r in rem if r["stage"] == "source")
 check("SE kaynak elemeleri kayıtlı (not_usable_verbatim)", src_reasons.get("not_usable_verbatim", 0) > 0,
       str(dict(src_reasons.most_common(4))))
@@ -276,6 +292,7 @@ check("12 ayrım", run("12_split_instructions") == 0)
 x_date = {f"SE_{r.site}_{r.qid}": r.answer_creation_date for r in se_df.itertuples(index=False)}
 ins = [json.loads(x) for x in open(TMP / "final" / "instruction_v2.0.jsonl", encoding="utf-8")]
 check("final örnek sayısı = doğrulanan", len(ins) == len(ver), f"{len(ins)}")
+check("kapsam dışı kaynaktan finalde örnek yok", not any(x["source_document"] == EXCL for x in ins))
 check("final seviyeleri geçerli", all(x["level"] in cfg["instruction"]["levels"] for x in ins))
 check("final görev türleri taksonomide", all(x["task_type"] in tax for x in ins), str(Counter(x["task_type"] for x in ins)))
 check("doküman örneği corpus kümesini miras aldı",

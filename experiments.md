@@ -860,3 +860,29 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
   ("provided" sıfatı) ve sınıflandırmada talimat kontrolü yalnız öğe sayısı < 3 iken yapılıyordu → 1 talimat görülmeyen
   metne atıfla geçiyordu. Kalıplar "provided/given/above/source/original" sıfatlarını kapsayacak şekilde genişletildi
   ve güvenlik ağı eklendi (silme sonrası atıf kalırsa `references_unseen_text`). Yeniden denetimde kalan atıf 0.
+
+## 11.11.2026 — Tam üretim bitti; kaynak kapsam denetimi (22 kaynak dışarıda)
+- **Üretim:** 346 işin tamamı bitti (doküman 283, Stack Exchange 51, kapsam dışı 12); 3.856 benzersiz örnek. Üreticiler:
+  lite 3.315 (%86; gemini-3.1-flash-lite 2.807, gemini-3.5-flash-lite 508), Flash 39, Stack Exchange 502 (Gemini'siz).
+  Kural kontrolünden 3.694, kanıt kontrolünden 3.629 örnek geçti. Kural elemeleri (162): görülmeyen metne atıf 52 +
+  cevapta 17, değerlendirme setiyle 8-gram örtüşmesi 46, çoktan seçmeli JSON 27, tekrar 13, uzunluk 3, eğitim uzunluğu
+  1, kişisel veri 1, URL 1, dil 1. Kural kontrolü ayrı bir süreçte yeniden çalıştırıldığında aynı sonuç (3.694).
+- **Değerlendirme seti örtüşmesi (46, v1.0'da 4):** örtüşen 8 kelimelik diziler genel İngilizce ifadeler ("the average
+  distance between the earth and the", "the discovery of the cosmic microwave background radiation"); v1.0'da örnekler
+  Türkçe olduğu için neredeyse hiç çıkmıyordu. Kural temkinli bırakıldı (maliyet %1,2; Final karşılaştırması temiz kalsın).
+- **Kapsam denetimi:** yargıcın ölçütleri "alan içi mi?" sorusunu içermiyor. Kural elemelerinde Wikipedia "Chuseok"
+  (Kore hasat bayramı; corpus'ta planets_moons etiketli) kaynaklı bir örnek görüldü; bunun üzerine 283 kaynak dokümanın
+  hepsi örnek talimatlarıyla incelendi (`scripts/instruction_source_review.py` → `reports/qc/instruction_source_review.csv`).
+  Yapay zekâ destekli ön inceleme 22 kaynağı kapsam dışı buldu (265 ham örnek): bayram, ödül haberi, tutuklanma konulu ve
+  teoloji ağırlıklı biyografiler, uzay şirketleri, mikrobiyoloji/biyokimya haberleri, astronomiye bağlanmayan genel mekanik,
+  ileri matematiksel/spekülatif fizik, etkinlik ve öğretmen rehberleri, OpenStax 8.3 Dünya atmosferi ve 8.4 yaşam/iklim
+  (Eda'nın 10.11 "Dünya bilimleri yok" kuralı). Eda onayladı (11.11.2026); 11 bu kaynakların örneklerini
+  `out_of_scope_source` nedeniyle eler. Kalan 261 kaynak (OpenStax 67, arXiv 40, NASA Science 86, Wikipedia 68) tutuldu.
+  Yargıç bu karardan önce yeni kodu bilmeden başlamıştı (aşama 1 örnekleminin 60 işinden 5'i bu kaynaklardan); grup kararı
+  kapsam dışı örneklerle hesaplanmasın diye yalnız 11 süreci durduruldu, döngü yeni kodla yeniden başlattı.
+- **Etki ve risk:** kural sonrası 3.445 örnek kalır. Yargıç v1.0'daki lite oranı kadar (%13) elerse final ~3.000 olur;
+  yargıç sonuçlarından sonra gerekirse ek paket (09 `--part doc_supplement`) değerlendirilecek.
+- **Düzeltme:** `instruction_source_review.py` tablo klasörü yoksa yazamıyordu (temiz kurulumda hata); klasör oluşturuluyor.
+- **Testler:** `test_instruction_pipeline.py` kapsam incelemesini de deniyor (tablo geçici klasörde; "çıkar" denen
+  kaynağın bütün örnekleri eleniyor, finalde yok): 53/53. Diğerleri: kural 50/50, SE filtresi 41/41, çoktan seçmeli
+  21/21, tekrar üretilebilirlik 1/1.

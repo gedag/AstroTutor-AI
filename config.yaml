@@ -238,6 +238,10 @@ instruction:
   requests_per_minute: 8
   quota_recheck_minutes: 30   # kotasi dolan model bu sure sonra yeniden denenir (kayan 24 saat penceresi)
   request_timeout_seconds: 600  # tek Gemini istegi icin ust sinir (normal cagri 1-3 dk; 25.10'da cevapsiz kalan istek donguyu durdurdu)
+  # Kaynak dokumanlarin kapsam incelemesi (11.11.2026 denetimi: "Chuseok" bayram maddesi, uzay sirketleri,
+  # mikrobiyoloji haberleri gibi kapsam disi kaynaklar). Tabloda son_karar = "cikar" olan kaynaklarin ornekleri 11'de
+  # elenir (out_of_scope_source). Adaylar: scripts/instruction_source_review.py
+  source_review_file: reports/qc/instruction_source_review.csv
   supplement: []              # ek dokuman paketleri (09 --part doc_supplement); v1.0'daki ek1-ek3 Git etiketi v1.0'da
   prompt_version: v2.0          # prompts/v2.0: Ingilizce; v1.0'da ogrenilen kurallar korunarak (bkz. experiments.md)
   source_doc_max_chars: 9000   # 12 ornek icin yeterli kaynak metin (~2.300 token)

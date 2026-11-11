@@ -168,7 +168,9 @@ def train_tokens(ins: str, resp: str) -> int:
     return len(_TOK(txt, add_special_tokens=False)["input_ids"])
 
 
-def rule_checks(rows: list[dict], removed: RemovalLog, det, grams: set) -> list[dict]:
+def rule_checks(rows: list[dict], removed: RemovalLog, det, grams: set, excluded: dict | None = None) -> list[dict]:
+    """excluded: kapsam incelemesinde son_karar = 'cikar' olan kaynak dokümanlar -> başlık (instruction_source_review.py)."""
+    excluded = excluded or {}
     ok = []
     seen = set()
     for r in rows:
@@ -191,7 +193,10 @@ def rule_checks(rows: list[dict], removed: RemovalLog, det, grams: set) -> list[
                 r["postprocess"] = "unseen_reference_removed"
         is_se = r.get("generation_method") == SE_METHOD
         reason = None
-        if r.get("skip"):
+        if r["source_document"] in excluded:
+            # kaynak doküman Tasarım kapsamı dışında (grup üyesinin kararı; reports/qc/instruction_source_review.csv)
+            reason = ("out_of_scope_source", excluded[r["source_document"]][:80])
+        elif r.get("skip"):
             reason = ("llm_skipped", r.get("skip_reason"))
         elif r["level"] not in I["levels"] and not (is_se and r["level"] == SE_UNASSIGNED_LEVEL):
             reason = ("invalid_level", r["level"][:30])
@@ -343,7 +348,12 @@ def main() -> int:
         latest[r["raw_example_id"]] = r
     rows = list(latest.values())
     removed = RemovalLog(p("reports") / "removed_instructions.csv", "verify", reset=False)
-    rows = rule_checks(rows, removed, det, grams)
+    from instruction_source_review import excluded_sources
+
+    excluded = excluded_sources()
+    if excluded:
+        log.info(f"Kapsam dışı kaynak doküman (grup üyesi kararı): {len(excluded)}")
+    rows = rule_checks(rows, removed, det, grams, excluded)
     log.info(f"Kural kontrolünden geçen: {len(rows)}")
 
     docs = {}
