@@ -15,6 +15,8 @@
             bitince data/interim/instruction_judge_plan.json'a sabitlenir.
    Stack Exchange işlerinin tamamı her zaman değerlendirilir: yargıç seviyeyi de atar; seviyesi atanamayan SE örneği
    sete girmez (level_unassigned).
+   Çağrı başına iş sayısı config judge.jobs_per_call (1 = her iş ayrı çağrı; >1: aynı iş türü ve aynı üretici modelin
+   işleri tek çağrıda, her işin kaynağı ayrı GROUP bloğunda, prompts/judge_batch.txt; kalibrasyon: judge_calibration.py).
    Ölçütler: supported / correct / follows_instruction / instruction_clear / fluent_english -> pass/fail
    Kararlar data/interim/instruction_judgments.jsonl'de saklanır (kaldığı yerden devam).
 Çıktı: data/interim/instructions_verified.jsonl, reports/removed_instructions.csv (stage=verify),
@@ -326,15 +328,71 @@ def judge_failed(jd: dict) -> list[str]:
     return failed
 
 
-def main() -> int:
-    """Çıkış kodu: 0 = tamam, 2 = yargıçta kota/yoğunluk nedeniyle bekleyen iş var."""
-    import random as _random
+JUDGE_SYSTEM = "You are a rigorous data quality auditor. Return only the requested JSON."
+TASK_HINT = "the task type given at the start of each example"
 
+
+def job_models(rs: list[dict]) -> frozenset:
+    """İşin örneklerini üreten Gemini modelleri (SE: boş)."""
+    return frozenset(x.get("generator_model") for x in rs) - {None}
+
+
+def make_batches(jids: list[str], by_job: dict, size: int) -> list[list[str]]:
+    """Yargıç çağrılarını gruplar (config judge.jobs_per_call; Eda kararı 11.11.2026, kalibrasyon testine bağlı).
+    size = 1: her iş ayrı çağrı, sıra aynen korunur (önceki davranış). size > 1: bir çağrıya yalnız AYNI iş türünden
+    (doc / refusal / se) ve AYNI üretici modelle üretilmiş işler konur; böylece "yargıç, örneği üreten modeli
+    kullanmaz" kuralı tek modelle korunur ve kaynaksız işler kaynaklı işlerle karışmaz."""
+    size = max(1, int(size))
+    if size == 1:
+        return [[j] for j in jids]
+    keyed: dict = {}
+    for j in jids:
+        keyed.setdefault((j.split("_")[1], tuple(sorted(job_models(by_job[j])))), []).append(j)
+    return [js[i:i + size] for js in keyed.values() for i in range(0, len(js), size)]
+
+
+def _example_block(i: int, x: dict) -> str:
+    return (f"[{i}] (task type: {x['task_type']}, level: {x['level']})\nINSTRUCTION:\n"
+            f"{x['instruction']}\nRESPONSE:\n{x['response']}")
+
+
+def judge_prompt(batch: list[str], by_job: dict, docs: dict, tmpl: str, tmpl_batch: str | None) -> tuple[str, list[dict]]:
+    """Yargıç istemi ve örneklerin sırası (yargıcın 'index' alanı bu listedeki sıradır).
+    Tek iş: prompts/judge.txt (önceki biçimin aynısı). Birden çok iş: prompts/judge_batch.txt; her işin kaynağı ayrı
+    GROUP bloğunda, örnek numaraları çağrı boyunca benzersiz ve kesintisiz."""
+    if len(batch) == 1:
+        rs = by_job[batch[0]]
+        exs = "\n\n".join(_example_block(i, x) for i, x in enumerate(rs))
+        return fill(tmpl, task_hint=TASK_HINT, source=source_for(rs, docs), examples=exs), list(rs)
+    flat, blocks = [], []
+    for g, jid in enumerate(batch, 1):
+        rs = by_job[jid]
+        exs = "\n\n".join(_example_block(len(flat) + k, x) for k, x in enumerate(rs))
+        flat.extend(rs)
+        blocks.append(f"=== GROUP {g} of {len(batch)} ===\nSOURCE (GROUP {g})\n---\n{source_for(rs, docs)}\n---\n\n"
+                      f"EXAMPLES (GROUP {g}; judge these ONLY against the SOURCE of GROUP {g})\n{exs}")
+    return fill(tmpl_batch, task_hint=TASK_HINT, n_groups=len(batch), groups="\n\n".join(blocks)), flat
+
+
+def parse_judgments(res, flat: list[dict]) -> list[tuple[dict, dict]]:
+    """Yargıç cevabını örneklerle eşler: (örnek, karar). Aralık dışı ve tekrarlanan index'ler yok sayılır
+    (o örnek değerlendirilmemiş kalır ve sonraki denemede yeniden sorulur)."""
+    out, seen = [], set()
+    for jd in res or []:
+        jd = jd.model_dump() if hasattr(jd, "model_dump") else dict(jd)
+        i = jd.get("index")
+        if isinstance(i, int) and not isinstance(i, bool) and 0 <= i < len(flat) and i not in seen:
+            seen.add(i)
+            jd["verdict"] = str(jd["verdict"]).strip().lower()
+            jd["level"] = str(jd["level"]).strip().lower()
+            out.append((flat[i], jd))
+    return out
+
+
+def prepare_rows(removed: RemovalLog) -> tuple[list[dict], dict]:
+    """1) kural ve 2) kanıt kontrolünden geçen örnekler + kaynak dokümanlar (yargıca gidecek örnekler).
+    Yargıç kalibrasyonu (judge_calibration.py) da aynı örnekleri bu fonksiyonla alır."""
     from lingua import Language, LanguageDetectorBuilder
-
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--no-judge", action="store_true", help="LLM yargıcı çalıştırma (yalnız kural + kanıt kontrolü)")
-    a = ap.parse_args()
     import importlib
 
     b9 = importlib.import_module("09_build_instruction_sources")
@@ -347,7 +405,6 @@ def main() -> int:
     for r in read_jsonl(p("interim") / "instructions_raw.jsonl"):
         latest[r["raw_example_id"]] = r
     rows = list(latest.values())
-    removed = RemovalLog(p("reports") / "removed_instructions.csv", "verify", reset=False)
     from instruction_source_review import excluded_sources
 
     excluded = excluded_sources()
@@ -375,7 +432,18 @@ def main() -> int:
                 continue
         kept.append(r)
     log.info(f"Kanıt kontrolünden geçen: {len(kept)}")
-    rows = kept
+    return kept, docs
+
+
+def main() -> int:
+    """Çıkış kodu: 0 = tamam, 2 = yargıçta kota/yoğunluk nedeniyle bekleyen iş var."""
+    import random as _random
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--no-judge", action="store_true", help="LLM yargıcı çalıştırma (yalnız kural + kanıt kontrolü)")
+    a = ap.parse_args()
+    removed = RemovalLog(p("reports") / "removed_instructions.csv", "verify", reset=False)
+    rows, docs = prepare_rows(removed)
 
     # ---- 3) aşamalı LLM yargıç
     by_job = defaultdict(list)
@@ -464,6 +532,11 @@ def main() -> int:
 
         llm = None
         tmpl = (PD / "judge.txt").read_text(encoding="utf-8")
+        # bir yargıç çağrısında kaç iş (1 = her iş ayrı çağrı); >1 yalnız kalibrasyon testi geçip Eda onaylarsa
+        size = int(J.get("jobs_per_call", 1))
+        tmpl_batch = (PD / "judge_batch.txt").read_text(encoding="utf-8") if size > 1 else None
+        if size > 1:
+            log.info(f"Toplu yargıç: bir çağrıda en fazla {size} iş (aynı iş türü ve aynı üretici model)")
         busy = 0
         stop = False
         # Önce aşama 1 ve SE işleri; aşama 1 bitince grup kararı verilir ve tam kontrol işleri eklenir
@@ -479,15 +552,12 @@ def main() -> int:
                      f"(örneklem {len(sample_jobs)}, SE {len(se_jobs)}, tam kontrol {len(full_jobs(plan))})")
             if todo and llm is None:
                 llm = Gemini(I["judge_models"], I["judge_temperature"], I.get("judge_thinking_budget"))
-            for jid in todo:
-                rs = by_job[jid]
-                exs = "\n\n".join(f"[{i}] (task type: {x['task_type']}, level: {x['level']})\nINSTRUCTION:\n"
-                                  f"{x['instruction']}\nRESPONSE:\n{x['response']}" for i, x in enumerate(rs))
-                prompt = fill(tmpl, task_hint="the task type given at the start of each example",
-                              source=source_for(rs, docs), examples=exs)
+            for batch in make_batches(todo, by_job, size):
+                prompt, flat = judge_prompt(batch, by_job, docs, tmpl, tmpl_batch)
+                name = batch[0] if len(batch) == 1 else f"{batch[0]} (+{len(batch) - 1} iş)"
                 try:
-                    res = llm.generate_json("You are a rigorous data quality auditor. Return only the requested JSON.",
-                                            prompt, list[Judgment], exclude={x["generator_model"] for x in rs} - {None})
+                    res = llm.generate_json(JUDGE_SYSTEM, prompt, list[Judgment],
+                                            exclude=set(job_models(flat)))
                 except QuotaExhausted as e:
                     if len(llm.exhausted) == len(llm.models):
                         log.error(f"Tüm yargıç modellerinin günlük kotası doldu; kaldığı yerden devam: {e}")
@@ -497,38 +567,39 @@ def main() -> int:
                 except TransientError as e:
                     # 503/bağlantı: işin kusuru değil, deneme sayılmaz; üst üste 3 kez olursa kota yanmasın diye durulur
                     busy += 1
-                    log.warning(f"{jid} yargıç geçici hata ({busy}/3): {str(e)[:150]}")
+                    log.warning(f"{name} yargıç geçici hata ({busy}/3): {str(e)[:150]}")
                     if busy >= 3:
                         log.error("Üst üste 3 geçici hata; yargıç bu çalıştırmada durduruldu, sonra kaldığı yerden devam")
                         stop = True
                         break
                     continue
                 except Exception as e:
-                    log.error(f"{jid} yargıç hatası: {str(e)[:200]}")
-                    attempts[jid] += 1
-                    append_jsonl(attempts_f, {"job_id": jid, "result": "error", "detail": str(e)[:200], "at": now_iso()})
+                    log.error(f"{name} yargıç hatası: {str(e)[:200]}")
+                    for jid in batch:
+                        attempts[jid] += 1
+                        append_jsonl(attempts_f, {"job_id": jid, "result": "error", "detail": str(e)[:200],
+                                                  "at": now_iso()})
                     continue
                 busy = 0
-                seen_idx = set()
-                for jd in res:
-                    jd = jd.model_dump() if hasattr(jd, "model_dump") else jd
-                    if 0 <= jd["index"] < len(rs) and jd["index"] not in seen_idx:
-                        seen_idx.add(jd["index"])
-                        jd["verdict"] = str(jd["verdict"]).strip().lower()
-                        jd["level"] = str(jd["level"]).strip().lower()
-                        rec = {"raw_example_id": rs[jd["index"]]["raw_example_id"], **jd, "judge_model": llm.last_model,
-                               # üretim bitmeden verilen kararlar (pilot) aşama 1 istatistiğine karışmasın diye ayrı etiket
-                               "judge_phase": ("pilot" if not generation_complete
-                                               else "se" if jid in se_jobs else phase)}
-                        judged[rec["raw_example_id"]] = rec
-                        append_jsonl(p("interim") / "instruction_judgments.jsonl", rec)
-                attempts[jid] += 1
-                missing = sum(1 for x in rs if x["raw_example_id"] not in judged)
-                append_jsonl(attempts_f, {"job_id": jid, "result": "ok" if not missing else "partial",
-                                          "missing": missing, "model": llm.last_model, "at": now_iso()})
-                if missing:
-                    log.warning(f"{jid}: yargıç {len(rs)} örneğin {missing} tanesini değerlendirmedi "
-                                f"(deneme {attempts[jid]}/{JUDGE_MAX_ATTEMPTS})")
+                for x, jd in parse_judgments(res, flat):
+                    rec = {"raw_example_id": x["raw_example_id"], **jd, "judge_model": llm.last_model,
+                           # üretim bitmeden verilen kararlar (pilot) aşama 1 istatistiğine karışmasın diye ayrı etiket
+                           "judge_phase": ("pilot" if not generation_complete
+                                           else "se" if x["job_id"] in se_jobs else phase)}
+                    if len(batch) > 1:
+                        rec["judge_jobs_in_call"] = len(batch)   # toplu çağrı (index çağrı içindeki sıradır)
+                    judged[rec["raw_example_id"]] = rec
+                    append_jsonl(p("interim") / "instruction_judgments.jsonl", rec)
+                for jid in batch:
+                    rs = by_job[jid]
+                    attempts[jid] += 1
+                    missing = sum(1 for x in rs if x["raw_example_id"] not in judged)
+                    append_jsonl(attempts_f, {"job_id": jid, "result": "ok" if not missing else "partial",
+                                              "missing": missing, "model": llm.last_model, "at": now_iso(),
+                                              **({"batch": batch} if len(batch) > 1 else {})})
+                    if missing:
+                        log.warning(f"{jid}: yargıç {len(rs)} örneğin {missing} tanesini değerlendirmedi "
+                                    f"(deneme {attempts[jid]}/{JUDGE_MAX_ATTEMPTS})")
             if stop:
                 break
 

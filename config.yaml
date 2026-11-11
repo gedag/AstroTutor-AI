@@ -233,6 +233,12 @@ instruction:
     initial_fraction: 0.20
     full_check_fail_rate: 0.05
     confidence: 0.95
+    # Bir yargic cagrisinda kac is (11.11.2026, Eda karari): 1 = her is ayri cagri. Ucretsiz katmanda gunluk istek
+    # siniri darbogaz; 3 is/cagri yargic istegini ~324'ten ~110'a indirir. Bir cagriya yalniz ayni is turu ve ayni
+    # uretici modelin isleri konur. 1'den buyuk deger YALNIZ kalibrasyon testi (scripts/judge_calibration.py, onceden
+    # belirlenen olcut: karar uyumu >= %90 ve tekli yargicin eledigi orneklerin >= %90'i toplu yargicta da elenmeli,
+    # kaynak karistirma yok) gecip Eda onaylarsa yazilir.
+    jobs_per_call: 1
   evidence_min_overlap: 0.6     # destekleyen alintinin kelime 5-gram'larinin en az %60'i kaynakta olmali
   temperature: 0.7
   judge_temperature: 0.0

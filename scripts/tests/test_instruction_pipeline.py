@@ -33,6 +33,9 @@ cfg["instruction"]["target_total"] = 400
 # küçük test setinde grupların bir kısmı durabilsin diye eşik gevşek (gerçek ayar: %5, %95 güven)
 cfg["instruction"]["judge"]["full_check_fail_rate"] = 0.5
 cfg["qc"]["instruction_sample"] = 30
+# toplu yargıç da uçtan uca denensin: ASTROTUTOR_TEST_JOBS_PER_CALL=3 python scripts/tests/test_instruction_pipeline.py
+JPC = int(os.environ.get("ASTROTUTOR_TEST_JOBS_PER_CALL", "1"))
+cfg["instruction"]["judge"]["jobs_per_call"] = JPC
 # kapsam inceleme tablosu da geçici klasörde (gerçek reports/qc tablosu okunmasın)
 cfg["instruction"]["source_review_file"] = str(TMP / "qc" / "instruction_source_review.csv")
 (TMP / "config.yaml").write_text(yaml.safe_dump(cfg, allow_unicode=True), encoding="utf-8")
@@ -164,7 +167,11 @@ class FakeGemini:
                               "no access to real-time or personal data. I'd be happy to explain a related astronomy topic."),
                  "supporting_evidence": ""} for k in range(n)]
 
+    JUDGE_CALLS: list = []   # (çağrıdaki iş sayısı, hariç tutulan modeller)
+
     def _judge(self, prompt: str, exclude: set) -> list[dict]:
+        m = re.search(r"^=== GROUP 1 of (\d+) ===$", prompt, re.M)
+        FakeGemini.JUDGE_CALLS.append((int(m.group(1)) if m else 1, frozenset(exclude)))
         cands = [m for m in self.models if m not in exclude]
         self.last_model = cands[0]
         lite = any("lite" in m for m in exclude)
@@ -305,6 +312,11 @@ check("diğer bütün işler değerlendirildi",
 check("SE örneklerinin hepsi değerlendirildi ve seviyeli",
       all(x["llm_judged"] and x["level"] in cfg["instruction"]["levels"] and x.get("level_source") == "llm_judge"
           for x in ver if x["source_name"] == "stackexchange_space_qa"))
+sizes = Counter(n for n, _ in FakeGemini.JUDGE_CALLS)
+check(f"yargıç çağrısında iş sayısı <= {JPC}", max(sizes) <= JPC, str(dict(sizes)))
+if JPC > 1:
+    check("toplu çağrı gerçekten yapıldı", any(n > 1 for n in sizes), str(dict(sizes)))
+    check("toplu çağrıda en fazla bir üretici model hariç", all(len(e) <= 1 for _, e in FakeGemini.JUDGE_CALLS))
 summ = json.load(open(TMP / "reports" / "instruction_verification_summary.json", encoding="utf-8"))
 check("özet: tahmini kalan hata hesaplandı", summ["estimated_error_rate_remaining"] is not None,
       f"{summ['estimated_error_rate_remaining']} ({summ['judged_by_phase']})")

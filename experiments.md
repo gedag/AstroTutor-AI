@@ -909,3 +909,27 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
   kontrolle değiştirildi (örneklemde olmayan ve tam kontrol grubundan örnek içermeyen işler değerlendirilmez, diğerleri
   değerlendirilir; pilot kararları hariç). 58/58 (iki çalıştırmada aynı); kural 50/50, SE 41/41, çoktan seçmeli 21/21,
   tekrar üretilebilirlik 1/1.
+
+## 11.11.2026 — Toplu yargıç (bir çağrıda 3 iş) ve kalibrasyon testi
+
+- **Soru (Eda):** Süre kısalabilir mi? ChatGPT arayüzüyle üretim/kontrol değerlendirildi ve **önerilmedi**: elle
+  kopyala-yapıştır tekrar üretilemez (model sürümü, prompt, parametre kaydı yok), ~255 doküman için 15–20+ saat elle
+  iş ve kopyalama hatası riski taşır, ikinci bir model ailesi cevap üslubunu karıştırır (lite'ın reddedilme nedeni).
+- **Karar (Eda):** Final'e instruction TAM ve hatasız bitmeden geçilmez. Yargıç süresi için "toplu yargıç" seçildi:
+  ücretsiz katmanda darboğaz günlük istek sayısı (model başına 20), token değil. Bir çağrıda 3 iş → yargıç isteği
+  ~324'ten ~110'a (doküman 261 → ~89, kapsam dışı 12 → 4, SE 51 → 17); tahmini yargıç süresi ~8–13 günden ~3–4 güne.
+- **Kod (varsayılan davranış değişmez):** `config judge.jobs_per_call` (1). >1 iken 11 işleri `make_batches` ile
+  gruplar: bir çağrıda yalnız aynı iş türü (doc/refusal/se) ve aynı üretici model (yargıç üreticiyi kullanmaz kuralı
+  korunur). `prompts/v2.0/judge_batch.txt`: ölçüt metni `judge.txt` ile birebir aynı (testli); her işin kaynağı ayrı
+  GROUP bloğunda, örnek numaraları çağrı boyunca benzersiz; "yalnız kendi GROUP'unun kaynağına göre değerlendir".
+  Tek iş istemi önceki kodun ürettiği metnin birebir aynısı (testli).
+- **Kalibrasyon (önceden belirlenen ölçüt, sonuçlardan önce; Eda onayı):** `scripts/judge_calibration.py`: 6 üçlü
+  (12 doküman, 3 kapsam dışı, 3 SE işi), her iş hem tek başına hem üçlüsüyle, **aynı yargıç modeliyle** (~24 istek);
+  sonuçlar `data/interim/judge_calibration/` (resmî dosyalara karışmaz). Kabul: (1) karar uyumu ≥ %90; (2) tekli
+  yargıcın elediği örneklerin ≥ %90'ı toplu yargıçta da elenir (tekli < 5 eleme → değerlendirilemez = sağlanmadı);
+  (3) uyuşmayan örneklerde kaynak karıştırma yok (elle inceleme). Rapor `reports/judge_calibration.md`;
+  `jobs_per_call` yalnız Eda onaylarsa 3 yapılır. Kalibrasyon 12 Flash doküman işi tamamlanınca çalıştırılır.
+- **Testler:** `test_judge_batch.py` (gruplama, istem yapısı, cevap eşleme, ölçüt metni) hata 0;
+  `test_judge_calibration.py` (sahte Gemini: kota/devam, aynı yargıç modeli, gevşek toplu yargıcın reddi) 18/18;
+  uçtan uca `test_instruction_pipeline.py` tekli 59/59 (37 yargıç çağrısı) ve `ASTROTUTOR_TEST_JOBS_PER_CALL=3` ile
+  61/61 (17 çağrı); kural, SE ve çoktan seçmeli testleri hata 0.
