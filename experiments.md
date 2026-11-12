@@ -933,3 +933,12 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
   `test_judge_calibration.py` (sahte Gemini: kota/devam, aynı yargıç modeli, gevşek toplu yargıcın reddi) 18/18;
   uçtan uca `test_instruction_pipeline.py` tekli 59/59 (37 yargıç çağrısı) ve `ASTROTUTOR_TEST_JOBS_PER_CALL=3` ile
   61/61 (17 çağrı); kural, SE ve çoktan seçmeli testleri hata 0.
+
+## 12.11.2026 — Üretim döngüsünün sürekliliği
+
+- Döngü 11.11 12:52'den sonra sessizce durdu (Windows'ta çökme kaydı yok; neden belirlenemedi), ~1 günlük üretim
+  kaybı. 12.11 10:47'de yeniden başlatıldı; kaldığı yerden devam etti (346 işin 90'ı bitmişti).
+- **Karar (Eda):** bilgisayar her açıldığında üretim kendiliğinden sürsün. `AstroTutorInstructionLoop` görevi
+  etkinleştirildi: oturum açılışı + saatte bir tetikleyici. Döngü çalışıyorsa yeni kopya kilit nedeniyle hemen çıkar
+  (elle tetiklenerek test edildi: süreç sayısı değişmedi), `logs/instruction_loop.DONE` varsa hiç çalışmaz. Saatlik
+  tetikleyici, döngü bilgisayar açıkken durursa en geç 1 saatte yeniden başlatır.
