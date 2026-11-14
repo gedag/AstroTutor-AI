@@ -53,6 +53,7 @@ class FakeGemini:
     """Kararı örneğin metninden belirleyen sahte yargıç: iki modda da aynı örneğe aynı karar (uyum %100 beklenir)."""
     calls: list = []
     quota_after = None   # bu kadar çağrıdan sonra kota hatası (devam testi)
+    busy: set = set()    # bu modeller 503 verir (bir model yoğunken diğerinin görevleri sürmeli)
 
     def __init__(self, models, temperature, thinking=None):
         self.models = list(models)
@@ -65,6 +66,8 @@ class FakeGemini:
         import re
 
         cands = [m for m in self.models if m not in (exclude or set())]
+        if cands[0] in FakeGemini.busy:
+            raise llm.TransientError("fake 503")
         self.last_model = cands[0]
         groups = re.search(r"Below are (\d+) GROUPS", prompt)
         FakeGemini.calls.append((int(groups.group(1)) if groups else 1, self.last_model))
@@ -87,6 +90,8 @@ cal.CRITERIA = {**cal.CRITERIA, "min_single_fails": 1}
 # 1) kota: 2 çağrıdan sonra kota dolar -> çıkış 2, kaldığı yerden devam
 FakeGemini.quota_after = 2
 check("kota dolunca çıkış 2", cal.main() == 2)
+check("kota hatası sonrası yeni çağrı yok (aynı modelin görevleri atlandı)", len(FakeGemini.calls) == 2,
+      str(len(FakeGemini.calls)))
 sel = json.loads((TMP / "interim" / "judge_calibration" / "selection.json").read_text(encoding="utf-8"))
 check("seçim sabitlendi (3 üçlü)", len(sel["triples"]) == 3, str([t["jobs"] for t in sel["triples"]]))
 check("üçlüler 3'er iş, tür karışmıyor",
@@ -94,6 +99,20 @@ check("üçlüler 3'er iş, tür karışmıyor",
 check("yargıç modeli üreticiden farklı", all(t["judge_model"] != GEN for t in sel["triples"]
                                               if not t["jobs"][0].startswith("JOB_SE_")))
 FakeGemini.quota_after = None
+# 1b) bir yargıç modeli yoğun (503): yalnız onun görevleri bekler, diğer modelinkiler tamamlanır
+models = sorted({t["judge_model"] for t in sel["triples"]})
+check("testte iki farklı yargıç modeli var", len(models) == 2, str(models))
+busy_model = sel["triples"][0]["judge_model"]
+FakeGemini.busy = {busy_model}
+before = len(FakeGemini.calls)
+check("bir model yoğunken çıkış 2", cal.main() == 2)
+new = FakeGemini.calls[before:]
+other_tasks = sum(4 for t in sel["triples"] if t["judge_model"] != busy_model)   # 3 tekli + 1 toplu
+check("yoğun olmayan modelin görevleri bitti", len(new) >= 1 and all(m != busy_model for _, m in new),
+      f"{len(new)} çağrı: {sorted({m for _, m in new})}")
+check("yoğun olmayan modelin bütün görevleri yapıldı", len(new) == other_tasks - sum(
+    1 for _, m in FakeGemini.calls[:before] if m != busy_model), f"{len(new)}")
+FakeGemini.busy = set()
 check("devam: tamamlandı (çıkış 0)", cal.main() == 0)
 n_calls = len(FakeGemini.calls)
 check("çağrı sayısı = 9 tekli + 3 toplu", n_calls == 12, str(n_calls))

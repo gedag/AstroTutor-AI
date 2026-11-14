@@ -123,15 +123,20 @@ def main() -> int:
         tmpl = (v11.PD / "judge.txt").read_text(encoding="utf-8")
         tmpl_b = (v11.PD / "judge_batch.txt").read_text(encoding="utf-8")
         log.info(f"Kalibrasyon: {len(todo)} çağrı bekliyor")
+        unavailable = set()   # bu çalıştırmada yoğun/kotası dolu yargıç modelleri: yalnız onların görevleri atlanır
         for name, mode, jobs, model, t in todo:
+            if model in unavailable:
+                continue
             prompt, flat = v11.judge_prompt(jobs, by_job, docs, tmpl, tmpl_b if mode == "batch" else None)
             try:
                 # yalnız seçilen yargıç modeli (iki mod aynı modelle)
                 res = llm.generate_json(v11.JUDGE_SYSTEM, prompt, list[v11.Judgment],
                                         exclude=set(I["judge_models"]) - {model})
             except (QuotaExhausted, TransientError) as e:
-                log.warning(f"{name}: {model} şu an kullanılamıyor ({str(e)[:120]}); kalibrasyon sonra devam eder")
-                return 2
+                unavailable.add(model)
+                log.warning(f"{name}: {model} şu an kullanılamıyor ({str(e)[:120]}); bu modelin görevleri "
+                            f"sonra devam eder")
+                continue
             except Exception as e:
                 attempts[name] += 1
                 append_jsonl(att_f, {"task": name, "result": "error", "detail": str(e)[:200], "at": now_iso()})
