@@ -942,3 +942,16 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
   etkinleştirildi: oturum açılışı + saatte bir tetikleyici. Döngü çalışıyorsa yeni kopya kilit nedeniyle hemen çıkar
   (elle tetiklenerek test edildi: süreç sayısı değişmedi), `logs/instruction_loop.DONE` varsa hiç çalışmaz. Saatlik
   tetikleyici, döngü bilgisayar açıkken durursa en geç 1 saatte yeniden başlatır.
+
+## 14–15.11.2026 — Kalibrasyonun ilerleyişi ve toplu yargıç kararı
+
+- Kota gözlemi: günlük kota kayan 24 saat değil, Pasifik gece yarısı (11:00 TR) yenileniyor; 503 ve zaman aşımı
+  alan istekler de kotadan düşüyor. Döngü zaten bu saate göre bekliyordu.
+- Kalibrasyon yargıç modelleri (gemini-3.7 / 3.8) çok yoğun olduğundan yavaş ilerliyor (15.11: 24 çağrının 7'si).
+  Değişiklik (b2cea8c): bir yargıç modeli yoğunken yalnız onun görevleri bekliyor, diğer modelinkiler sürüyor;
+  üçlülerin yargıç modeli ve tekli/toplu sırası değişmedi (ölçüm aynı).
+- **Karar (Eda, 15.11):** süre önemli; kalitede belirgin fark yoksa toplu yargıçla ilerlenecek. Kalibrasyon raporu
+  önceden belirlenen üç ölçütün hepsini sağlarsa (uyum ≥ %90, tekli yargıcın elediklerinin ≥ %90'ı toplu yargıçta
+  da elenmiş, uyuşmayan örneklerin incelemesinde kaynak karışması yok) `jobs_per_call: 3` yapılır. Bir ölçüt bile
+  sağlanmazsa tekli yargıçla devam edilir ve karar yeniden Eda'ya sorulur. Üretim kalibrasyondan önce biterse yargıç
+  tekli başlar; geçiş onaylanınca kalan işler toplu yargılanır (her kaydın `judge_jobs_in_call` alanı yöntemi gösterir).
