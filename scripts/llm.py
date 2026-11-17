@@ -63,6 +63,11 @@ class Gemini:
         # istek kotadan düşmez.
         self._exhausted_at: dict[str, float] = {}
         self.recheck_seconds = 60 * CFG["instruction"].get("quota_recheck_minutes", 30)
+        # 503 / zaman aşımı veren model bir süre (busy_cooldown_minutes) denenmez: bu istekler de kotadan düşüyor ve
+        # yoğunluk genelde dakikalarca sürüyor (17.11.2026: üretimde ~28 istek 503 aldı, 8'i başarılı). Süre dolunca
+        # model YENİDEN denenir (unutulmaz). DNS/SSL gibi Google'a ulaşmayan ağ hataları soğumaya sokmaz.
+        self._busy_at: dict[str, float] = {}
+        self.cooldown_seconds = 60 * CFG["instruction"].get("busy_cooldown_minutes", 15)
         self.temperature = temperature
         self.thinking = thinking  # Gemini 2.x: token bütçesi (int); Gemini 3+: seviye ("low"/"medium"/"high")
         self.min_interval = 60.0 / CFG["instruction"]["requests_per_minute"]
@@ -82,6 +87,12 @@ class Gemini:
         now = time.time()
         return {m for m, t in self._exhausted_at.items() if now - t < self.recheck_seconds}
 
+    @property
+    def cooling(self) -> set[str]:
+        """Yakın zamanda 503 / zaman aşımı veren, şimdilik denenmeyen modeller."""
+        now = time.time()
+        return {m for m, t in self._busy_at.items() if now - t < self.cooldown_seconds}
+
     def _config(self, system: str, schema):
         from google.genai import types
 
@@ -100,7 +111,15 @@ class Gemini:
         self._last_err = None
         self._permanent_err = False  # bu çağrıda içerikle ilgili (geçici olmayan) hata görüldü mü
         excl = set(exclude or ()) | self.force_exclude
-        avail = [m for m in self.models if m not in self.exhausted and m not in excl]
+        cand = [m for m in self.models if m not in excl]
+        cooling = self.cooling
+        avail = [m for m in cand if m not in self.exhausted and m not in cooling]
+        if not avail:
+            if all(m in self.exhausted for m in cand):
+                raise QuotaExhausted(f"Tüm modellerin günlük kotası doldu: {self.models}")
+            # Kotası olan ama yoğunluk nedeniyle beklemedeki modeller var: geçici durum, iş atlanmaz
+            raise TransientError(f"Gemini çağrısı geçici nedenlerle başarısız (503/kota/bağlantı): kullanılabilir "
+                                 f"modeller yoğunluk beklemesinde {sorted(m for m in cand if m in cooling)}")
         # Kademeler: "lite" modeller daha kısa cevap üretiyor (23.10.2026 ölçümü: Stack Exchange işlerinde
         # kanıt kontrolü %68'e karşı Flash'ta %96; doküman işlerinde ikisi de %100, ort. cevap ~380'e karşı ~745
         # karakter). Bu yüzden lite YALNIZCA tüm Flash modellerinin günlük kotası bittiğinde kullanılır; anlık
@@ -114,7 +133,9 @@ class Gemini:
             # Kademede kotası bitmemiş (503 vb. ile başarısız) model varsa alt kademeye İNİLMEZ
             if not all(m in self.exhausted for m in tier):
                 break
-        if all(m in self.exhausted for m in avail):
+        # Yalnız kullanılabilecek BÜTÜN modellerin kotası dolduysa "kota bitti" denir; beklemedeki (503) bir model
+        # varsa durum geçicidir (o model süre dolunca yeniden denenir).
+        if all(m in self.exhausted for m in cand):
             raise QuotaExhausted(f"Tüm modellerin günlük kotası doldu: {self.models}")
         if not self._permanent_err:
             raise TransientError(f"Gemini çağrısı geçici nedenlerle başarısız (503/kota/bağlantı): {self._last_err}")
@@ -164,8 +185,10 @@ class Gemini:
                         continue
                     if any(x in msg for x in ("500", "503", "UNAVAILABLE", "INTERNAL", "DEADLINE")):
                         # Yoğunluk hatası da kotadan düşüyor: aynı modelde hemen tekrar deneme, sıradaki modele geç.
-                        log.warning(f"{model}: geçici yoğunluk (503), sıradaki modele geçiliyor")
+                        log.warning(f"{model}: geçici yoğunluk (503), sıradaki modele geçiliyor "
+                                    f"({self.cooldown_seconds // 60} dk sonra yeniden denenecek)")
                         self.busy[model] = self.busy.get(model, 0) + 1
+                        self._busy_at[model] = time.time()
                         break
                     # Ağ hataları (DNS, SSL, erişilemeyen ağ) işin kusuru değildir. ssl.SSLError aynı zamanda ValueError
                     # olduğu için bu kontrol JSON kontrolünden ÖNCE yapılır (28.10.2026: Wi-Fi değişince 15 iş için SSL ve
@@ -173,6 +196,10 @@ class Gemini:
                     if NETWORK_ERR.search(msg) or isinstance(e, (ConnectionError, TimeoutError, OSError)):
                         log.warning(f"{model}: bağlantı hatası ({msg[:80]}), sıradaki modele geçiliyor")
                         self.busy[model] = self.busy.get(model, 0) + 1
+                        # Zaman aşımı: istek Google'a ulaştı ve model cevap veremedi (yoğunluk) -> beklemeye al.
+                        # DNS/SSL/bağlantı kopması: istek ulaşmadı, model beklemeye ALINMAZ.
+                        if re.search(r"timed? ?out|ReadTimeout|DEADLINE", msg, re.I):
+                            self._busy_at[model] = time.time()
                         break
                     if isinstance(e, (json.JSONDecodeError, ValueError)):
                         log.warning(f"{model}: geçersiz JSON, tekrar deneniyor")

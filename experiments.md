@@ -955,3 +955,16 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
   da elenmiş, uyuşmayan örneklerin incelemesinde kaynak karışması yok) `jobs_per_call: 3` yapılır. Bir ölçüt bile
   sağlanmazsa tekli yargıçla devam edilir ve karar yeniden Eda'ya sorulur. Üretim kalibrasyondan önce biterse yargıç
   tekli başlar; geçiş onaylanınca kalan işler toplu yargılanır (her kaydın `judge_jobs_in_call` alanı yöntemi gösterir).
+
+## 17.11.2026 — Yoğunluk (503) beklemesi
+
+- Gözlem: yoğun günlerde kotanın çoğu 503 / zaman aşımı alan isteklere gidiyor (17.11 üretim: ~28 istek 503, 8 başarılı;
+  günün sonunda dört modelin de kotası doldu, 7 iş tamamlandı). Önceki davranış: 503 veren model bir sonraki işte
+  hemen yeniden deneniyordu.
+- **Değişiklik (Eda onayı):** `llm.Gemini` 503 veya zaman aşımı veren modeli `busy_cooldown_minutes` (15) boyunca
+  denemiyor; süre dolunca model yeniden deneniyor (unutulmuyor), her yeni tur bütün modellerle başlıyor. DNS / SSL
+  gibi Google'a ulaşmayan ağ hataları beklemeye sokmuyor. Bütün modeller beklemedeyse istek gönderilmiyor ve hata
+  "geçici" sayılıyor (iş atlanmıyor, "kota bitti" denmiyor); QuotaExhausted yalnız bütün modellerin kotası dolunca.
+  Üretilen örneklerin içeriği değişmez; yalnız modelin ne zaman denendiği değişir.
+- Test: `scripts/tests/test_llm_cooldown.py` (sahte istemci) 21/21; toplu yargıç, kalibrasyon, uçtan uca hat, kural
+  ve SE testleri hata 0.
