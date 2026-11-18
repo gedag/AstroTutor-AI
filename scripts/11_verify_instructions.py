@@ -3,7 +3,9 @@
 1) Kural tabanlı otomatik kontroller (tüm örnekler)
    llm_skipped, invalid_level, length, task_type_mismatch, wrong_language (İngilizce değil), exponent_loss,
    references_unseen_text, response_references_unseen_text, invalid_mcq_json / no_teaching_passage,
-   mcq_answer_in_instruction, contains_url, contains_pii, latex_artifact, duplicate, near_duplicate, eval_overlap.
+   mcq_answer_in_instruction, mcq_count_mismatch, level_audience_mismatch, contains_url, contains_pii, latex_artifact,
+   encoding_artifact, placeholder_text, missing_media_reference, truncated_response, ai_disclaimer, repeated_sentence,
+   unbalanced_markdown, duplicate, near_duplicate, eval_overlap. (18.11.2026 kural denetimi: experiments.md)
    Düzeltme (eleme değil): sınıflandırma talimatında öğeler sayılmışken "mentioned in the text" gibi atıf silinir.
 2) Kanıt kontrolü (kaynak dokümanı olan Gemini örnekleri): destekleyen alıntı kaynakta geçmeli. Stack Exchange
    örnekleri orijinal metin olduğu için (cevabın kendisi kaynak) bu kontrolden geçmez.
@@ -138,6 +140,52 @@ def media_ref(text: str) -> str | None:
             continue
         return m.group(0)
     return None
+
+
+# Talimata uyum (kuralla ölçülebilen kısmı). 18.11.2026 denetimi: cümle sayısı (83 talimat) ve kelime sınırı
+# ihlali yok; sınıflandırmada "unutulan öğe" adaylarının 8/8'i yazım farkıydı (kural EKLENMEDİ, yanlış eleme yapardı).
+_NUMW = {"one": 1, "a single": 1, "single": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+         "1": 1, "2": 2, "3": 3, "4": 4, "5": 5}
+MCQ_N = re.compile(r"\b(one|a single|single|two|three|four|five|[1-5])(?![- ]?(?:option|choice|answer))\s+"
+                   r"(?:[\w-]+\s+){0,3}?questions?\b", re.I)
+# Hedef kitle -> seviye (prompts/v2.0/system_generate.txt: beginner = ortaokul/lise; intermediate = genel okur /
+# üniversite öncesi; advanced = lisans). Yalnız "for/to a ... student/reader/audience" kalıbı (içerikteki
+# "researchers" gibi kelimeler sayılmaz). Denetimde 421 talimatın 3'ünde etiket kitleyle çelişiyordu.
+AUDIENCE = re.compile(r"\b(?:for|to|suitable for|aimed at|targeted at|written for)\s+(?:an?\s+|the\s+)?(?:\w+[- ]){0,3}?"
+                      r"(middle[- ]school|high[- ]school|secondary[- ]school|elementary|pre-university|general|lay|"
+                      r"undergraduate|college|graduate|beginner|intermediate|advanced|novice|expert)\b[\w -]{0,30}?"
+                      r"\b(?:students?|readers?|audiences?|learners?|public|person|course|seminar|class|level)\b", re.I)
+AUDIENCE_LEVEL = {"middle-school": "beginner", "middle school": "beginner", "high-school": "beginner",
+                  "high school": "beginner", "secondary school": "beginner", "secondary-school": "beginner",
+                  "elementary": "beginner", "beginner": "beginner", "novice": "beginner",
+                  "pre-university": "intermediate", "general": "intermediate", "lay": "intermediate",
+                  "intermediate": "intermediate", "undergraduate": "advanced", "college": "advanced",
+                  "graduate": "advanced", "advanced": "advanced", "expert": "advanced"}
+
+
+def mcq_count_mismatch(ins: str, resp: str) -> str | None:
+    """Talimat 'two multiple-choice questions' diyor ama JSON'da farklı sayıda soru var."""
+    m = MCQ_N.search(ins.split("\n")[0])
+    if not m:
+        return None
+    try:
+        obj = json.loads(resp)
+    except Exception:
+        mm = re.search(r"\{.*\}", resp, re.S)
+        try:
+            obj = json.loads(mm.group(0)) if mm else None
+        except Exception:
+            obj = None
+    qs = obj.get("questions") if isinstance(obj, dict) else None
+    if not isinstance(qs, list):
+        return None   # biçim hatasını check_mcq yakalar
+    want = _NUMW[m.group(1).lower()]
+    return f"asked={want} got={len(qs)}" if len(qs) != want else None
+
+
+def audience_level(ins: str) -> str | None:
+    m = AUDIENCE.search(ins.split("\n")[0])
+    return AUDIENCE_LEVEL[m.group(1).lower()] if m else None
 
 
 def repeated_sentence(text: str) -> str | None:
@@ -285,6 +333,10 @@ def rule_checks(rows: list[dict], removed: RemovalLog, det, grams: set, excluded
             reason = ("invalid_mcq_json", check_mcq(resp) or "no_teaching_passage")
         elif t == "mcq_generation" and mcq_in_instruction(ins, resp):
             reason = ("mcq_answer_in_instruction", mcq_in_instruction(ins, resp))
+        elif t == "mcq_generation" and mcq_count_mismatch(ins, resp):
+            reason = ("mcq_count_mismatch", mcq_count_mismatch(ins, resp))
+        elif not is_se and t != "out_of_scope_refusal" and audience_level(ins) not in (None, r["level"]):
+            reason = ("level_audience_mismatch", f"audience={audience_level(ins)} level={r['level']}")
         elif re.search(r"https?://|www\.", ins + " " + resp):
             reason = ("contains_url", "")
         elif EMAIL.search(ins + " " + resp) or PHONE.search(ins + " " + resp):

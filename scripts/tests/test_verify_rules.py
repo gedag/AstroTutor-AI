@@ -187,6 +187,26 @@ rep = "Pulsars are rotating neutron stars that emit beams. They are very dense.\
 check("repeated_sentence", bool(v11.repeated_sentence(rep)), True)
 check("repeated_sentence: yok", v11.repeated_sentence("Pulsars spin fast. They emit radio beams that sweep Earth."), None)
 
+# 8b) talimata uyum: soru sayısı ve hedef kitle-seviye
+q2 = json.dumps({"questions": [good["questions"][0]] * 2}) if isinstance(good, dict) and "questions" in good else None
+q3 = json.dumps({"questions": [good["questions"][0]] * 3}) if q2 else None
+check("mcq sayı: iki istendi, iki var", v11.mcq_count_mismatch("Generate two multiple-choice questions.\n\nPassage: x", q2),
+      None)
+check("mcq sayı: iki istendi, üç var", v11.mcq_count_mismatch("Generate two multiple-choice questions.", q3),
+      "asked=2 got=3")
+check("mcq sayı: 'four-option' sayı sayılmaz", v11.mcq_count_mismatch(
+    "Write four-option multiple-choice questions about the passage.", q3), None)
+check("mcq sayı: 'two four-option questions'", v11.mcq_count_mismatch(
+    "Write two four-option multiple-choice questions.", q2), None)
+aud = {"Explain TRAPPIST-1 to a high school science student.": "beginner",
+       "Summarize the text in 2 sentences for a general audience:": "intermediate",
+       "Summarize the passage for an undergraduate astronomy student:": "advanced",
+       "Explain fusion to a pre-university student.": "intermediate",
+       "Why did researchers combine Webb data with ground-based telescopes?": None,
+       "What is a pulsar?": None}
+for s, want in aud.items():
+    check(f"audience_level: {s[:45]}", v11.audience_level(s), want)
+
 # 9) rule_checks uçtan uca: yeni kurallar doğru nedenle eler, iyi örnek kalır
 from common import RemovalLog  # noqa: E402
 from lingua import LanguageDetectorBuilder, Language  # noqa: E402
@@ -206,11 +226,13 @@ def row(i, ins, resp, t="definition_explanation", se=False):
 cases = [row(0, "What is a pulsar and how is it detected?", GOOD),
          row(1, "Why does the Moon look larger near the horizon?", GOOD + " Consider the below picture:", se=True),
          row(2, "What is a pulsar and how do astronomers find them?", GOOD + " Have a look at this simulation:", se=True),
-         row(3, "Explain what a pulsar is to a beginner student.", GOOD + " " + GOOD.split(". ")[0] + ".")]
+         row(3, "Explain what a pulsar is to a beginner student.", GOOD + " " + GOOD.split(". ")[0] + "."),
+         row(4, "Explain what a pulsar is to an undergraduate astronomy student.", GOOD)]   # etiket beginner
 rl = RemovalLog(Path(__file__).parent / "_tmp_removed.csv", "t")
 kept = v11.rule_checks(cases, rl, det2, set())
 check("rule_checks: iyi örnek kaldı", [r["raw_example_id"] for r in kept], ["R0"])
 check("rule_checks: nedenler", sorted((x["id"], x["reason"]) for x in rl.rows),
-      [("R1", "missing_media_reference"), ("R2", "truncated_response"), ("R3", "repeated_sentence")])
+      [("R1", "missing_media_reference"), ("R2", "truncated_response"), ("R3", "repeated_sentence"),
+       ("R4", "level_audience_mismatch")])
 print("hata:", bad)
 sys.exit(1 if bad else 0)

@@ -1018,3 +1018,9 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
   150 örneklik insan incelemesinden gelecek; INSTRUCTION_CARD'da böyle yazılacak.
 - Doğrulama: 0/500 hatada bile grup tam kontrol ediliyor; uçtan uca hat (tekli ve toplu), kural ve toplu yargıç
   testleri hata 0 (uçtan uca test aşamalı mantığı kendi eşiğiyle sınamaya devam ediyor).
+- Ek tur (talimata uyum, aynı gün): cümle sayısı ("2–3 sentences", 83 talimat) ve kelime sınırı ihlali yok. Yeni:
+  `mcq_count_mismatch` (219 çoktan seçmeli örnekte 1: iki soru istenmiş, üç yazılmış), `level_audience_mismatch`
+  (talimattaki hedef kitle proje seviye tanımıyla çelişiyor; 421 talimatta 3, ör. "high school student" + intermediate).
+  İlk ölçümde "undergraduate → advanced" eşlemesini hata sandım; proje tanımında (system_generate.txt) lisans =
+  advanced, yani üretici doğru. Sınıflandırmada "unutulan öğe" adaylarının 8/8'i yazım farkıydı → kural eklenmedi.
+  Karşılaştırma: yalnız bu 4 örnek elendi. `test_verify_rules.py` 107/107, diğer testler hata 0.
