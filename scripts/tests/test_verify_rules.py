@@ -108,5 +108,109 @@ short = v11.train_tokens("What is a pulsar?", "A rotating neutron star.")
 check("kısa örnek kısa ölçülüyor", 20 < short < 80, True)
 long_resp = " ".join(["Pulsars are rapidly rotating neutron stars."] * 200)
 check("uzun örnek sınırı aşıyor", v11.train_tokens("Explain pulsars.", long_resp) > 1024, True)
+
+# 8) 18.11.2026 kural denetimi: canlı veride kaçan kalıplar ve yeni güvenlik kuralları
+unseen2 = {
+    # kaçanlar (gerçek örneklerden)
+    "Classify the four items into telescopes or young stellar objects based on the text: TIFR, HH 1042, HAWK-I.": True,
+    "Compare the two black holes based on characteristics described in the study.": True,
+    "Here is a comparison based on the study:": True,
+    "Classify the observatories by wavelength range as described in the survey context: JWST, ALMA, VLA.": True,
+    "According to the authors, the planet is tidally locked.": True,
+    "Classify the missions by status described in the source: Kepler, Spitzer, TESS.": True,
+    # doğal İngilizce: tetiklenmemeli
+    "Helioseismology is the study of solar surface oscillations.": False,
+    "What was its effect on the study of planetoid motions?": False,
+    "Why can interstellar dust be ruled out as the source of the dark matter?": False,
+    "The waves compress if the source moves closer to the observer.": False,
+    "It is discussed in the context of solar time series.": False,
+    "Explain this in the context of stellar evolution.": False,
+}
+for s, want in unseen2.items():
+    check(f"UNSEEN+: {s[:50]}", bool(v11.UNSEEN.search(s)), want)
+strip2 = {
+    "Classify the following space missions based on Dr. Stapelfeldt's involvement as described in the text into two "
+    "categories: WFPC2, Spitzer, TPF, and WFIRST.":
+        "Classify the following space missions based on Dr. Stapelfeldt's involvement into two categories: WFPC2, "
+        "Spitzer, TPF, and WFIRST.",
+    "Classify the observatories by wavelength range as described in the survey context: JWST, ALMA, VLA, Chandra.":
+        "Classify the observatories by wavelength range: JWST, ALMA, VLA, Chandra.",
+    "Classify the items into telescopes or young stellar objects based on the text: TIFR, HH 1042, HAWK-I, and Chandra.":
+        "Classify the items into telescopes or young stellar objects: TIFR, HH 1042, HAWK-I, and Chandra.",
+}
+for s, want in strip2.items():
+    got = v11.strip_unseen_ref(s)
+    check(f"strip+: {s[:50]}", got, want)
+    check("  silme sonrası atıf kalmadı", bool(v11.UNSEEN.search(got)), False)
+long_list = ("Classify the following space observatories as either Space Observatories (Infrared / Multi-wavelength) or "
+             "Radio Ground-Based Telescopes based on their primary operating platform and wavelength range: James Webb "
+             "Space Telescope, Atacama Large Millimeter/submillimeter Array, Jansky Very Large Array, Chandra.")
+check("has_passage: uzun tek satır öğe listesi metin DEĞİL", v11.has_passage(long_list), False)
+with_text = ("Classify the objects described in the passage below into planets and moons.\n\nPassage:\n" +
+             "Titan is the largest moon of Saturn and has a thick nitrogen atmosphere. Mars is a terrestrial planet "
+             "with two small moons, Phobos and Deimos, which may be captured asteroids. Europa orbits Jupiter and hides "
+             "a global ocean beneath its icy crust.")
+check("has_passage: ayrı satırda metin var", v11.has_passage(with_text), True)
+
+media = {
+    "In the figure below, the arrows show CMB photons.": "figure below",
+    "They used the training vehicle, as pictured below.": "pictured below",
+    "Consider the below picture:": "below picture",
+    "Image source: NASA": "Image source",
+    "Below is a plot of initial mass versus remnant mass.": "Below is a plot",
+    "The Moon keeps the same face, as seen in the figure on the left.": "as seen in the figure",
+    # tetiklenmemeli
+    "A flaw in any of the surfaces will distort the image.": None,
+    "The distance between the lens and the image formed at the focus is the focal length.": None,
+    "The following table compares them:\n\n| Planet | Moons |\n|---|---|\n| Mars | 2 |": None,
+}
+for s, want in media.items():
+    check(f"media_ref: {s[:45]}", v11.media_ref(s), want)
+trunc = {"Have a look at this NASA simulation of the collision:": True,
+         "Only near the equator could the moon be completely horizontal,": True,
+         "The spacecraft then returned the sample to Earth.": False,
+         "* **Mass:** about 5 to 30 solar masses": False,
+         "Galactic archaeology studies the Milky Way (using stellar ages)": False,
+         "Temperatures reach 6000 K": False}
+for s, want in trunc.items():
+    check(f"truncated: {s[:45]}", bool(v11.TRUNCATED.search(s.rstrip("*_` \n"))), want)
+check("encoding: mojibake", bool(v11.ENCODING_ART.search("The Sunâ€™s core is hot.")), True)
+check("encoding: replacement char", bool(v11.ENCODING_ART.search("The Sun�s core")), True)
+check("encoding: temiz (−, °, ’)", bool(v11.ENCODING_ART.search("It is −15 °C at the Sun’s pole.")), False)
+check("placeholder: [insert]", bool(v11.PLACEHOLDER.search("The mass is [insert value] kg.")), True)
+check("placeholder: TODO", bool(v11.PLACEHOLDER_CS.search("TODO: add the distance")), True)
+check("placeholder: normal köşeli parantez", bool(v11.PLACEHOLDER.search("Iron [Fe] is common.") or
+                                                 v11.PLACEHOLDER_CS.search("Iron [Fe] is common.")), False)
+check("ai_disclaimer", bool(v11.AI_DISCLAIMER.search("As an AI language model, I think pulsars spin.")), True)
+check("ai_disclaimer: normal metin", bool(v11.AI_DISCLAIMER.search("Astronomers model the galaxy with AI tools.")), False)
+rep = "Pulsars are rotating neutron stars that emit beams. They are very dense.\nPulsars are rotating neutron stars that emit beams."
+check("repeated_sentence", bool(v11.repeated_sentence(rep)), True)
+check("repeated_sentence: yok", v11.repeated_sentence("Pulsars spin fast. They emit radio beams that sweep Earth."), None)
+
+# 9) rule_checks uçtan uca: yeni kurallar doğru nedenle eler, iyi örnek kalır
+from common import RemovalLog  # noqa: E402
+from lingua import LanguageDetectorBuilder, Language  # noqa: E402
+
+det2 = LanguageDetectorBuilder.from_languages(Language.ENGLISH, Language.TURKISH, Language.SPANISH,
+                                              Language.FRENCH, Language.GERMAN).build()
+GOOD = ("A pulsar is a rapidly rotating neutron star that emits beams of radio waves from its magnetic poles. "
+        "As it spins, the beams sweep across Earth like a lighthouse, so astronomers detect regular pulses.")
+
+
+def row(i, ins, resp, t="definition_explanation", se=False):
+    return {"raw_example_id": f"R{i}", "task_type": t, "planned_task_type": t, "level": "unassigned" if se else "beginner",
+            "instruction": ins, "response": resp, "source_name": "x", "source_document": f"D{i}",
+            "generation_method": v11.SE_METHOD if se else "llm_synthetic_from_source_document"}
+
+
+cases = [row(0, "What is a pulsar and how is it detected?", GOOD),
+         row(1, "Why does the Moon look larger near the horizon?", GOOD + " Consider the below picture:", se=True),
+         row(2, "What is a pulsar and how do astronomers find them?", GOOD + " Have a look at this simulation:", se=True),
+         row(3, "Explain what a pulsar is to a beginner student.", GOOD + " " + GOOD.split(". ")[0] + ".")]
+rl = RemovalLog(Path(__file__).parent / "_tmp_removed.csv", "t")
+kept = v11.rule_checks(cases, rl, det2, set())
+check("rule_checks: iyi örnek kaldı", [r["raw_example_id"] for r in kept], ["R0"])
+check("rule_checks: nedenler", sorted((x["id"], x["reason"]) for x in rl.rows),
+      [("R1", "missing_media_reference"), ("R2", "truncated_response"), ("R3", "repeated_sentence")])
 print("hata:", bad)
 sys.exit(1 if bad else 0)

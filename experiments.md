@@ -982,3 +982,26 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
 - Öneri tekli yargıçtı (~7–12 gün). **Karar (Eda, 18.11):** risk açıklandıktan sonra süre nedeniyle toplu yargıç
   (`jobs_per_call: 3`, ~3–4 gün). Bu karar ve kalibrasyon sonucu INSTRUCTION_CARD'da sınırlılık olarak açıkça
   yazılacak. Kalibrasyonun kalan 4 çağrısı rapor eksiksiz olsun diye tamamlanacak.
+
+## 18.11.2026 — Kural denetimi ve yeni kurallar (Eda isteği)
+
+- Amaç: kuralla yakalanabilecek her hata türünün yargıçtan bağımsız yakalanması (toplu yargıç kalibrasyonda
+  hatalı örneklerin bir kısmını kaçırdığı için). Kurallardan geçen 2.498 örnek (SE dahil) aday kalıplar için
+  tarandı; her aday elle incelendi. İnce bilimsel hatalar (ör. "Dawn evrenin erken tarihini inceler") kuralla
+  yakalanamaz; onlar yargıçta kalır.
+- Bulunan kod hataları: (1) `UNSEEN` kalıbı "based on the text" ifadesinden sonra boşluk istiyordu; "based on the
+  text:" kaçtı (JOB_DOC_DOC_013345_09, kalibrasyonda toplu yargıcın kaçırdığı örnek). (2) `has_passage` yalnız
+  uzunluğa (≥ 300) bakıyordu; v2.0'daki 20 uzun sınıflandırma talimatının hiçbirinde metin yoktu (tek satır öğe
+  listesi), atıf kontrolünden yanlışlıkla muaftı. Artık ilk satırdan sonra ≥ 150 karakterlik ayrı satır aranıyor.
+- Genişletilen kalıplar: görülmeyen çalışma/rapor/bağlama atıf ("described in the study", "as described in the survey
+  context", "according to the authors"); "the study of ..." gibi doğal kullanım serbest. Sınıflandırmada silme
+  "as described in the text" ifadesini de siliyor.
+- Yeni kurallar: `missing_media_reference` (yönlü görsel atfı: "the diagram below", "as pictured above", "Image
+  source"; tek başına "the image" serbest), `truncated_response` (":" / "," / bağlaçla biten), `encoding_artifact`,
+  `placeholder_text`, `ai_disclaimer` (reddetme görevleri hariç), `repeated_sentence`, `unbalanced_markdown`.
+- Mevcut veride etkisi (eski/yeni kural karşılaştırması): 39 örnek elendi (31 SE görsel atfı, 6 SE yarım cevap,
+  2 üretilmiş örnekte görülmeyen kaynağa atıf), 4 sınıflandırma talimatında atıf silindi; geri gelen örnek yok.
+  Elenen ve değişen her örnek elle incelendi, yanlış eleme görülmedi. Diğer güvenlik kurallarının bugünkü veride
+  karşılığı yok (kalan işler için koruma).
+- Test: `test_verify_rules.py` 97/97 (yeni kurallar için yakalaması ve yakalamaması gereken örnekler + uçtan uca
+  `rule_checks`); toplu yargıç, kalibrasyon, uçtan uca hat, SE ve 503 bekleme testleri hata 0.

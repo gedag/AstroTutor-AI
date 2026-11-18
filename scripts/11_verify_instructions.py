@@ -51,7 +51,12 @@ CRIT = ("supported", "correct", "follows_instruction", "instruction_clear", "flu
 
 
 def has_passage(ins: str) -> bool:
-    return len(ins) >= PASSAGE_MIN_CHARS
+    """Talimatta görev cümlesinden AYRI bir okuma metni var mı: ilk satırdan sonra en az 150 karakterlik bir satır.
+    18.11.2026: önceden yalnız uzunluğa (>= 300) bakılıyordu; v2.0'daki 20 uzun sınıflandırma talimatının hiçbirinde
+    metin yoktu (tek satırlık uzun öğe listesi) ama "metin var" sayılıp atıf kontrolünden muaf tutuluyordu
+    ("as described in the text" kalmıştı). Özetleme/çoktan seçmeli talimatlarında metin hep ayrı satır bloğunda."""
+    lines = ins.strip().split("\n")
+    return len(ins) >= PASSAGE_MIN_CHARS and any(len(x.strip()) >= 150 for x in lines[1:])
 
 
 def n_list_items(ins: str) -> int:
@@ -64,9 +69,16 @@ _DOC = r"(?:text|passage|document|article|excerpt|source text|source material|re
 UNSEEN = re.compile(r"\b(?:according to the " + _DOC + r"|according to the source|in the (?:above |given |provided )?"
                     + _DOC + r"|(?:the|this) " + _DOC + r" (?:says|states|mentions|describes|notes|explains)|"
                     r"(?:mentioned|described|stated|discussed|listed|noted|given) in the " + _DOC + r"|"
-                    r"based on the (?:" + _DOC + r"|source|provided|given) |the (?:provided|given|above) "
-                    r"(?:text|passage|information|document|excerpt)|as (?:stated|described|mentioned|noted) above)\b",
+                    r"based on the (?:" + _DOC + r"|source|provided|given)\b|the (?:provided|given|above) "
+                    r"(?:text|passage|information|document|excerpt)|as (?:stated|described|mentioned|noted) above|"
+                    # 18.11.2026 denetimi: görülmeyen çalışma/makale/rapora atıf ("described in the study",
+                    # "as described in the survey context", "based on the study:"). "the study of ..." serbest.
+                    r"(?:mentioned|described|stated|discussed|listed|noted|reported|presented|outlined|detailed) in the "
+                    r"(?:study|paper|report|source|(?:\w+ )?context)(?! of)|"
+                    r"based on the (?:study|paper|report|findings|(?:\w+ )?context)(?! of)|"
+                    r"according to the (?:study|paper|report|authors?|researchers)(?! of))\b",
                     re.I)
+# Not: "based on the text:" önceden kaçıyordu (kalıp sonda boşluk istiyordu; 18.11.2026, JOB_DOC_DOC_013345_09).
 
 # Sınıflandırma talimatlarında öğeler sayıldığı hâlde kalan atıf ifadeleri ("Classify the objects mentioned in the text:
 # Mercury, Venus ..."): görev çözülebilir, ama kullanıcının görmediği metne atıf öğretmesin diye ifade silinir (v1.0'da
@@ -74,11 +86,13 @@ UNSEEN = re.compile(r"\b(?:according to the " + _DOC + r"|according to the sourc
 # "provided / given / above / source" sıfatlarıyla da (10.11.2026 denetimi: "based on their descriptions in the
 # provided text" silinmeden kalmıştı)
 _ADJ = r"(?:(?:provided|given|above|source|original)\s+)?"
+# 18.11.2026: "as described in the text", "described in the survey context", "based on the study" de silinir
+_REFN = r"(?:text|passage|document|article|source|study|paper|report|(?:\w+ )?context)"
 REF_PATTERNS = [
-    re.compile(r"\s*\b(?:that are |which are )?(?:mentioned|listed|named|described|discussed) in the " + _ADJ +
-               r"(?:text|passage|document|article|source)\b", re.I),
-    re.compile(r",?\s*\baccording to the " + _ADJ + r"(?:text|passage|document|article|source)\b,?", re.I),
-    re.compile(r",?\s*\bbased on the " + _ADJ + r"(?:text|passage|document|article|source)\b,?", re.I),
+    re.compile(r"\s*\b(?:that are |which are )?(?:as )?(?:mentioned|listed|named|described|discussed|reported|"
+               r"presented|outlined|detailed) in the " + _ADJ + _REFN + r"\b", re.I),
+    re.compile(r",?\s*\baccording to the " + _ADJ + _REFN + r"\b,?", re.I),
+    re.compile(r",?\s*\bbased on the " + _ADJ + _REFN + r"\b,?", re.I),
     re.compile(r"\s*\b(?:from|in) the " + _ADJ + r"(?:text|passage|document|article)\b", re.I),
 ]
 
@@ -94,6 +108,47 @@ def strip_unseen_ref(ins: str) -> str:
 
 # LaTeX/MathJax artığı: içinde LaTeX karakteri (\x5c ^ _ { }) olan $...$ blokları veya \x5ctimes, \x5crm ... komutları
 LATEX = re.compile(r"\$[^$\n]{0,80}[\x5c^_{}][^$\n]{0,80}\$|\x5c(times|rm|frac|odot|mathrm|cdot|sim|approx)\b")
+
+# --- 18.11.2026 kural denetimi (Eda isteği: kuralla yakalanabilen her hata türü kuralla yakalansın) ---
+# Var olmayan görsele/videoya YÖNLÜ atıf ("the diagram below", "as pictured above", "Image source"). Stack Exchange
+# metinlerinde görseller temizlikte çıktığı için cevap havada kalıyor (denetimde ~50 örnek). Tek başına "the image"
+# (optikte "görüntü") kuralı TETİKLEMEZ.
+_MEDIA = (r"(?:image|picture|photo(?:graph)?|video|animation|simulation|figure|fig\.|graph|plot|chart|diagram|map|"
+          r"screenshot|gif|illustration|table|comic|cartoon)s?")
+MEDIA_REF = re.compile(r"\b(?:following|below|above) " + _MEDIA + r"\b|\b" + _MEDIA + r" (?:below|above|here)\b|"
+                       r"\b(?:shown|pictured|illustrated|depicted|summari[sz]ed) (?:below|above|here)\b|"
+                       r"\b(?:image|photo|picture|video|figure) (?:credit|source)\b|"
+                       r"\b(?:below|here) (?:is|are) (?:a |an |the |some )?(?:\w+ )?" + _MEDIA + r"\b|"
+                       r"\bas seen in the " + _MEDIA + r"\b", re.I)
+# Yarım kalan cevap: iki nokta / virgül / açık parantez / bağlaç ile biten (SE'de "Have a look at this simulation:")
+TRUNCATED = re.compile(r"(?:[,:;(–—-]|\b(?:and|or|the|a|an|of|to|with|for|in|is|are|was|which|that|because|"
+                       r"such as))\s*$", re.I)
+ENCODING_ART = re.compile(r"�|Ã[\x80-\xbf]|â€|Â[\xa0-\xbf]")      # bozuk kodlama (mojibake)
+PLACEHOLDER = re.compile(r"\[(?:insert|placeholder|todo|tbd|citation needed|your [a-z ]{2,20}|name|date|source|"
+                         r"reference)[^\]]{0,40}\]|\blorem ipsum\b|\{\{|\}\}", re.I)
+PLACEHOLDER_CS = re.compile(r"\bTODO\b|\bTBD\b|\bXXX\b")
+AI_DISCLAIMER = re.compile(r"\bas an ai\b|\b(?:ai|large) language model\b|\bmy (?:training data|knowledge cut-?off)\b|"
+                           r"\bknowledge cut-?off\b", re.I)
+
+
+def media_ref(text: str) -> str | None:
+    """Var olmayan görsele yönlü atıf; 'table' yalnız metinde markdown tablo yoksa sayılır."""
+    for m in MEDIA_REF.finditer(text):
+        if "table" in m.group(0).lower() and re.search(r"^\s*\|.*\|\s*$", text, re.M):
+            continue
+        return m.group(0)
+    return None
+
+
+def repeated_sentence(text: str) -> str | None:
+    """Cevapta aynen tekrar eden uzun cümle (üretim döngüsü)."""
+    ss = [s.strip().lower() for s in re.split(r"(?<=[.!?])\s+|\n+", text) if len(s.strip()) > 40]
+    seen = set()
+    for s in ss:
+        if s in seen:
+            return s[:60]
+        seen.add(s)
+    return None
 
 
 class Judgment(BaseModel):
@@ -236,6 +291,23 @@ def rule_checks(rows: list[dict], removed: RemovalLog, det, grams: set, excluded
             reason = ("contains_pii", "")  # kişisel iletişim bilgisi (e-posta/telefon)
         elif LATEX.search(resp):
             reason = ("latex_artifact", LATEX.search(resp).group(0))
+        elif ENCODING_ART.search(ins + resp):
+            reason = ("encoding_artifact", ENCODING_ART.search(ins + resp).group(0))
+        elif PLACEHOLDER.search(ins + resp) or PLACEHOLDER_CS.search(ins + resp):
+            reason = ("placeholder_text", (PLACEHOLDER.search(ins + resp) or PLACEHOLDER_CS.search(ins + resp)).group(0))
+        elif t not in ("mcq_generation", "summarization") and media_ref(ins):
+            # özetleme/çoktan seçmeli pasajları kaynak metinden alıntı; onlar için yargıç karar verir
+            reason = ("missing_media_reference", "ins:" + media_ref(ins))
+        elif t != "mcq_generation" and media_ref(resp):
+            reason = ("missing_media_reference", "resp:" + media_ref(resp))
+        elif t != "mcq_generation" and TRUNCATED.search(resp.rstrip("*_` \n")):
+            reason = ("truncated_response", resp.rstrip()[-40:])
+        elif t != "out_of_scope_refusal" and AI_DISCLAIMER.search(resp):
+            reason = ("ai_disclaimer", AI_DISCLAIMER.search(resp).group(0))
+        elif not is_se and t != "mcq_generation" and repeated_sentence(resp):
+            reason = ("repeated_sentence", repeated_sentence(resp))
+        elif not is_se and t != "mcq_generation" and resp.count("**") % 2 == 1:
+            reason = ("unbalanced_markdown", "**")
         elif ins.lower() in seen:
             reason = ("duplicate", "")
         else:
