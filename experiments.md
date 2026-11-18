@@ -1005,3 +1005,16 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
   karşılığı yok (kalan işler için koruma).
 - Test: `test_verify_rules.py` 97/97 (yeni kurallar için yakalaması ve yakalamaması gereken örnekler + uçtan uca
   `rule_checks`); toplu yargıç, kalibrasyon, uçtan uca hat, SE ve 503 bekleme testleri hata 0.
+
+## 18.11.2026 — Yargıç kapsamı: tam kontrol
+
+- Sorun: yargıç aşamalıdır (işlerin %20'si; bir grubun hata oranı üst güven sınırı < %5 ise grubun geri kalanı
+  değerlendirilmez). Toplu yargıç kalibrasyonda daha az hata bulduğu için gruplar yanlışlıkla "temiz" görünüp
+  durdurulabilir ve bazı örnekler yargıçtan geçmeden sete girebilirdi.
+- Seçenekler Eda'ya sunuldu (öneri: tam kontrol + 300 örneklik tekli yargıç ölçümü, kalan hata > %2 ise setin tekli
+  yargıçla yeniden kontrolü). **Karar (Eda):** "Sadece toplu yargıç, tam kapsam" — `full_check_fail_rate: 0.0`;
+  her grubun tüm işleri değerlendirilir, ölçüm turu yapılmaz. Kalan hata oranı için elimizdeki tahmin kalibrasyondan
+  (154 örnek; tekli yargıç %3,2 hata buldu, toplu yargıç sonrası ~%2, yeni kurallarla ~%1,3; örneklem küçük) ve
+  150 örneklik insan incelemesinden gelecek; INSTRUCTION_CARD'da böyle yazılacak.
+- Doğrulama: 0/500 hatada bile grup tam kontrol ediliyor; uçtan uca hat (tekli ve toplu), kural ve toplu yargıç
+  testleri hata 0 (uçtan uca test aşamalı mantığı kendi eşiğiyle sınamaya devam ediyor).

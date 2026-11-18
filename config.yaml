@@ -231,7 +231,10 @@ instruction:
   # SE islerinin tamami her zaman degerlendirilir (seviye atamasi icin).
   judge:
     initial_fraction: 0.20
-    full_check_fail_rate: 0.05
+    # 18.11.2026 Eda karari ("Sadece toplu yargic, tam kapsam"): erken durdurma KAPALI. Toplu yargic daha az hata
+    # buldugu icin (kalibrasyon) gruplar yanlislikla "temiz" gorunup durabilirdi; 0.0 ile her grubun TUM isleri
+    # degerlendirilir, hicbir ornek yargicsiz sete girmez. Asama 1 istatistikleri yine plana yazilir.
+    full_check_fail_rate: 0.0
     confidence: 0.95
     # Bir yargic cagrisinda kac is (11.11.2026, Eda karari): 1 = her is ayri cagri. Ucretsiz katmanda gunluk istek
     # siniri darbogaz; 3 is/cagri yargic istegini ~324'ten ~110'a indirir. Bir cagriya yalniz ayni is turu ve ayni
