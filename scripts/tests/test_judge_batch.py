@@ -119,8 +119,10 @@ crit_b = tmpl_b[tmpl_b.index("Criteria (each true/false):"):tmpl_b.index("\n\n{g
 check("ölçüt metni iki şablonda aynı", crit_b == crit_1, True)
 check("toplu şablon 'yalnız kendi GROUP kaynağı' kuralını içeriyor", "ONLY the SOURCE of its own GROUP" in tmpl_b, True)
 
-# 6) yapılandırma: varsayılan davranış değişmedi
-check("config jobs_per_call varsayılan 1", v11.J.get("jobs_per_call"), 1)
+# 6) yapılandırma: değer 1 (tekli) ya da 3 (18.11.2026 Eda kararı); config'te yoksa kod tekli çalışır
+check("config jobs_per_call 1 veya 3", v11.J.get("jobs_per_call") in (1, 3), True)
+src11 = (Path(__file__).resolve().parent.parent / "11_verify_instructions.py").read_text(encoding="utf-8")
+check("kodda varsayılan 1", 'J.get("jobs_per_call", 1)' in src11, True)
 
 print("hata:", bad)
 sys.exit(1 if bad else 0)

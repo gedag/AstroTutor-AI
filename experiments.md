@@ -968,3 +968,17 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
   Üretilen örneklerin içeriği değişmez; yalnız modelin ne zaman denendiği değişir.
 - Test: `scripts/tests/test_llm_cooldown.py` (sahte istemci) 21/21; toplu yargıç, kalibrasyon, uçtan uca hat, kural
   ve SE testleri hata 0.
+
+## 18.11.2026 — Kalibrasyon ara sonucu ve yargıç yöntemi kararı
+
+- Ara sonuç (6 üçlünün 5'i, 154 örnek, iki modda aynı yargıç modeli): karar uyumu %98,1 (151/154); tekli yargıcın
+  elediği 5 örneğin yalnız 2'si toplu yargıçta elendi (yakalama %40, ölçüt ≥ %90) → **ölçüt 2 sağlanmadı**;
+  kaynak karışması görülmedi. Kalan SE üçlüsü (29 örnek) sonucu değiştiremez (ölçütün geçmesi için ≥ 25 yeni
+  eleme ve hepsinin toplu yargıçta yakalanması gerekir).
+- Toplu yargıcın kaçırdığı 3 örnek elle incelendi; üçünde de tekli yargıç haklı: JOB_DOC_DOC_010762_05 (eucrite
+  oksijen izotopu ile Vesta tayf gözlemi karıştırılmış), JOB_DOC_DOC_010762_06 (Dawn "evrenin erken tarihi" —
+  doğrusu Güneş Sistemi'nin), JOB_DOC_DOC_013345_09 (talimat "metne göre" diyor, metin yok). Yorum: toplu yargıç
+  daha gevşek; ince bilimsel hataları kaçırma eğiliminde.
+- Öneri tekli yargıçtı (~7–12 gün). **Karar (Eda, 18.11):** risk açıklandıktan sonra süre nedeniyle toplu yargıç
+  (`jobs_per_call: 3`, ~3–4 gün). Bu karar ve kalibrasyon sonucu INSTRUCTION_CARD'da sınırlılık olarak açıkça
+  yazılacak. Kalibrasyonun kalan 4 çağrısı rapor eksiksiz olsun diye tamamlanacak.

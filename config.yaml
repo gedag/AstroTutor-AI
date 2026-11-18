@@ -238,7 +238,10 @@ instruction:
     # uretici modelin isleri konur. 1'den buyuk deger YALNIZ kalibrasyon testi (scripts/judge_calibration.py, onceden
     # belirlenen olcut: karar uyumu >= %90 ve tekli yargicin eledigi orneklerin >= %90'i toplu yargicta da elenmeli,
     # kaynak karistirma yok) gecip Eda onaylarsa yazilir.
-    jobs_per_call: 1
+    # 18.11.2026: kalibrasyon ara sonucu (5/6 uclu, 154 ornek) uyum %98.1 ama tekli yargicin eledigi 5 ornegin
+    # yalniz 2'si toplu yargicta elendi (%40) -> olcut 2 SAGLANMADI. Eda risk aciklandiktan sonra sure nedeniyle
+    # toplu yargici secti (AskUserQuestion: "Yine de toplu yargic"). INSTRUCTION_CARD'da acikca belirtilir.
+    jobs_per_call: 3
   evidence_min_overlap: 0.6     # destekleyen alintinin kelime 5-gram'larinin en az %60'i kaynakta olmali
   temperature: 0.7
   judge_temperature: 0.0
