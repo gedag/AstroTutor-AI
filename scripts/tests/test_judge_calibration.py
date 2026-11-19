@@ -54,13 +54,14 @@ class FakeGemini:
     calls: list = []
     quota_after = None   # bu kadar çağrıdan sonra kota hatası (devam testi)
     busy: set = set()    # bu modeller 503 verir (bir model yoğunken diğerinin görevleri sürmeli)
+    batch_deadline = False  # True: toplu çağrılar 504 DEADLINE verir (görev bırakılmalı, tekliler sürmeli)
 
     def __init__(self, models, temperature, thinking=None):
         self.models = list(models)
         self.last_model = None
         self.exhausted = set()
 
-    def generate_json(self, system, prompt, schema, exclude=None):
+    def generate_json(self, system, prompt, schema, exclude=None, stop_on_deadline=False):
         if FakeGemini.quota_after is not None and len(FakeGemini.calls) >= FakeGemini.quota_after:
             raise llm.QuotaExhausted("fake quota")
         import re
@@ -68,6 +69,8 @@ class FakeGemini:
         cands = [m for m in self.models if m not in (exclude or set())]
         if cands[0] in FakeGemini.busy:
             raise llm.TransientError("fake 503")
+        if FakeGemini.batch_deadline and stop_on_deadline:
+            raise llm.DeadlineError("fake 504 DEADLINE_EXCEEDED")
         self.last_model = cands[0]
         groups = re.search(r"Below are (\d+) GROUPS", prompt)
         FakeGemini.calls.append((int(groups.group(1)) if groups else 1, self.last_model))
@@ -145,6 +148,28 @@ res2 = json.loads((TMP / "reports" / "judge_calibration.json").read_text(encodin
 check("gevşek toplu yargıç: yakalama 0", res2["fail_recall"] == 0.0, str(res2["fail_recall"]))
 check("gevşek toplu yargıç: ölçüt sağlanmadı", res2["automatic_criteria_met"] is False)
 check("uyuşmayanlar listelendi", len(res2["disagreements"]) == res2["single_fail"] > 0)
+
+# 4) toplu çağrılar hep süre aşımına uğrarsa: her toplu görev MAX_ATTEMPTS kez denenip bırakılır, tekli görevler
+#    aynı modelle sürer (model yoğun sayılmaz), rapor yazılır ve süre aşımları raporda görünür
+shutil.rmtree(TMP / "interim" / "judge_calibration")
+for f in ("judge_calibration.json", "judge_calibration.md"):
+    (TMP / "reports" / f).unlink()
+FakeGemini.batch_deadline = True
+FakeGemini.calls.clear()
+codes = [cal.main() for _ in range(3)]
+check("süre aşımı: görevler bırakılınca çıkış 0", codes[-1] == 0, str(codes))
+sel4 = json.loads((TMP / "interim" / "judge_calibration" / "selection.json").read_text(encoding="utf-8"))
+n_single = sum(len(t["jobs"]) for t in sel4["triples"])
+check("süre aşımı: bütün tekli görevler yapıldı (model yoğun sayılmadı)", len(FakeGemini.calls) == n_single,
+      f"{len(FakeGemini.calls)} / {n_single}")
+res4 = json.loads((TMP / "reports" / "judge_calibration.json").read_text(encoding="utf-8"))
+check("süre aşımı: her toplu görev MAX_ATTEMPTS kez", res4["batch_deadline_events"] ==
+      {f"batch:{t}": cal.MAX_ATTEMPTS for t in range(len(sel4["triples"]))}, str(res4["batch_deadline_events"]))
+check("süre aşımı: karşılaştırılamayanlar raporda",
+      res4["examples_compared"] == 0 and len(res4["examples_not_compared"]) == res4["examples_selected"] > 0)
+check("süre aşımı: markdown raporda yazıyor", "Süre aşımına uğrayan toplu görevler" in
+      (TMP / "reports" / "judge_calibration.md").read_text(encoding="utf-8"))
+FakeGemini.batch_deadline = False
 
 print(f"\nhata: {bad}")
 if not bad:

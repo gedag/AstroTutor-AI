@@ -652,7 +652,7 @@ def main() -> int:
                 and any(group(x) in fg for x in by_job[jid])}
 
     if not a.no_judge:
-        from llm import Gemini, QuotaExhausted, TransientError
+        from llm import DeadlineError, Gemini, QuotaExhausted, TransientError
 
         llm = None
         tmpl = (PD / "judge.txt").read_text(encoding="utf-8")
@@ -676,12 +676,20 @@ def main() -> int:
                      f"(örneklem {len(sample_jobs)}, SE {len(se_jobs)}, tam kontrol {len(full_jobs(plan))})")
             if todo and llm is None:
                 llm = Gemini(I["judge_models"], I["judge_temperature"], I.get("judge_thinking_budget"))
-            for batch in make_batches(todo, by_job, size):
+            queue = make_batches(todo, by_job, size)
+            while queue:
+                batch = queue.pop(0)
                 prompt, flat = judge_prompt(batch, by_job, docs, tmpl, tmpl_batch)
                 name = batch[0] if len(batch) == 1 else f"{batch[0]} (+{len(batch) - 1} iş)"
                 try:
                     res = llm.generate_json(JUDGE_SYSTEM, prompt, list[Judgment],
-                                            exclude=set(job_models(flat)))
+                                            exclude=set(job_models(flat)), stop_on_deadline=len(batch) > 1)
+                except DeadlineError as e:
+                    # Toplu çağrı sunucu süre sınırını aştı: işler bu çalıştırmada TEK TEK denenir (ağır istek
+                    # yüzünden yargıç takılmasın; 19.11.2026). Tekli çağrıda bu hata fırlatılmaz (normal geçici hata).
+                    log.warning(f"{name}: toplu çağrı süre aşımı ({str(e)[:100]}); işler tek tek denenecek")
+                    queue[0:0] = [[j] for j in batch]
+                    continue
                 except QuotaExhausted as e:
                     if len(llm.exhausted) == len(llm.models):
                         log.error(f"Tüm yargıç modellerinin günlük kotası doldu; kaldığı yerden devam: {e}")

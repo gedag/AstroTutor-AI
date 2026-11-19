@@ -136,5 +136,48 @@ f.requests.clear()
 check("beklemedeki model başka çağrıyı engellemez", call(g, exclude={M[2]}) == "ok" and f.requests == [M[0]],
       str(f.requests))
 
+# 8) süre aşımı (504 / zaman aşımı): toplu çağrı stop_on_deadline=True ile başka modele gitmez -> DeadlineError
+E504 = "504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired'}}"
+
+
+def call_batch(g):
+    try:
+        g.generate_json("s", "p", dict, stop_on_deadline=True)
+        return "ok"
+    except llm.DeadlineError:
+        return "deadline"
+    except llm.QuotaExhausted:
+        return "quota"
+    except llm.TransientError:
+        return "transient"
+
+
+check("DeadlineError geçici hata sınıfından (eski yakalayıcılar bozulmaz)",
+      issubclass(llm.DeadlineError, llm.TransientError))
+g, f = new_client()
+f.behavior = {M[0]: E504}
+check("toplu + 504: DeadlineError, başka modele gidilmedi", call_batch(g) == "deadline" and f.requests == [M[0]],
+      str(f.requests))
+g, f = new_client()
+f.behavior = {M[0]: E504}
+check("tekli + 504: sıradaki modele geçilir", call(g) == "ok" and f.requests == [M[0], M[1]], str(f.requests))
+g, f = new_client()
+f.behavior = {M[0]: ETIMEOUT}
+check("toplu + zaman aşımı: DeadlineError", call_batch(g) == "deadline" and f.requests == [M[0]], str(f.requests))
+g, f = new_client()
+f.behavior = {M[0]: E503}
+check("toplu + 503 (süre aşımı değil): sıradaki modelle başarı", call_batch(g) == "ok" and f.requests == [M[0], M[1]],
+      str(f.requests))
+g, f = new_client()
+f.behavior = {M[0]: EDNS, M[1]: E504}
+check("DNS sonra 504: DeadlineError, üçüncü modele gidilmedi",
+      call_batch(g) == "deadline" and f.requests == [M[0], M[1]], str(f.requests))
+g, f = new_client()
+f.behavior = {M[0]: E504}
+call_batch(g)
+f.requests.clear()
+f.behavior = {}
+check("süre aşımından sonraki normal çağrı etkilenmez", call(g) == "ok" and f.requests == [M[1]], str(f.requests))
+
 print(f"\nhata: {bad}")
 sys.exit(1 if bad else 0)

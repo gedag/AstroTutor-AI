@@ -117,7 +117,7 @@ def main() -> int:
     if missing_jobs:
         log.warning(f"Seçimdeki {len(missing_jobs)} işin kontrolden geçen örneği yok: {missing_jobs}")
     if todo:
-        from llm import Gemini, QuotaExhausted, TransientError
+        from llm import DeadlineError, Gemini, QuotaExhausted, TransientError
 
         llm = Gemini(I["judge_models"], I["judge_temperature"], I.get("judge_thinking_budget"))
         tmpl = (v11.PD / "judge.txt").read_text(encoding="utf-8")
@@ -131,7 +131,14 @@ def main() -> int:
             try:
                 # yalnız seçilen yargıç modeli (iki mod aynı modelle)
                 res = llm.generate_json(v11.JUDGE_SYSTEM, prompt, list[v11.Judgment],
-                                        exclude=set(I["judge_models"]) - {model})
+                                        exclude=set(I["judge_models"]) - {model}, stop_on_deadline=mode == "batch")
+            except DeadlineError as e:
+                # Toplu çağrı sunucu süre sınırını aştı: görevin kendisiyle ilgili (deneme sayılır, MAX_ATTEMPTS sonra
+                # bırakılır; raporda yazılır). Model yoğun sayılmaz, aynı modelin tekli görevleri sürer (19.11.2026).
+                attempts[name] += 1
+                append_jsonl(att_f, {"task": name, "result": "deadline", "detail": str(e)[:200], "at": now_iso()})
+                log.warning(f"{name}: toplu çağrı süre aşımı (deneme {attempts[name]}/{MAX_ATTEMPTS})")
+                continue
             except (QuotaExhausted, TransientError) as e:
                 unavailable.add(model)
                 log.warning(f"{name}: {model} şu an kullanılamıyor ({str(e)[:120]}); bu modelin görevleri "
@@ -203,7 +210,10 @@ def report(sel: dict, by_job: dict, judged: dict) -> None:
            "by_kind": by_kind, "criterion_disagreements": crit_diff,
            "se_level_agreement": round(lvl / len(se), 4) if se else None,
            "criterion_1_agreement_ok": c1, "criterion_2_evaluable": c2_eval, "criterion_2_recall_ok": c2,
-           "automatic_criteria_met": bool(c1 and c2), "disagreements": dis}
+           "automatic_criteria_met": bool(c1 and c2), "disagreements": dis,
+           # süre aşımına uğrayan toplu görevler (19.11.2026): görev -> 504/zaman aşımı sayısı
+           "batch_deadline_events": dict(Counter(r["task"] for r in read_jsonl(OUT / "attempts.jsonl")
+                                                 if r.get("result") == "deadline"))}
     (p("reports") / "judge_calibration.json").write_text(json.dumps(res, indent=2, ensure_ascii=False),
                                                               encoding="utf-8")
     pct = lambda v: "—" if v is None else f"%{100 * v:.1f}"  # noqa: E731
@@ -240,7 +250,10 @@ def report(sel: dict, by_job: dict, judged: dict) -> None:
           f"{esc(d['instruction'])} |" for d in dis]
     if gaps:
         L += ["", f"Karşılaştırılamayan örnek: {len(gaps)} (bir modda değerlendirilemedi)"]
-    L += ["", "Karar: bu rapor Eda'ya sunulur; `config.yaml` → `instruction.judge.jobs_per_call` yalnız Eda onaylarsa 3 yapılır."]
+    if res["batch_deadline_events"]:
+        L += ["", "Süre aşımına uğrayan toplu görevler (504 / zaman aşımı; MAX_ATTEMPTS sonra bırakıldı): "
+              + ", ".join(f"{k} ({v} kez)" for k, v in res["batch_deadline_events"].items())]
+    L += ["", "Karar: 18.11.2026 ara sonuçla Eda toplu yargıcı seçti (`jobs_per_call: 3`, tam kapsam); ayrıntı experiments.md."]
     (p("reports") / "judge_calibration.md").write_text("\n".join(L) + "\n", encoding="utf-8")
     log.info(f"Rapor: uyum {pct(res['agreement'])}, tekli eledi {n_sf}, toplu eledi {sum(bf)}, yakalama "
              f"{pct(res['fail_recall'])}; otomatik ölçüt {'sağlandı' if res['automatic_criteria_met'] else 'sağlanmadı'}")

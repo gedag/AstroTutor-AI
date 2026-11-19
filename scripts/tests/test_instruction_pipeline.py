@@ -92,10 +92,10 @@ class FakeGemini:
         self.n_doc = 0
         self.bad_level_done = False
 
-    def generate_json(self, system, prompt, schema, exclude=None):
+    def generate_json(self, system, prompt, schema, exclude=None, stop_on_deadline=False):
         self.calls += 1
         if "quality auditor" in system:
-            return self._judge(prompt, exclude or set())
+            return self._judge(prompt, exclude or set(), stop_on_deadline)
         self.last_model = self.GEN[1] if self.calls % 3 == 0 else self.GEN[0]
         self.calls_by_model[self.last_model] = self.calls_by_model.get(self.last_model, 0) + 1
         if "SOURCE DOCUMENT" in prompt:
@@ -168,9 +168,14 @@ class FakeGemini:
                  "supporting_evidence": ""} for k in range(n)]
 
     JUDGE_CALLS: list = []   # (çağrıdaki iş sayısı, hariç tutulan modeller)
+    DEADLINE_JOBS: list = []  # süre aşımı verilen ilk toplu çağrıdaki işler (19.11.2026: tek tek denenmeli)
 
-    def _judge(self, prompt: str, exclude: set) -> list[dict]:
+    def _judge(self, prompt: str, exclude: set, stop_on_deadline: bool = False) -> list[dict]:
         m = re.search(r"^=== GROUP 1 of (\d+) ===$", prompt, re.M)
+        if m and int(m.group(1)) > 1 and stop_on_deadline and not FakeGemini.DEADLINE_JOBS:
+            # ilk toplu çağrı sunucu süre sınırını aşar -> 11 bu işleri aynı çalıştırmada tek tek denemeli
+            FakeGemini.DEADLINE_JOBS.append(int(m.group(1)))
+            raise llm.DeadlineError("fake 504 DEADLINE_EXCEEDED")
         FakeGemini.JUDGE_CALLS.append((int(m.group(1)) if m else 1, frozenset(exclude)))
         cands = [m for m in self.models if m not in exclude]
         self.last_model = cands[0]
@@ -317,6 +322,9 @@ check(f"yargıç çağrısında iş sayısı <= {JPC}", max(sizes) <= JPC, str(d
 if JPC > 1:
     check("toplu çağrı gerçekten yapıldı", any(n > 1 for n in sizes), str(dict(sizes)))
     check("toplu çağrıda en fazla bir üretici model hariç", all(len(e) <= 1 for _, e in FakeGemini.JUDGE_CALLS))
+    check("süre aşımı: bir toplu çağrı 504 verdi", len(FakeGemini.DEADLINE_JOBS) == 1, str(FakeGemini.DEADLINE_JOBS))
+    check("süre aşımı sonrası işler tek tek denendi (tekli çağrı var)", sizes.get(1, 0) >= FakeGemini.DEADLINE_JOBS[0],
+          str(dict(sizes)))
 summ = json.load(open(TMP / "reports" / "instruction_verification_summary.json", encoding="utf-8"))
 check("özet: tahmini kalan hata hesaplandı", summ["estimated_error_rate_remaining"] is not None,
       f"{summ['estimated_error_rate_remaining']} ({summ['judged_by_phase']})")

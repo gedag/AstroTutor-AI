@@ -1024,3 +1024,18 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
   İlk ölçümde "undergraduate → advanced" eşlemesini hata sandım; proje tanımında (system_generate.txt) lisans =
   advanced, yani üretici doğru. Sınıflandırmada "unutulan öğe" adaylarının 8/8'i yazım farkıydı → kural eklenmedi.
   Karşılaştırma: yalnız bu 4 örnek elendi. `test_verify_rules.py` 107/107, diğer testler hata 0.
+
+## 19.11.2026 — Toplu yargıçta süre aşımı (504 DEADLINE_EXCEEDED) güvencesi
+
+- Gözlem: kalibrasyonun Stack Exchange toplu çağrısı (batch:5, 3 iş / 29 örnek, ~63 bin karakter) 18–19.11'de taze
+  kotada bile ~10 dk sonra 504 / zaman aşımı verdi (benzer büyüklükteki doküman toplu çağrıları 4–5 dk'da bitmişti).
+- Risk: 11'de süre aşımı "geçici hata" sayılıyordu (deneme sayılmaz, her turda yeniden denenir). Bir toplu çağrı her
+  seferinde süre sınırını aşacak kadar ağırsa o işler hiç değerlendirilmez, yargıç ve sonraki aşamalar (12, 13) hiç
+  bitmezdi; her deneme ~10 dk ve kota harcardı.
+- Değişiklik: `llm.DeadlineError` (TransientError alt sınıfı). Toplu çağrıda (`stop_on_deadline=True`) 504 / zaman aşımı
+  görülünce aynı ağır istek başka modellere gönderilmez. 11: toplu çağrı süre aşımına uğrarsa işleri aynı
+  çalıştırmada TEK TEK denenir (tekli çağrıda davranış değişmedi). Kalibrasyon: toplu görevin süre aşımı deneme sayılır
+  (MAX_ATTEMPTS = 2 sonra bırakılır), model yoğun sayılmaz, tekli görevler sürer; raporda `batch_deadline_events`.
+- Test: `test_llm_cooldown.py` (504/zaman aşımı/DNS+504/503 ayrımı) hata 0; `test_judge_calibration.py` (bütün toplu
+  çağrılar süre aşımı → tekliler tamam, görevler bırakıldı, raporda) hata 0; uçtan uca hat tekli ve toplu (ilk toplu
+  çağrı sahte 504 → 3 iş tek tek değerlendirildi, bütün işler bitti) hata 0; kural, toplu yargıç ve SE testleri hata 0.

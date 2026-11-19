@@ -29,6 +29,13 @@ class TransientError(RuntimeError):
     hata sanılıp atlanmıştı.)"""
 
 
+class DeadlineError(TransientError):
+    """İstek sunucunun süre sınırını aştı (504 DEADLINE_EXCEEDED / okuma zaman aşımı) ve çağıran
+    stop_on_deadline=True istedi. Toplu yargıç çağrısı büyükse çağıran işleri tek tek dener (19.11.2026: kalibrasyonda
+    bir Stack Exchange toplu çağrısı taze kotada bile üç kez ~10 dk sonra 504 verdi; aynı isteği diğer modellere
+    göndermek her biri için ~10 dk ve kota harcardı)."""
+
+
 NETWORK_ERR = re.compile(r"10054|10053|10060|connection (reset|aborted|refused)|remote ?(end|host|disconnected)|"
                          r"timed? ?out|ReadTimeout|ConnectTimeout|RemoteProtocolError|ConnectError|"
                          r"Server disconnected|EOF occurred|getaddrinfo|Name or service not known|nodename|"
@@ -78,6 +85,8 @@ class Gemini:
         self.usage = {"prompt_tokens": 0, "output_tokens": 0}
         self._last_err: Exception | None = None
         self._permanent_err = False
+        self._deadline = False
+        self._stop_on_deadline = False
         # Çağıranın geçici olarak dışladığı modeller (ör. lite'ta iki kez Türkçe karakter kusuru veren iş
         # yalnız Flash ile denenir)
         self.force_exclude: set[str] = set()
@@ -105,11 +114,15 @@ class Gemini:
             cfg["thinking_config"] = types.ThinkingConfig(thinking_budget=self.thinking)
         return types.GenerateContentConfig(**cfg)
 
-    def generate_json(self, system: str, prompt: str, schema, exclude: set | None = None) -> object:
-        """exclude: bu çağrıda kullanılmayacak modeller (ör. yargıç için örneği üreten model)."""
+    def generate_json(self, system: str, prompt: str, schema, exclude: set | None = None,
+                      stop_on_deadline: bool = False) -> object:
+        """exclude: bu çağrıda kullanılmayacak modeller (ör. yargıç için örneği üreten model).
+        stop_on_deadline: süre aşımında (504 / zaman aşımı) başka modele geçmeden DeadlineError fırlat."""
         config = self._config(system, schema)
         self._last_err = None
         self._permanent_err = False  # bu çağrıda içerikle ilgili (geçici olmayan) hata görüldü mü
+        self._deadline = False       # bu çağrıda süre aşımı görüldü mü
+        self._stop_on_deadline = stop_on_deadline
         excl = set(exclude or ()) | self.force_exclude
         cand = [m for m in self.models if m not in excl]
         cooling = self.cooling
@@ -133,6 +146,8 @@ class Gemini:
             # Kademede kotası bitmemiş (503 vb. ile başarısız) model varsa alt kademeye İNİLMEZ
             if not all(m in self.exhausted for m in tier):
                 break
+        if self._deadline and self._stop_on_deadline:
+            raise DeadlineError(f"Gemini çağrısı sunucu süre sınırını aştı (504/zaman aşımı): {self._last_err}")
         # Yalnız kullanılabilecek BÜTÜN modellerin kotası dolduysa "kota bitti" denir; beklemedeki (503) bir model
         # varsa durum geçicidir (o model süre dolunca yeniden denenir).
         if all(m in self.exhausted for m in cand):
@@ -150,6 +165,8 @@ class Gemini:
             usable.remove(self.last_model)
             usable.insert(0, self.last_model)
         for model in usable:
+            if self._deadline and self._stop_on_deadline:
+                break   # ağır istek başka modele gönderilmez; çağıran küçülterek dener
             for attempt in range(4):
                 wait = self.min_interval - (time.time() - self._last)
                 if wait > 0:
@@ -189,6 +206,8 @@ class Gemini:
                                     f"({self.cooldown_seconds // 60} dk sonra yeniden denenecek)")
                         self.busy[model] = self.busy.get(model, 0) + 1
                         self._busy_at[model] = time.time()
+                        if "DEADLINE" in msg or "504" in msg:
+                            self._deadline = True
                         break
                     # Ağ hataları (DNS, SSL, erişilemeyen ağ) işin kusuru değildir. ssl.SSLError aynı zamanda ValueError
                     # olduğu için bu kontrol JSON kontrolünden ÖNCE yapılır (28.10.2026: Wi-Fi değişince 15 iş için SSL ve
@@ -200,6 +219,7 @@ class Gemini:
                         # DNS/SSL/bağlantı kopması: istek ulaşmadı, model beklemeye ALINMAZ.
                         if re.search(r"timed? ?out|ReadTimeout|DEADLINE", msg, re.I):
                             self._busy_at[model] = time.time()
+                            self._deadline = True
                         break
                     if isinstance(e, (json.JSONDecodeError, ValueError)):
                         log.warning(f"{model}: geçersiz JSON, tekrar deneniyor")
