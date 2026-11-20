@@ -174,6 +174,14 @@ trunc = {"Have a look at this NASA simulation of the collision:": True,
          "Temperatures reach 6000 K": False}
 for s, want in trunc.items():
     check(f"truncated: {s[:45]}", bool(v11.TRUNCATED.search(s.rstrip("*_` \n"))), want)
+other = {"To add to John Conde's answer. According to NASA...": True,
+         "Anders's answer is entirely fine, but I'd like to add some extra information.": True,
+         "As the accepted answer explains, the Moon recedes.": True,
+         "Kepler's third law gives the orbital period.": False,
+         "The answer depends on the mass of the star.": False,
+         "So the question becomes: does Pu-238 go critical?": False}
+for s, want in other.items():
+    check(f"other_answer: {s[:45]}", bool(v11.OTHER_ANSWER.search(s)), want)
 check("encoding: mojibake", bool(v11.ENCODING_ART.search("The Sunâ€™s core is hot.")), True)
 check("encoding: replacement char", bool(v11.ENCODING_ART.search("The Sun�s core")), True)
 check("encoding: temiz (−, °, ’)", bool(v11.ENCODING_ART.search("It is −15 °C at the Sun’s pole.")), False)

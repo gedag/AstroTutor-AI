@@ -1057,3 +1057,8 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
   (3), 51 SE işi tekli yargılanır (~34 ek istek, yargıç ~yarım–1 gün uzar). `make_batches` iş türüne göre büyüklük alır.
 - Test: `test_judge_batch.py` (karma gruplama, config) hata 0; uçtan uca hat tekli ve toplu (toplu modda SE
   çağrılarının hepsi tekli, doküman çağrıları toplu, süre aşımı güvencesi) hata 0; diğer testler hata 0.
+- Ek kural (20.11): `references_other_answer` (yalnız SE cevabı): cevap başka kullanıcının cevabına dayanıyor
+  ("To add to John Conde's answer", "Anders's answer is entirely fine"). Kalan 464 SE örneğinde 5 eleme, hepsi elle
+  doğrulandı (biri kalibrasyonda tekli yargıcın da elediği JOB_SE_0017_09). Sorudaki "this question" gibi doğal ifadeler
+  ve "Kepler's third law" serbest. SE elemelerinin nedeni: örnekler Gemini üretimi değil, forumdan aynen alınan insan
+  metinleri (başka gönderiye/görsele atıf, yazım hataları, kısmi cevap, ara sıra bilgi hatası).

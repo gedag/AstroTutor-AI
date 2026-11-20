@@ -4,7 +4,8 @@
    llm_skipped, invalid_level, length, task_type_mismatch, wrong_language (İngilizce değil), exponent_loss,
    references_unseen_text, response_references_unseen_text, invalid_mcq_json / no_teaching_passage,
    mcq_answer_in_instruction, mcq_count_mismatch, level_audience_mismatch, contains_url, contains_pii, latex_artifact,
-   encoding_artifact, placeholder_text, missing_media_reference, truncated_response, ai_disclaimer, repeated_sentence,
+   encoding_artifact, placeholder_text, missing_media_reference, references_other_answer (SE), truncated_response,
+   ai_disclaimer, repeated_sentence,
    unbalanced_markdown, duplicate, near_duplicate, eval_overlap. (18.11.2026 kural denetimi: experiments.md)
    Düzeltme (eleme değil): sınıflandırma talimatında öğeler sayılmışken "mentioned in the text" gibi atıf silinir.
 2) Kanıt kontrolü (kaynak dokümanı olan Gemini örnekleri): destekleyen alıntı kaynakta geçmeli. Stack Exchange
@@ -125,6 +126,11 @@ MEDIA_REF = re.compile(r"\b(?:following|below|above) " + _MEDIA + r"\b|\b" + _ME
 # Yarım kalan cevap: iki nokta / virgül / açık parantez / bağlaç ile biten (SE'de "Have a look at this simulation:")
 TRUNCATED = re.compile(r"(?:[,:;(–—-]|\b(?:and|or|the|a|an|of|to|with|for|in|is|are|was|which|that|because|"
                        r"such as))\s*$", re.I)
+# Stack Exchange cevabı başka bir kullanıcının cevabına dayanıyor ("To add to John Conde's answer", "Anders's answer is
+# fine, but..."): cevap tek başına anlaşılmaz (20.11.2026 denetimi: kalan 464 SE örneğinin cevabında 4). Sorudaki
+# "this question" gibi doğal ifadeler serbest.
+OTHER_ANSWER = re.compile(r"\b[\w.-]+'s answer\b|\b(?:the )?(?:accepted|other|previous|top) answers?\b|"
+                          r"\bthe answers? (?:above|below)\b", re.I)
 ENCODING_ART = re.compile(r"�|Ã[\x80-\xbf]|â€|Â[\xa0-\xbf]")      # bozuk kodlama (mojibake)
 PLACEHOLDER = re.compile(r"\[(?:insert|placeholder|todo|tbd|citation needed|your [a-z ]{2,20}|name|date|source|"
                          r"reference)[^\]]{0,40}\]|\blorem ipsum\b|\{\{|\}\}", re.I)
@@ -352,6 +358,8 @@ def rule_checks(rows: list[dict], removed: RemovalLog, det, grams: set, excluded
             reason = ("missing_media_reference", "ins:" + media_ref(ins))
         elif t != "mcq_generation" and media_ref(resp):
             reason = ("missing_media_reference", "resp:" + media_ref(resp))
+        elif is_se and OTHER_ANSWER.search(resp):
+            reason = ("references_other_answer", OTHER_ANSWER.search(resp).group(0))
         elif t != "mcq_generation" and TRUNCATED.search(resp.rstrip("*_` \n")):
             reason = ("truncated_response", resp.rstrip()[-40:])
         elif t != "out_of_scope_refusal" and AI_DISCLAIMER.search(resp):
