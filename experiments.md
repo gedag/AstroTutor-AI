@@ -1039,3 +1039,21 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
 - Test: `test_llm_cooldown.py` (504/zaman aşımı/DNS+504/503 ayrımı) hata 0; `test_judge_calibration.py` (bütün toplu
   çağrılar süre aşımı → tekliler tamam, görevler bırakıldı, raporda) hata 0; uçtan uca hat tekli ve toplu (ilk toplu
   çağrı sahte 504 → 3 iş tek tek değerlendirildi, bütün işler bitti) hata 0; kural, toplu yargıç ve SE testleri hata 0.
+
+## 20.11.2026 — Kalibrasyon raporu ve karma yargıç (SE tek tek)
+
+- Kalibrasyonun son çağrısı (single:JOB_SE_0048) 19–20.11'de gemini-3.7-flash yoğunluğu (503/504) yüzünden
+  tamamlanamadı; saatlik denemeler 3.7 kotasından üretimin de kullanabileceği istekleri yaktığı için Eda'nın sorusu
+  üzerine denemeler durduruldu ve rapor 23/24 çağrıyla yazıldı (`reports/judge_calibration.md` / `.json`;
+  JOB_SE_0048'in ~9 örneği "karşılaştırılamayan" olarak raporda). Sonuç ölçüt kararını değiştirmez.
+- Sonuç (171 örnek): uyum %94,7; tekli 15 / toplu 6 eledi, ikisi de 6 → yakalama %40 (ölçüt 2 sağlanmadı);
+  kaynak karışması görülmedi (uyuşmayan 9 örneğin hepsinde toplu "pass", başka grubun kaynağına dayanan karar yok).
+  Türe göre: DOC 109 örnek uyum %97,2 (tekli 5 / toplu 2), REF 44 örnek %100 (0 / 0), **SE 18 örnek %66,7
+  (tekli 10 / toplu 4)**. SE'de kaçan 6 örnek elle incelendi; tekli yargıç haklı (fiziksel olarak yanlış açıklama,
+  sorunun bir kısmını cevaplamama, bozuk cümle / yazım hataları). SE seviye uyumu %72,2.
+- Yorum: toplu yargıçtan geçen hatalı örnek oranı DOC'ta ~%3 (yeni kurallarla ~%2), SE'de ~%33 (küçük örneklem:
+  tek üçlü). SE ~500 örnek olduğu için en büyük kalite riski burada.
+- **Karar (Eda, 20.11):** "Karma: SE tek tek" — `jobs_per_call_by_kind: {SE: 1}`; doküman ve reddetme işleri toplu
+  (3), 51 SE işi tekli yargılanır (~34 ek istek, yargıç ~yarım–1 gün uzar). `make_batches` iş türüne göre büyüklük alır.
+- Test: `test_judge_batch.py` (karma gruplama, config) hata 0; uçtan uca hat tekli ve toplu (toplu modda SE
+  çağrılarının hepsi tekli, doküman çağrıları toplu, süre aşımı güvencesi) hata 0; diğer testler hata 0.

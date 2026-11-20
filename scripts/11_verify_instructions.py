@@ -461,18 +461,24 @@ def job_models(rs: list[dict]) -> frozenset:
     return frozenset(x.get("generator_model") for x in rs) - {None}
 
 
-def make_batches(jids: list[str], by_job: dict, size: int) -> list[list[str]]:
+def make_batches(jids: list[str], by_job: dict, size: int, by_kind: dict | None = None) -> list[list[str]]:
     """Yargıç çağrılarını gruplar (config judge.jobs_per_call; Eda kararı 11.11.2026, kalibrasyon testine bağlı).
     size = 1: her iş ayrı çağrı, sıra aynen korunur (önceki davranış). size > 1: bir çağrıya yalnız AYNI iş türünden
     (doc / refusal / se) ve AYNI üretici modelle üretilmiş işler konur; böylece "yargıç, örneği üreten modeli
-    kullanmaz" kuralı tek modelle korunur ve kaynaksız işler kaynaklı işlerle karışmaz."""
+    kullanmaz" kuralı tek modelle korunur ve kaynaksız işler kaynaklı işlerle karışmaz.
+    by_kind: iş türüne göre çağrı büyüklüğü (config judge.jobs_per_call_by_kind, ör. {"SE": 1}); verilmeyen tür size."""
     size = max(1, int(size))
-    if size == 1:
+    by_kind = {k: max(1, int(v)) for k, v in (by_kind or {}).items()}
+    if size == 1 and all(v == 1 for v in by_kind.values()):
         return [[j] for j in jids]
     keyed: dict = {}
     for j in jids:
         keyed.setdefault((j.split("_")[1], tuple(sorted(job_models(by_job[j])))), []).append(j)
-    return [js[i:i + size] for js in keyed.values() for i in range(0, len(js), size)]
+    out = []
+    for (kind, _), js in keyed.items():
+        k = by_kind.get(kind, size)
+        out += [js[i:i + k] for i in range(0, len(js), k)]
+    return out
 
 
 def _example_block(i: int, x: dict) -> str:
@@ -676,7 +682,7 @@ def main() -> int:
                      f"(örneklem {len(sample_jobs)}, SE {len(se_jobs)}, tam kontrol {len(full_jobs(plan))})")
             if todo and llm is None:
                 llm = Gemini(I["judge_models"], I["judge_temperature"], I.get("judge_thinking_budget"))
-            queue = make_batches(todo, by_job, size)
+            queue = make_batches(todo, by_job, size, J.get("jobs_per_call_by_kind"))
             while queue:
                 batch = queue.pop(0)
                 prompt, flat = judge_prompt(batch, by_job, docs, tmpl, tmpl_batch)

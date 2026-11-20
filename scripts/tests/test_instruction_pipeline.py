@@ -169,6 +169,7 @@ class FakeGemini:
 
     JUDGE_CALLS: list = []   # (çağrıdaki iş sayısı, hariç tutulan modeller)
     DEADLINE_JOBS: list = []  # süre aşımı verilen ilk toplu çağrıdaki işler (19.11.2026: tek tek denenmeli)
+    JUDGE_KINDS: list = []    # (çağrıdaki iş sayısı, SE örneği içeriyor mu) — 20.11.2026: SE tek tek
 
     def _judge(self, prompt: str, exclude: set, stop_on_deadline: bool = False) -> list[dict]:
         m = re.search(r"^=== GROUP 1 of (\d+) ===$", prompt, re.M)
@@ -177,6 +178,8 @@ class FakeGemini:
             FakeGemini.DEADLINE_JOBS.append(int(m.group(1)))
             raise llm.DeadlineError("fake 504 DEADLINE_EXCEEDED")
         FakeGemini.JUDGE_CALLS.append((int(m.group(1)) if m else 1, frozenset(exclude)))
+        # şablonun kendisi de "question_answering" geçiyor; yalnız örnek başlığına bakılır
+        FakeGemini.JUDGE_KINDS.append((int(m.group(1)) if m else 1, "(task type: question_answering" in prompt))
         cands = [m for m in self.models if m not in exclude]
         self.last_model = cands[0]
         lite = any("lite" in m for m in exclude)
@@ -323,6 +326,9 @@ if JPC > 1:
     check("toplu çağrı gerçekten yapıldı", any(n > 1 for n in sizes), str(dict(sizes)))
     check("toplu çağrıda en fazla bir üretici model hariç", all(len(e) <= 1 for _, e in FakeGemini.JUDGE_CALLS))
     check("süre aşımı: bir toplu çağrı 504 verdi", len(FakeGemini.DEADLINE_JOBS) == 1, str(FakeGemini.DEADLINE_JOBS))
+    se_calls = [n for n, se in FakeGemini.JUDGE_KINDS if se]
+    check("karma: SE işleri tek tek yargılandı", se_calls and all(n == 1 for n in se_calls),
+          f"{len(se_calls)} SE çağrısı, en büyük {max(se_calls) if se_calls else None}")
     check("süre aşımı sonrası işler tek tek denendi (tekli çağrı var)", sizes.get(1, 0) >= FakeGemini.DEADLINE_JOBS[0],
           str(dict(sizes)))
 summ = json.load(open(TMP / "reports" / "instruction_verification_summary.json", encoding="utf-8"))

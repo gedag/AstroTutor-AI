@@ -245,6 +245,10 @@ instruction:
     # yalniz 2'si toplu yargicta elendi (%40) -> olcut 2 SAGLANMADI. Eda risk aciklandiktan sonra sure nedeniyle
     # toplu yargici secti (AskUserQuestion: "Yine de toplu yargic"). INSTRUCTION_CARD'da acikca belirtilir.
     jobs_per_call: 3
+    # 20.11.2026 kalibrasyon raporu (23/24 cagri, 171 ornek): DOC uyum %97.2 (tekli 5 / toplu 2 eledi), REF %100,
+    # SE uyum %66.7 (tekli 10 / toplu 4 eledi; elle incelenen kacan ornekler gercekten hatali). Eda karari
+    # ("Karma: SE tek tek"): Stack Exchange isleri TEKLI yargilanir, digerleri toplu (~34 ek istek).
+    jobs_per_call_by_kind: {SE: 1}
   evidence_min_overlap: 0.6     # destekleyen alintinin kelime 5-gram'larinin en az %60'i kaynakta olmali
   temperature: 0.7
   judge_temperature: 0.0

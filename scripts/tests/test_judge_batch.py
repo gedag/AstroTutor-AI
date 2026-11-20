@@ -61,6 +61,13 @@ check("size=3: M1 doküman işleri birlikte", ["JOB_DOC_DOC_A", "JOB_DOC_DOC_C",
 check("size=3: M2 işi ayrı çağrıda", ["JOB_DOC_DOC_B"] in b3, True)
 check("size=3: SE işleri birlikte, refusal ile karışmadan", ["JOB_SE_0000", "JOB_SE_0001"] in b3, True)
 check("job_models: SE boş", v11.job_models(by_job["JOB_SE_0000"]), frozenset())
+# 20.11.2026 karma yöntem: SE tek tek, diğerleri toplu
+bk = v11.make_batches(jids, by_job, 3, {"SE": 1})
+check("karma: her iş tam bir kez", sorted(j for b in bk for j in b), jids)
+check("karma: SE işleri tek tek", [b for b in bk if b[0].startswith("JOB_SE_")], [["JOB_SE_0000"], ["JOB_SE_0001"]])
+check("karma: doküman işleri yine toplu", ["JOB_DOC_DOC_A", "JOB_DOC_DOC_C", "JOB_DOC_DOC_D"] in bk, True)
+check("karma: size=1 + SE=1 önceki tekli davranış", v11.make_batches(jids, by_job, 1, {"SE": 1}), [[j] for j in jids])
+check("config: SE tek tek", v11.J.get("jobs_per_call_by_kind"), {"SE": 1})
 
 # 2) tek iş istemi: önceki kodun ürettiği metnin birebir aynısı
 tmpl = (v11.PD / "judge.txt").read_text(encoding="utf-8")

@@ -1,0 +1,186 @@
+{
+  "at": "2026-11-20T12:30:36+00:00",
+  "selection_created_at": "2026-11-13T20:06:11+00:00",
+  "criteria": {
+    "min_agreement": 0.9,
+    "min_fail_recall": 0.9,
+    "min_single_fails": 5
+  },
+  "triples": [
+    {
+      "jobs": [
+        "JOB_DOC_DOC_010762",
+        "JOB_DOC_DOC_011444",
+        "JOB_DOC_DOC_011517"
+      ],
+      "judge_model": "gemini-3.7-flash"
+    },
+    {
+      "jobs": [
+        "JOB_DOC_DOC_000701",
+        "JOB_DOC_DOC_002037",
+        "JOB_DOC_DOC_013587"
+      ],
+      "judge_model": "gemini-3.7-flash"
+    },
+    {
+      "jobs": [
+        "JOB_DOC_DOC_003599",
+        "JOB_DOC_DOC_009184",
+        "JOB_DOC_DOC_011547"
+      ],
+      "judge_model": "gemini-3.8-flash"
+    },
+    {
+      "jobs": [
+        "JOB_DOC_DOC_000273",
+        "JOB_DOC_DOC_011450",
+        "JOB_DOC_DOC_013345"
+      ],
+      "judge_model": "gemini-3.7-flash"
+    },
+    {
+      "jobs": [
+        "JOB_REF_007",
+        "JOB_REF_009",
+        "JOB_REF_010"
+      ],
+      "judge_model": "gemini-3.8-flash"
+    },
+    {
+      "jobs": [
+        "JOB_SE_0006",
+        "JOB_SE_0017",
+        "JOB_SE_0048"
+      ],
+      "judge_model": "gemini-3.7-flash"
+    }
+  ],
+  "examples_selected": 180,
+  "examples_compared": 171,
+  "examples_not_compared": [
+    "JOB_SE_0048_00",
+    "JOB_SE_0048_01",
+    "JOB_SE_0048_02",
+    "JOB_SE_0048_03",
+    "JOB_SE_0048_04",
+    "JOB_SE_0048_05",
+    "JOB_SE_0048_06",
+    "JOB_SE_0048_08",
+    "JOB_SE_0048_09"
+  ],
+  "agreement": 0.9474,
+  "single_fail": 15,
+  "batch_fail": 6,
+  "fail_both": 6,
+  "fail_recall": 0.4,
+  "single_only_fail": 9,
+  "batch_only_fail": 0,
+  "by_kind": {
+    "DOC": {
+      "examples": 109,
+      "agreement": 0.9725,
+      "single_fail": 5,
+      "batch_fail": 2
+    },
+    "REF": {
+      "examples": 44,
+      "agreement": 1.0,
+      "single_fail": 0,
+      "batch_fail": 0
+    },
+    "SE": {
+      "examples": 18,
+      "agreement": 0.6667,
+      "single_fail": 10,
+      "batch_fail": 4
+    }
+  },
+  "criterion_disagreements": {
+    "supported": 7,
+    "correct": 7,
+    "follows_instruction": 6,
+    "instruction_clear": 2,
+    "fluent_english": 4
+  },
+  "se_level_agreement": 0.7222,
+  "criterion_1_agreement_ok": true,
+  "criterion_2_evaluable": true,
+  "criterion_2_recall_ok": false,
+  "automatic_criteria_met": false,
+  "disagreements": [
+    {
+      "raw_example_id": "JOB_DOC_DOC_010762_05",
+      "job_id": "JOB_DOC_DOC_010762",
+      "task_type": "comparison",
+      "single": "FAIL ['supported', 'correct'] The response incorrectly claims that eucrites contain oxygen isotope signatures that match the spectral signatures observed directly on Vesta, conflating distinct isotopic and spectroscopic measurements.",
+      "batch": "pass [] none",
+      "instruction": "Compare the oxygen isotopes found in eucrite meteorites with those found in rocks from Earth and the Moon."
+    },
+    {
+      "raw_example_id": "JOB_DOC_DOC_010762_06",
+      "job_id": "JOB_DOC_DOC_010762",
+      "task_type": "definition_explanation",
+      "single": "FAIL ['supported', 'correct'] The claim that Dawn aims to shed light on the 'early history of the universe' is unsupported by the text and factually inaccurate (Dawn explores planetary bodies from the early solar system, not cosmological origins of the universe).",
+      "batch": "pass [] none",
+      "instruction": "What is the Dawn spacecraft and what is its mission in the asteroid belt?"
+    },
+    {
+      "raw_example_id": "JOB_DOC_DOC_013345_09",
+      "job_id": "JOB_DOC_DOC_013345",
+      "task_type": "classification",
+      "single": "FAIL ['instruction_clear'] The instruction asks the user to classify items 'based on the text', but no reference passage is included in the instruction.",
+      "batch": "pass [] ",
+      "instruction": "Classify the following four items into either Astronomical Telescopes/Instruments or Young Stellar Objects: TIFR 100-cm balloon-born telescope, HH 1042, HAWK-I,"
+    },
+    {
+      "raw_example_id": "JOB_SE_0006_03",
+      "job_id": "JOB_SE_0006",
+      "task_type": "question_answering",
+      "single": "FAIL ['supported', 'correct', 'follows_instruction'] The response makes a factual and logical slip stating there was no 'Chinese reluctance to be part of the CNSA' (intending to say ISS), and fails to address the question regarding other non-participating nations such as India.",
+      "batch": "pass [] ",
+      "instruction": "Why is China still not invited to the ISS? (Or, why do certain countries not get invited/rejected to work on the ISS?)  I understand that U.S. Congress passed a"
+    },
+    {
+      "raw_example_id": "JOB_SE_0006_07",
+      "job_id": "JOB_SE_0006",
+      "task_type": "question_answering",
+      "single": "FAIL ['supported', 'follows_instruction'] The response fails to address the second question in the instruction asking whether NASA has plans for an even bigger reusable spacecraft.",
+      "batch": "pass [] ",
+      "instruction": "What made NASA shut down the Shuttle program?  Recently NASA shut down its Space Shuttle program. Between the first launch on April 12, 1981, and the final land"
+    },
+    {
+      "raw_example_id": "JOB_SE_0006_08",
+      "job_id": "JOB_SE_0006",
+      "task_type": "question_answering",
+      "single": "FAIL ['supported', 'correct'] The explanation is physically incorrect, attributing galaxy collisions to randomly distributed kinetic energy and random directions of motion like particles bumping into each other, rather than explaining gravitationally bound structures decoupling from cosmological expansion.",
+      "batch": "pass [] ",
+      "instruction": "Why do galaxies collide?  If the universe is expanding outward, what is the processes for one galaxy to get off track enough to collide with another?  Say, the "
+    },
+    {
+      "raw_example_id": "JOB_SE_0017_00",
+      "job_id": "JOB_SE_0017",
+      "task_type": "question_answering",
+      "single": "FAIL ['supported', 'correct', 'fluent_english'] The response is not fluent due to a garbled sentence ('Finding faint, moving extremely faint objects in a series of pictures...'). It also fails to adequately explain why distant galaxies/black holes are detectable (high intrinsic luminosity and emitting their own light) compared to dwarf planets (reflecting sunlight, dropping as 1/r^4).",
+      "batch": "pass [] ",
+      "instruction": "Undiscovered dwarf planets  Scientists think there may be dozens of undiscovered dwarf planets in the Solar system. What I find intriguing is that, we have been"
+    },
+    {
+      "raw_example_id": "JOB_SE_0017_05",
+      "job_id": "JOB_SE_0017",
+      "task_type": "question_answering",
+      "single": "FAIL ['supported', 'correct'] The response contains a factual error claiming gravitomagnetism is tied to the finite speed of gravity (in general relativity, it arises from mass currents/momentum density, not retardation). It also fails to answer the question of how black hole spin is actually observed or measured.",
+      "batch": "pass [] ",
+      "instruction": "How do we know that black holes are spinning?  How is it possible to know if a black hole is spinning or not?  If a planet is spinning, you can see it clearly b"
+    },
+    {
+      "raw_example_id": "JOB_SE_0017_06",
+      "job_id": "JOB_SE_0017",
+      "task_type": "question_answering",
+      "single": "FAIL ['fluent_english'] The response contains multiple grammatical errors and typos, including 'an intense electric fields', 'have convective zone', 'certainity', and 'ligthnings'.",
+      "batch": "pass [] ",
+      "instruction": "Can lightning occur in stars like the Sun?  In the Wikipedia article about lightining, the following explanation is given about the electrification process in c"
+    }
+  ],
+  "batch_deadline_events": {}
+}
