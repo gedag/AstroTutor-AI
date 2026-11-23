@@ -495,20 +495,24 @@ def instruction_card(out_dir=None) -> None:
     )
     cal_note = ""
     if jpc > 1 and cal:
+        bk = cal.get("by_kind") or {}
         cal_note = (
-            f"- **Toplu yargıç kalibrasyon riski:** Toplu çağrının (3 iş/çağrı) tekli çağrıyla uyumu önceden test edildi "
-            f"([reports/judge_calibration.md](reports/judge_calibration.md); {cal.get('compared_examples', 171)} örnek): "
-            "genel uyum %94,7, ancak tekli yargıcın elediği örneklerin %40'ı toplu yargıçta yakalandı (ölçüt 2 "
-            "sağlanmadı). En büyük fark Stack Exchange'de görüldüğü için (uyum %66,7) **SE işleri tekli yargıca** "
-            "alındı (`SE: 1`); doküman (%97,2 uyum) ve kapsam dışı (%100 uyum) işlerinde süre nedeniyle 3'lü toplu "
-            "yargıç kullanıldı. Doküman örneklerinde ~%2–3 düzeyinde artık hata riski bu nedenle bilinçli olarak "
+            f"- **Toplu yargıç kalibrasyon riski:** Toplu çağrının ({jpc} iş/çağrı) tekli çağrıyla uyumu önceden test edildi "
+            f"([reports/judge_calibration.md](reports/judge_calibration.md); {n(cal.get('examples_compared', 0))} örnek): "
+            f"genel uyum {pc(cal.get('agreement', 0), 1)}, ancak tekli yargıcın elediği örneklerin "
+            f"{pc(cal.get('fail_recall', 0), 1, 0)}'ı toplu yargıçta yakalandı (ölçüt 2 sağlanmadı). "
+            f"En büyük fark Stack Exchange'de görüldüğü için (uyum {pc(bk.get('SE', {}).get('agreement', 0), 1)}) "
+            f"**SE işleri tekli yargıca** alındı (`SE: 1`); doküman ({pc(bk.get('DOC', {}).get('agreement', 0), 1)} uyum) "
+            f"ve kapsam dışı ({pc(bk.get('REF', {}).get('agreement', 0), 1, 0)} uyum) işlerinde süre nedeniyle {jpc}'lü "
+            "toplu yargıç kullanıldı. Doküman örneklerinde ~%2–3 düzeyinde artık hata riski bu nedenle bilinçli olarak "
             "kabul edilmiş ve burada açıkça belgelenmiştir."
         )
 
+    tok_model = I["train_tokenizer"]
     md = [f"# AstroTutor AI İngilizce Instruction Dataset v{iv}", "",
           "## Amaç",
           "Bu veri seti, yalnız İngilizce [Domain Corpus v2.0](DATASET_CARD.md) ile alana uyarlanacak **İngilizce "
-          "konuşan** modele (AstroTutor AI; Final hedef modeli: `Qwen/Qwen3-1.7B`) **supervised fine-tuning (SFT)** "
+          f"konuşan** modele (AstroTutor AI; SFT uzunluk/şablon kontrolü: `{tok_model}`) **supervised fine-tuning (SFT)** "
           "ile şu davranışları kazandırmak için hazırlanmıştır: kullanıcının seviyesine (`beginner` / `intermediate` / "
           "`advanced`) göre İngilizce konu anlatımı, verilen öğretim pasajından JSON biçiminde dört seçenekli soru "
           "üretme, astronomi terminolojisiyle doğru açıklama, kapsam dışı sorularda sınırını bildirme ve yanlış "
@@ -562,8 +566,8 @@ def instruction_card(out_dir=None) -> None:
            "örnek kaldı. Üretim sırasında çoktan seçmeli talimatında soru/şık/cevap sızıntısı yapan işler hemen "
            "reddedilip yeniden üretildi. Dört aşamalı kontrol uygulandı:", "",
            "1. **Kural kontrolleri** (tüm örnekler): İngilizce dil tespiti (`lingua`), karakter uzunluğu, Final SFT "
-           f"token sınırı (`too_long_for_training`: `{I['train_tokenizer']}` chat template, düşünme kapalı, sistem "
-           f"mesajı dahil ≤ {n(train_limit)} token; SFT 1.024 token sınırı için {I['train_token_margin']} token pay), "
+           f"token sınırı (`too_long_for_training`: `{tok_model}` chat template, düşünme kapalı, sistem "
+           f"mesajı dahil ≤ {n(train_limit)} token; SFT {n(I['train_max_tokens'])} token sınırı için {I['train_token_margin']} token pay), "
            "görev türü ve hedef kitle–seviye tutarlılığı (`level_audience_mismatch`), çoktan seçmeli JSON şeması, "
            "soru sayısı ve talimatta sızıntı kontrolü, kaybolmuş üs (`exponent_loss`), URL, kişisel iletişim bilgisi "
            "(`contains_pii`), LaTeX artığı, bozuk kodlama, yer tutucu, eksik görsel atfı (`missing_media_reference`), "
@@ -610,7 +614,8 @@ def instruction_card(out_dir=None) -> None:
            "- Değerlendirme setleri (Astro-mcqa, astro-mcq, HubbleSpaceTelescope-MCQ, AstroMLab Astrobench) eğitime "
            f"alınmadı; bunlarla {I['decontam_ngram']}-gram örtüşmesi olan tüm örnekler elendi (`eval_overlap = 0`).", "",
            "## Değerlendirme planı (final dönemi)",
-           "Final aşamasında İngilizce model (`Qwen/Qwen3-1.7B-Base` / `Qwen/Qwen3-1.7B`) şu eksenlerde değerlendirilecek:",
+           f"Final aşamasında İngilizce model (`{tok_model}` ailesi; nihai model seçimi Final deney günlüğünde "
+           "kesinleştirilir) şu eksenlerde değerlendirilecek:",
            "- **Dış alan değerlendirme setleri** (eğitime girmedi): AstroMLab Astrobench, Astro-mcqa, astro-mcq, "
            "HubbleSpaceTelescope-MCQ — çoktan seçmeli doğruluk. Corpus ile örtüşen sorular "
            "[reports/eval_contamination.csv](reports/eval_contamination.csv) dosyasında ayrıca raporlanır.",
@@ -622,15 +627,16 @@ def instruction_card(out_dir=None) -> None:
            "## Sınırlılıklar",
            "Doküman ve kapsam dışı örnekler sentetiktir ve kaynak dokümanlardaki bilgiyle sınırlıdır; güncel astronomik "
            "veriler (ör. ötegezegen sayısı) için birincil kaynakların yerine geçmez (Final'de RAG ile desteklenecektir). "
-           "Tüm örnekler tek turlu (`user` → `assistant`) İngilizce diyaloglardır ve SFT 1.024 token sınırına uyacak "
-           "biçimde filtrelenmiştir.", "",
+           f"Tüm örnekler tek turlu (`user` → `assistant`) İngilizce diyaloglardır ve SFT {n(I['train_max_tokens'])} "
+           "token sınırına uyacak biçimde filtrelenmiştir.", "",
            "## Sürüm geçmişi",
            "- v1.0 (24–26.10.2026): Vize teslimi Türkçe Instruction Dataset (3.388 örnek, Git etiketi `v1.0`, "
            "arşiv: `reports/archive_v1.0/`).",
-           f"- v{iv} (10–25.11.2026): Tamamen **İngilizce** yeniden üretim; yalnız Flash modelleri (lite kapalı), "
+           f"- v{iv} (Kasım 2026): Tamamen **İngilizce** yeniden üretim; yalnız Flash modelleri (lite kapalı), "
            "orijinal İngilizce Stack Exchange soru-cevapları (Gemini'siz, seviye yargıçtan), 60 yanlış öncüllü "
-           "astronomi sorusu (`misconceptions.json`), Final SFT 1.024 token sınırı (`too_long_for_training`), "
-           "genişletilmiş kural denetimi ve tam kapsamlı karma LLM yargıç (`DOC`/`REF` 3'lü toplu, `SE` tekli).", "",
+           f"astronomi sorusu (`misconceptions.json`), Final SFT {n(I['train_max_tokens'])} token sınırı "
+           "(`too_long_for_training`), genişletilmiş kural denetimi ve tam kapsamlı karma LLM yargıç (`DOC`/`REF` "
+           f"{jpc}'lü toplu, `SE` tekli).", "",
            "## Lisans",
            "Her örnek kaynağının lisansını `license` alanında taşır. Stack Exchange örnekleri cevabın tarihine göre "
            + (", ".join(f"{k} ({n(v)})" for k, v in se_lics.most_common()) or "CC BY-SA 3.0 / 4.0")
