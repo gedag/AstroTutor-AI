@@ -272,7 +272,12 @@ def train_tokens(ins: str, resp: str) -> int:
     if _TOK is None:
         from transformers import AutoTokenizer
 
-        _TOK = AutoTokenizer.from_pretrained(I["train_tokenizer"])
+        # Önce yerel önbellekten yükle: açılışta Wi-Fi henüz bağlanmamışken HuggingFace Hub isteği askıda kalıp
+        # döngüyü kilitleyebiliyordu (23.11.2026); önbellekte yoksa indirir.
+        try:
+            _TOK = AutoTokenizer.from_pretrained(I["train_tokenizer"], local_files_only=True)
+        except Exception:
+            _TOK = AutoTokenizer.from_pretrained(I["train_tokenizer"])
     msgs = [{"role": "system", "content": I["train_system_message"]}, {"role": "user", "content": ins},
             {"role": "assistant", "content": resp}]
     txt = _TOK.apply_chat_template(msgs, tokenize=False, enable_thinking=False)

@@ -151,7 +151,10 @@ def main() -> int:
             tok_name = I["train_tokenizer"]
             max_tok = I["train_max_tokens"]
             sys_msg = I["train_system_message"]
-            tok = AutoTokenizer.from_pretrained(tok_name)
+            try:
+                tok = AutoTokenizer.from_pretrained(tok_name, local_files_only=True)
+            except Exception:
+                tok = AutoTokenizer.from_pretrained(tok_name)
             # Şablon metin olarak üretilir ve token'lanır. Final Rehberi: Qwen3-1.7B, düşünme kapalı, 1024 token sınırı.
             lens, bad_render = [], 0
             for x in ins:

@@ -1080,3 +1080,7 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
     `Qwen/Qwen3-1.7B`, düşünme kapalı, İngilizce sistem mesajı, `≤ 1024` token) chat template + uzunluk kontrolü ile
     İngilizce taksonomi/seviye doğrulaması eklendi.
   - `scripts/tests/test_instruction_pipeline.py`: `15_write_cards.instruction_card()` uçtan uca teste eklendi.
+- **Düzeltme (23.11 20:45):** Bilgisayar açılışında (Wi-Fi bağlanmadan önce) başlayan `11_verify_instructions.py`,
+  yerel önbellekte zaten bulunan `Qwen/Qwen3-1.7B` tokenizer'ını yüklerken HuggingFace Hub'a erişmeye çalışıp
+  `[WinError 10054]` sonrası askıda kaldı (`20:32`–`20:45`). `11_verify_instructions.py` ve `validate_datasets.py`
+  içinde `AutoTokenizer.from_pretrained(..., local_files_only=True)` önce denenir, yalnız önbellekte yoksa ağa çıkar.
