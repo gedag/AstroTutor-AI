@@ -6,11 +6,24 @@ bitti sayılmaz); yalnız bütün modellerin kotası dolunca QuotaExhausted; yar
 
     python scripts/tests/test_llm_cooldown.py
 """
+import atexit
 import os
+import shutil
 import sys
+import tempfile
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import yaml
+
+ROOT = Path(__file__).resolve().parents[2]
+TMP = Path(tempfile.mkdtemp(prefix="astrotutor_llm_test_"))
+atexit.register(shutil.rmtree, TMP, True)
+_cfg = yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))
+_cfg["paths"]["logs"] = str(TMP / "logs")
+(TMP / "config.yaml").write_text(yaml.safe_dump(_cfg, allow_unicode=True), encoding="utf-8")
+os.environ["ASTROTUTOR_CONFIG"] = str(TMP / "config.yaml")
+
+sys.path.insert(0, str(ROOT / "scripts"))
 os.environ.setdefault("GEMINI_API_KEY", "test-key-not-used")   # sahte istemci kullanılır, ağa çıkılmaz
 import llm  # noqa: E402
 

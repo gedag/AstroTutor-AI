@@ -682,6 +682,7 @@ def main() -> int:
             log.info(f"Toplu yargıç: bir çağrıda en fazla {size} iş (aynı iş türü ve aynı üretici model)")
         busy = 0
         stop = False
+        stop_reason = None
         # Önce aşama 1 ve SE işleri; aşama 1 bitince grup kararı verilir ve tam kontrol işleri eklenir
         for phase in ("stage1", "full"):
             plan = make_plan()
@@ -713,6 +714,7 @@ def main() -> int:
                     if len(llm.exhausted) == len(llm.models):
                         log.error(f"Tüm yargıç modellerinin günlük kotası doldu; kaldığı yerden devam: {e}")
                         stop = True
+                        stop_reason = "quota"
                         break
                     continue  # bu işin uygun yargıcı kalmadı; başka modelle üretilmiş işlere devam
                 except TransientError as e:
@@ -722,6 +724,7 @@ def main() -> int:
                     if busy >= 3:
                         log.error("Üst üste 3 geçici hata; yargıç bu çalıştırmada durduruldu, sonra kaldığı yerden devam")
                         stop = True
+                        stop_reason = "busy"
                         break
                     continue
                 except Exception as e:
@@ -814,6 +817,9 @@ def main() -> int:
     if not a.no_judge:
         left = pending(sample_jobs) + pending(se_jobs) + (pending(fjobs) if plan else [])
         if left or plan is None:
+            if stop_reason == "busy":
+                log.info(f"Yargıçta bekleyen iş: {len(left)} (geçici yoğunluk/503; 45 dk sonra devam)")
+                return 3
             log.info(f"Yargıçta bekleyen iş: {len(left)} (kota yenilenince devam)")
             return 2
     return 0
