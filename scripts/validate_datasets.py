@@ -5,7 +5,8 @@ Kontroller:
   2. Instruction JSONL şeması, id benzersizliği, kaynak doküman birden fazla kümede değil
   3. Instruction ile corpus arasında küme tutarlılığı (corpus test dokümanından üretilen örnek train'de değil)
   4. Hugging Face `datasets` ile yüklenebilirlik
-  5. Instruction örneklerine Qwen2.5-7B-Instruct chat template'inin hatasız uygulanması (SFT'ye hazır)
+  5. Instruction örneklerine Final SFT modelinin (`config.yaml → instruction.train_tokenizer`, düşünme kapalı)
+     chat template'inin hatasız uygulanması ve `train_max_tokens` (1024) sınırına sığması (SFT'ye hazır)
   6. Değerlendirme setleriyle 8-gram örtüşmesi (instruction'da 0 olmalı; corpus'ta raporlanır)
 Sonuç: reports/validation_report.md ; hata varsa çıkış kodu 1
 
@@ -111,6 +112,12 @@ def main() -> int:
         miss = [x["id"] for x in ins if any(f not in x for f in INS_FIELDS)]
         check("Instruction şeması tam", not miss, f"{len(ins)} örnek, eksik alanlı {len(miss)}")
         check("Instruction id benzersiz", len({x["id"] for x in ins}) == len(ins))
+        tax = set(CFG["instruction"]["taxonomy"])
+        bad_tt = sum(1 for x in ins if x["task_type"] not in tax)
+        check("Instruction görev türleri İngilizce taksonomide", bad_tt == 0, f"dışında={bad_tt}")
+        lvs = set(CFG["instruction"]["levels"])
+        bad_lv = sum(1 for x in ins if x["level"] not in lvs)
+        check("Instruction seviyeleri geçerli", bad_lv == 0, f"geçersiz={bad_lv}")
         own, clash = {}, 0
         for x in ins:
             if own.setdefault(x["source_document"], x["split"]) != x["split"]:
@@ -140,22 +147,26 @@ def main() -> int:
         try:
             from transformers import AutoTokenizer
 
-            tok = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-7B-Instruct")
-            # Şablon metin olarak üretilir ve token'lanır. (transformers 5'te apply_chat_template(tokenize=True)
-            # liste değil sözlük döndürüyor; ilk sürüm sözlüğün uzunluğunu (2) ölçüyordu — 24.10.2026 denetimi.)
+            I = CFG["instruction"]
+            tok_name = I["train_tokenizer"]
+            max_tok = I["train_max_tokens"]
+            sys_msg = I["train_system_message"]
+            tok = AutoTokenizer.from_pretrained(tok_name)
+            # Şablon metin olarak üretilir ve token'lanır. Final Rehberi: Qwen3-1.7B, düşünme kapalı, 1024 token sınırı.
             lens, bad_render = [], 0
             for x in ins:
-                txt = tok.apply_chat_template(x["messages"], tokenize=False)
+                msgs = [{"role": "system", "content": sys_msg}, *x["messages"]]
+                txt = tok.apply_chat_template(msgs, tokenize=False, enable_thinking=False)
                 if (x["instruction"] not in txt or x["response"] not in txt
                         or "<|im_start|>user" not in txt or "<|im_start|>assistant" not in txt):
                     bad_render += 1
                 lens.append(len(tok(txt, add_special_tokens=False)["input_ids"]))
             lens.sort()
-            check("Qwen2.5-7B-Instruct chat template uygulanabiliyor (talimat ve cevap şablonda birebir)",
-                  bad_render == 0,
-                  f"hatalı={bad_render}; örnek token uzunluğu medyan={lens[len(lens) // 2]}, "
-                  f"p95={lens[int(0.95 * (len(lens) - 1))]}, maks={lens[-1]}; 2048 token üzeri="
-                  f"{sum(1 for v in lens if v > 2048)}")
+            over = sum(1 for v in lens if v > max_tok)
+            check(f"{tok_name} chat template uygulanabiliyor ve ≤ {max_tok} token (Final SFT'ye hazır)",
+                  bad_render == 0 and over == 0,
+                  f"hatalı={bad_render}; medyan={lens[len(lens) // 2]}, "
+                  f"p95={lens[int(0.95 * (len(lens) - 1))]}, maks={lens[-1]}; {max_tok} üzeri={over}")
         except Exception as e:
             check("Chat template", False, str(e)[:200])
 

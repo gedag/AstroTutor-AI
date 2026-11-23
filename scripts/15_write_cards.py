@@ -31,11 +31,27 @@ LICENSE = {
     "wikipedia_tr": "CC BY-SA 4.0",
 }
 TASK_TR = {
+    # v2.0 (İngilizce)
+    "definition_explanation": "Tanım ve açıklama",
+    "leveled_explanation": "Seviyeye göre ders anlatımı",
+    "mcq_generation": "Çoktan seçmeli soru üretimi (JSON)",
+    "question_answering": "Soru-cevap (Stack Exchange, orijinal İngilizce)",
+    "comparison": "Karşılaştırma",
+    "cause_effect": "Neden-sonuç",
+    "summarization": "Özetleme",
+    "step_by_step_problem_solving": "Adım adım problem çözme",
+    "classification": "Sınıflandırma",
+    "out_of_scope_refusal": "Kapsam dışı / bilgi yetersizliği ve yanlış öncül düzeltme",
+    # v1.0 (Türkçe arşiv uyumluluğu)
     "tanim_aciklama": "Tanım ve açıklama", "seviyeli_anlatim": "Seviyeye göre ders anlatımı",
     "coktan_secmeli_soru_uretimi": "Çoktan seçmeli soru üretimi (JSON)", "soru_cevap": "Soru-cevap (Stack Exchange)",
     "karsilastirma": "Karşılaştırma", "neden_sonuc": "Neden-sonuç", "ozetleme": "Özetleme",
     "adim_adim_problem_cozme": "Adım adım problem çözme", "siniflandirma": "Sınıflandırma",
     "bilgi_yetersizligi_kapsam_disi": "Bilgi yetersizliği / kapsam dışı",
+}
+LEVEL_TR = {
+    "beginner": "başlangıç", "intermediate": "orta", "advanced": "ileri",
+    "baslangic": "başlangıç", "orta": "orta", "ileri": "ileri",
 }
 
 
@@ -407,9 +423,9 @@ def dataset_card() -> None:
     log.info("DATASET_CARD.md yazıldı")
 
 
-def instruction_card() -> None:
-    # Geçerli sürüm (config.yaml) üretilmediyse kart DEĞİŞTİRİLMEZ: v2.0 (İngilizce) yokken INSTRUCTION_CARD.md
-    # vizede teslim edilen Türkçe v1.0'ı anlatır; eski dosyadan yeni sürüm numarasıyla kart üretilmemeli.
+def instruction_card(out_dir=None) -> None:
+    # Geçerli sürüm (config.yaml) üretilmediyse kart DEĞİŞTİRİLMEZ: v2.0 (İngilizce) yokken eski dosyadan yeni sürüm
+    # numarasıyla kart üretilmemeli. out_dir yalnız testlerde geçici klasör vermek için kullanılır.
     if not instruction_file().exists():
         log.warning(f"{instruction_file().name} yok; INSTRUCTION_CARD.md değiştirilmedi")
         return
@@ -418,7 +434,10 @@ def instruction_card() -> None:
         log.warning("Instruction dataset boş, INSTRUCTION_CARD atlandı")
         return
     vs, src_s, qc = j("instruction_verification_summary.json"), j("instruction_sources_summary.json"), j("qc_summary.json")
+    cal = j("judge_calibration.json")
     I = CFG["instruction"]
+    J = I.get("judge", {})
+    iv = CFG["project"]["instruction_version"]
     raw = {}
     for r in read_jsonl(p("interim") / "instructions_raw.jsonl"):
         raw[r["raw_example_id"]] = r
@@ -426,114 +445,146 @@ def instruction_card() -> None:
     rem_v = Counter(r["reason"].split(":")[0] if not r["reason"].startswith("judge_fail") else "judge_fail"
                     for r in rem if r["stage"] == "verify")
     rem_qc = sum(1 for r in rem if r["stage"] == "qc")
-    regen = {r["id"] for r in rem if r["stage"] == "regen"}
     tt = Counter(x["task_type"] for x in ins)
     lv = Counter(x["level"] for x in ins)
     sp = Counter(x["split"] for x in ins)
     meth = Counter(x["generation_method"] for x in ins)
-    gm = Counter(x["generator_model"] for x in ins)
-    lite = [x for x in ins if "lite" in (x.get("generator_model") or "")]
-    flash = [x for x in ins if "lite" not in (x.get("generator_model") or "")]
+    gm = Counter(x["generator_model"] or "Stack Exchange (orijinal, Gemini yok)" for x in ins)
     pp_final = Counter(x.get("postprocess") for x in ins)
 
     def fix_note(kind: str) -> str:
         # Düzeltilen bir örnek sonradan (ör. kalite kontrolünde) elendiyse final setteki sayıyı ayrıca belirt
         done, left = vs.get("rule_fixes", {}).get(kind, 0), pp_final.get(kind, 0)
         return f"; {n(done - left)} tanesi sonradan elendiği için final sette {n(left)}" if left < done else ""
-    lite_n = len(lite)
-    lite_len = round(sum(len(x["response"]) for x in lite) / max(len(lite), 1))
-    flash_len = round(sum(len(x["response"]) for x in flash) / max(len(flash), 1))
-    pv = Counter(x.get("prompt_version") or "v1" for x in ins)
+
+    pv = Counter(x.get("prompt_version") or "none (Stack Exchange)" for x in ins)
     jm = Counter(x["judge_model"] for x in ins if x.get("judge_model"))
     srcn = Counter(x["source_name"] for x in ins)
     n_docs = len({x["source_document"] for x in ins if x["source_name"] not in ("stackexchange_space_qa", "none")})
+    n_corpus_ex = sum(v for k, v in srcn.items() if k not in ("stackexchange_space_qa", "none"))
+    se_lics = Counter(x["license"].split(" (")[0] for x in ins if x["source_name"] == "stackexchange_space_qa" and x.get("license"))
     target = I["taxonomy"]
-    md = [f"# AstroTutor AI Türkçe Instruction Dataset v{CFG['project']['instruction_version']}", "",
+    full_cov = J.get("full_check_fail_rate", 0.05) == 0.0
+    jpc = int(J.get("jobs_per_call", 1))
+    jpc_kind = J.get("jobs_per_call_by_kind") or {}
+    train_limit = I["train_max_tokens"] - I["train_token_margin"]
+    tax_ref = ("[reports/instruction_taxonomy.md](reports/instruction_taxonomy.md)"
+               if (R / "instruction_taxonomy.md").exists()
+               else f"[prompts/{I['prompt_version']}/task_types.json](prompts/{I['prompt_version']}/task_types.json)")
+
+    judge_desc = (
+        f"3. **Tam kapsamlı karma LLM yargıç** (`config: instruction.judge`; {n(vs.get('judged_examples', 0))} örnek): "
+        "örneği üreten modelden **farklı** bir Gemini Flash modeli, sıcaklık 0 ve `medium` düşünme bütçesiyle her "
+        "örneği kaynağıyla birlikte beş ölçütte (`supported`, `correct`, `follows_instruction`, `instruction_clear`, "
+        "`fluent_english`) değerlendirdi. "
+        + ("Erken durdurma kapalıdır (`full_check_fail_rate: 0.0`): aşama 1 (%20 tabakalı örneklem) istatistikleri "
+           "raporlandıktan sonra tüm grupların tamamı yargıçtan geçer. " if full_cov else
+           f"Aşamalı kontrol: önce işlerin %{int(100 * J.get('initial_fraction', 0.2))}'i değerlendirilir; "
+           f"hata oranının %{int(100 * J.get('confidence', 0.95))} Clopper-Pearson üst güven sınırı "
+           f"%{100 * J.get('full_check_fail_rate', 0.05):.0f}'in altında olmayan grupların tamamı kontrol edilir. ")
+        + (f"Doküman ve kapsam dışı işleri en fazla {jpc} iş/çağrı (aynı iş türü ve aynı üretici model; 504 süre "
+           "aşımında tek tek düşüş), " if jpc > 1 else "Her iş ayrı çağrıda değerlendirildi; ")
+        + ("Stack Exchange işlerinin tamamı ise **tek tek** (`jobs_per_call_by_kind: {SE: 1}`) yargılanıp "
+           "`beginner` / `intermediate` / `advanced` seviyesi yargıç tarafından atandı. "
+           if jpc_kind.get("SE") == 1 else "Stack Exchange işlerinin tamamı değerlendirilip seviyesi yargıç tarafından atandı. ")
+        + f"Başarısız oranı: **{pc(vs.get('judge_fail', 0), vs.get('judged_examples') or 0)}**; başarısızlar elendi. "
+        + f"Yargıçtan geçip final sette kalan {n(sum(jm.values()))} örneğin yargıç modelleri: "
+        + (", ".join(f"{k} ({n(v)})" for k, v in jm.most_common()) or "-") + "."
+        + (f" {n(vs['judge_gave_up_jobs'])} işte yargıç iki denemede tüm örnekleri değerlendiremedi."
+           if vs.get("judge_gave_up_jobs") else "")
+    )
+    cal_note = ""
+    if jpc > 1 and cal:
+        cal_note = (
+            f"- **Toplu yargıç kalibrasyon riski:** Toplu çağrının (3 iş/çağrı) tekli çağrıyla uyumu önceden test edildi "
+            f"([reports/judge_calibration.md](reports/judge_calibration.md); {cal.get('compared_examples', 171)} örnek): "
+            "genel uyum %94,7, ancak tekli yargıcın elediği örneklerin %40'ı toplu yargıçta yakalandı (ölçüt 2 "
+            "sağlanmadı). En büyük fark Stack Exchange'de görüldüğü için (uyum %66,7) **SE işleri tekli yargıca** "
+            "alındı (`SE: 1`); doküman (%97,2 uyum) ve kapsam dışı (%100 uyum) işlerinde süre nedeniyle 3'lü toplu "
+            "yargıç kullanıldı. Doküman örneklerinde ~%2–3 düzeyinde artık hata riski bu nedenle bilinçli olarak "
+            "kabul edilmiş ve burada açıkça belgelenmiştir."
+        )
+
+    md = [f"# AstroTutor AI İngilizce Instruction Dataset v{iv}", "",
           "## Amaç",
-          "Bu veri seti, [Domain Corpus](DATASET_CARD.md) ile alana uyarlanacak modele **supervised fine-tuning (SFT)** "
-          "ile şu davranışları kazandırmak için hazırlanmıştır: kullanıcının seviyesine (başlangıç / orta / ileri) "
-          "göre Türkçe konu anlatımı, verilen öğretim metninden JSON biçiminde dört seçenekli soru üretme, astronomi "
-          "terminolojisiyle doğru açıklama ve bilgisi/kapsamı dışındaki sorularda sınırını bildirme.", "",
+          "Bu veri seti, yalnız İngilizce [Domain Corpus v2.0](DATASET_CARD.md) ile alana uyarlanacak **İngilizce "
+          "konuşan** modele (AstroTutor AI; Final hedef modeli: `Qwen/Qwen3-1.7B`) **supervised fine-tuning (SFT)** "
+          "ile şu davranışları kazandırmak için hazırlanmıştır: kullanıcının seviyesine (`beginner` / `intermediate` / "
+          "`advanced`) göre İngilizce konu anlatımı, verilen öğretim pasajından JSON biçiminde dört seçenekli soru "
+          "üretme, astronomi terminolojisiyle doğru açıklama, kapsam dışı sorularda sınırını bildirme ve yanlış "
+          "öncüllü astronomi sorularında öncülü nazikçe düzeltme.", "",
+          "Vizede teslim edilen Türkçe sürüm (`v1.0`, 3.388 örnek) Git etiketi `v1.0` ve "
+          "[reports/archive_v1.0/INSTRUCTION_CARD_v1.0.md](reports/archive_v1.0/INSTRUCTION_CARD_v1.0.md) altında "
+          "arşivlenmiştir; 09.11.2026 kararıyla model dili tamamen İngilizceye geçirilmiştir.", "",
           "## Format",
-          "JSONL; her satır bir örnektir. SFT için `messages` alanı kullanılır (`user` / `assistant`). İzlenebilirlik "
-          "alanları: `id`, `source_document` (corpus `document_id`'si veya Stack Exchange soru kimliği), `source_url`, "
-          "`task_type`, `level`, `supporting_evidence` (cevabı destekleyen kaynak alıntısı), `generation_method`, "
-          "`generator_model`, `prompt_version`, `auto_verified`, `llm_judged`, `judge_model`, `human_verified`, "
-          "`verified_by`, `license`, `split`, `raw_example_id` (üretim kaydı), `postprocess` (kural tabanlı metin düzeltmesi, ör. `kaynak_atfi_silindi`; yoksa boş).", "",
-          "Dosyalar: `data/final/instruction_v1.0.jsonl` (tamamı) ve `data/final/instruction/{train,validation,test}.jsonl`.", "",
+          "JSONL; her satır bir örnektir. SFT için `messages` alanı kullanılır (`user` / `assistant`; sistem mesajı "
+          "Final SFT aşamasında eklenir). İzlenebilirlik alanları: `id`, `source_document` (corpus `document_id`'si "
+          "veya Stack Exchange soru kimliği), `source_url`, `source_name`, `task_type`, `level`, `level_source` "
+          "(`generation_plan` veya `llm_judge`), `supporting_evidence` (cevabı destekleyen kaynak alıntısı), "
+          "`generation_method`, `generator_model`, `prompt_version`, `auto_verified`, `llm_judged`, `judge_model`, "
+          "`human_verified`, `verified_by`, `license`, `split`, `raw_example_id`, `postprocess` (kural tabanlı metin "
+          "düzeltmesi, ör. `unseen_reference_removed`; yoksa `null`).", "",
+          f"Dosyalar: `data/final/{instruction_file().name}` (tamamı) ve "
+          "`data/final/instruction/{train,validation,test}.jsonl`.", "",
           "## Görev türü dağılımı", "", "| Görev türü | Örnek | Oran | Hedef oran |", "| --- | --- | --- | --- |"]
     for t in target:
         md.append(f"| {TASK_TR.get(t, t)} (`{t}`) | {n(tt.get(t, 0))} | {pc(tt.get(t, 0), len(ins))} | "
                   f"{pc(target[t], 1, 0)} |")
     md += [f"| **Toplam** | **{n(len(ins))}** | %100 | |", "",
-           "Taksonominin gerekçesi ve her türden örnekler: [reports/instruction_taxonomy.md](reports/instruction_taxonomy.md).", "",
+           f"Görev tanımları: {tax_ref}.", "",
            "Seviye dağılımı: " + ", ".join(
-               f"{ {'baslangic': 'başlangıç', 'orta': 'orta', 'ileri': 'ileri'}.get(k, k)} (`{k}`) {n(v)} ({pc(v, len(ins), 1)})"
+               f"{LEVEL_TR.get(k, k)} (`{k}`) {n(v)} ({pc(v, len(ins), 1)})"
                for k, v in lv.most_common()) + ".", "",
            "## Örneklerin üretimi",
-           f"- **Kaynaklar:** Domain Corpus'tan {n(n_docs)} doküman ({n(srcn.get('openstax_astronomy_2e', 0) + srcn.get('nasa_science', 0) + srcn.get('wikipedia_en', 0) + srcn.get('wikipedia_tr', 0) + srcn.get('nasa_apod', 0) + srcn.get('arxiv_astro_ph', 0))} örnek), "
+           f"- **Kaynaklar:** İngilizce Domain Corpus v{CFG['project']['corpus_version']}'dan {n(n_docs)} doküman "
+           f"({n(n_corpus_ex)} örnek: NASA Science, Wikipedia EN, OpenStax Astronomy 2e, arXiv astro-ph), "
            f"Stack Exchange Space/Astronomy soru-cevapları ({n(srcn.get('stackexchange_space_qa', 0))} örnek; "
-           f"{n(src_s.get('stackexchange_candidates_selected', 0))} seçilmiş soru) ve kaynak dokümansız kapsam dışı "
-           f"örnekler ({n(srcn.get('none', 0))}).",
-           "- **Yöntem:** LLM destekli sentetik üretim. Her çağrıda tek bir kaynak doküman ve o dokümana atanmış görev "
-           "türleri/seviyeler verilir; model yalnızca kaynaktaki bilgiyi kullanmak ve cevabı destekleyen alıntıyı "
-           "kaynaktan kelimesi kelimesine kopyalamak zorundadır. Stack Exchange örneklerinde soru ve kabul edilmiş/en "
-           "yüksek puanlı cevap Türkçeye aktarılıp düzenlenmiştir (kullanıcı adı, bağlantı ve kişisel yorumlar çıkarıldı).",
-           "- **Model:** Google Gemini API (ücretsiz katman). Katmanın model başına günlük istek sınırı nedeniyle aynı "
-           "aileden birden fazla Flash modeli havuz olarak kullanılmış, her örnekte gerçekte kullanılan model "
-           "kaydedilmiştir: " + ", ".join(f"{k} ({n(v)})" for k, v in gm.most_common()) + ".",
+           f"{n(src_s.get('stackexchange_candidates_selected', 0))} seçilmiş soru) ve kaynak dokümansız kapsam dışı / "
+           f"yanlış öncül örnekleri ({n(srcn.get('none', 0))}).",
+           "- **Yöntem:** Üç kaynak türü ayrı ele alındı: (1) Corpus dokümanlarından LLM destekli sentetik İngilizce "
+           "üretim — model yalnız kaynaktaki bilgiyi kullanır ve `supporting_evidence` alıntısını kaynaktan birebir "
+           "kopyalar; (2) Stack Exchange örneklerinde **Gemini kullanılmaz**, orijinal İngilizce soru + en yüksek "
+           "puanlı cevap metni değiştirilmeden alınır (LaTeX, URL, `@kullanıcı`, görsele bağımlı, forum/insan sesi "
+           "içeren kayıtlar 09'da elenir; seviye 11'de yargıç tarafından atanır); (3) kapsam dışı işlerinde her 15 "
+           "örneğin 5'i [prompts/v2.0/misconceptions.json](prompts/v2.0/misconceptions.json) listesindeki 60 "
+           "astronomi yanlış kanısından (tekrarsız) üretilir.",
+           "- **Model:** Google Gemini API (ücretsiz katman; **yalnız Flash modelleri**, lite kapalı). Her örnekte "
+           "gerçekte kullanılan model kaydedilmiştir: " + ", ".join(f"{k} ({n(v)})" for k, v in gm.most_common()) + ".",
            f"- **Parametreler:** sıcaklık {tr_num(I['temperature'])}, düşünme seviyesi `{I.get('generator_thinking_budget')}`, "
-           f"en fazla {n(I['max_output_tokens'])} çıktı token'ı. Prompt sürümleri (örnek sayısı): "
-           + ", ".join(f"`{k}` ({n(v)})" for k, v in sorted(pv.items())) + ". Prompt metinleri: "
-           + ", ".join(f"[prompts/{k}/](prompts/{k}/)" for k in sorted(pv)) + " (`system_generate.txt`, "
-           "`generate_doc.txt`, `generate_se.txt`, `generate_refusal.txt`, `task_types.json`). Sürümler, doğrulamada "
-           "bulunan kusurların kaynağında önlenmesi için eklendi: **v1.1** çoktan seçmeli görev tanımına 'talimatta "
-           "soru, şık veya doğru cevap yer almaz', sistem prompt'una 'Türkçeye özgü harfleri (ç, ğ, ı, ö, ş, ü) ASCII "
-           "karşılıklarıyla değiştirme'; **v1.2** ayrıca 'kullanıcı kaynağı görmediği için cevaplarda da \"metne "
-           "göre\", \"kaynakta\" deme' ve sınıflandırmada öğelerin talimatta açıkça sayılması kurallarını ekler.",
+           f"en fazla {n(I['max_output_tokens'])} çıktı token'ı. Prompt sürümleri: "
+           + ", ".join(f"`{k}` ({n(v)})" for k, v in sorted(pv.items()))
+           + f" ([prompts/{I['prompt_version']}/](prompts/{I['prompt_version']}/): `system_generate.txt`, "
+           "`generate_doc.txt`, `generate_refusal.txt`, `task_types.json`, `misconceptions.json`, `judge.txt`, "
+           "`judge_batch.txt`).",
            "- Üretim yöntemlerine göre: " + ", ".join(f"`{k}` {n(v)}" for k, v in meth.most_common()) + ".", "",
            "## Doğrulama",
-           f"Toplam **{n(len(raw))}** örnek üretildi; doğrulamadan sonra **{n(len(ins))}** örnek kaldı. "
-           f"Ayrıca çıktısı iş düzeyinde kusurlu bulunan {n(len(regen))} iş (Türkçe karakter kaybı veya çoktan seçmeli "
-           "talimatta soru verilmesi) arşivlenip yeniden üretildi; üretim sırasında aynı nedenlerle reddedilen çıktılar "
-           "hiç kaydedilmedi. Bir LLM'in ürettiği cevap doğru kabul edilmedi; dört aşamalı kontrol uygulandı:", "",
-           "1. **Kural kontrolleri** (tüm örnekler): Türkçe dil tespiti, uzunluk sınırları, görev türü tutarlılığı, "
-           "çoktan seçmeli JSON şeması (4 seçenek, tek doğru cevap), talimatta öğretim metninin bulunması ve sorunun, "
-           "şıkların, doğru cevabın veya öğrenciye sorulacak sorunun verilmemesi, Türkçe karakter eksikliği ('ı' "
-           "harfinin düşmesi dahil), kaybolmuş üs, kişisel iletişim bilgisi, LaTeX artığı, URL, kaynağı "
-           "görmeyen kullanıcıya talimatta veya cevapta 'metne göre' gibi atıf, birebir ve yakın tekrar (MinHash, "
-           f"Jaccard ≥ 0,8), değerlendirme setleriyle {I['decontam_ngram']}-gram örtüşmesi."
-           + (f" Öğeleri talimatta sayılmış {n(vs['rule_fixes']['kaynak_atfi_silindi'])} sınıflandırma talimatının "
-              "başındaki \"Metinde adı geçen\" gibi atıf ifadesi silindi (örnek elenmedi; `postprocess` alanında "
-              "işaretli)" + fix_note("kaynak_atfi_silindi") + "." if vs.get("rule_fixes", {}).get("kaynak_atfi_silindi") else "")
-           + (f" {n(vs['rule_fixes']['adim_yazimi_duzeltildi'])} cevapta \"Adim\" yazımı \"Adım\" olarak düzeltildi"
-              + fix_note("adim_yazimi_duzeltildi") + "."
-              if vs.get("rule_fixes", {}).get("adim_yazimi_duzeltildi") else ""),
-           f"2. **Kanıt kontrolü** (kaynağı olan tüm örnekler): `supporting_evidence` alıntısının kelime 5-gram'larının en "
-           f"az {tr_ek('%' + str(int(100 * I['evidence_min_overlap'])))} kaynak metinde bulunmalıdır; bulunmayan örnek uydurma kaynak "
-           "riski nedeniyle elenir.",
-           f"3. **LLM yargıç** (işlerin %{int(100 * I['judge_sample_fraction'])}'luk tabakalı rastgele örneklemi, "
-           f"{n(vs.get('judged_examples', 0))} örnek): örneği üreten modelden **farklı** bir model, sıcaklık 0 ile her "
-           "örneği kaynağıyla birlikte desteklenme, doğruluk, talimata uyma, anlaşılırlık ve Türkçe akıcılık açısından "
-           f"değerlendirdi. Başarısız oranı: **{pc(vs.get('judge_fail', 0), vs.get('judged_examples') or 0)}** "
-           "(tüm set için tahmini hata oranı); başarısızlar elendi. Yargıçtan geçip final sette kalan "
-           + f"{n(sum(jm.values()))} örneğin yargıç modelleri: "
-           + (", ".join(f"{k} ({n(v)})" for k, v in jm.most_common()) or "-") + "."
-           + (" Örneklem ilk çalıştırmada sabitlendi (sonradan eklenen kurallar örneklemi değiştirmesin diye)."
-              + "".join(f" {lab} üretimlerinde başarısız: {n(g['fail'])}/{n(g['judged'])}"
-                        f" ({pc(g['fail'], g['judged'])});" for lab, g in
-                        (("Lite", vs['judge_by_generator']['lite']), ("Flash", vs['judge_by_generator']['flash']))
-                        if g['judged']).rstrip(";") + "."
-              if vs.get("judge_by_generator") else "")
-           + (f" Örneklemdeki {n(vs['judge_gave_up_jobs'])} işte yargıç iki denemede tüm örnekleri değerlendiremedi; "
-              f"bu işlerin değerlendirilmeyen {n(vs.get('judge_unjudged_examples_in_sample', 0))} örneği yalnız kural ve "
-              "kanıt kontrolüyle sette kaldı (`llm_judged=false`)." if vs.get("judge_gave_up_jobs") else ""),
+           f"Toplam **{n(len(raw))}** ham örnek üretildi; doğrulama ve kalite kontrolünden sonra **{n(len(ins))}** "
+           "örnek kaldı. Üretim sırasında çoktan seçmeli talimatında soru/şık/cevap sızıntısı yapan işler hemen "
+           "reddedilip yeniden üretildi. Dört aşamalı kontrol uygulandı:", "",
+           "1. **Kural kontrolleri** (tüm örnekler): İngilizce dil tespiti (`lingua`), karakter uzunluğu, Final SFT "
+           f"token sınırı (`too_long_for_training`: `{I['train_tokenizer']}` chat template, düşünme kapalı, sistem "
+           f"mesajı dahil ≤ {n(train_limit)} token; SFT 1.024 token sınırı için {I['train_token_margin']} token pay), "
+           "görev türü ve hedef kitle–seviye tutarlılığı (`level_audience_mismatch`), çoktan seçmeli JSON şeması, "
+           "soru sayısı ve talimatta sızıntı kontrolü, kaybolmuş üs (`exponent_loss`), URL, kişisel iletişim bilgisi "
+           "(`contains_pii`), LaTeX artığı, bozuk kodlama, yer tutucu, eksik görsel atfı (`missing_media_reference`), "
+           "başka cevaba atıf (`references_other_answer`, SE), yarım kalan cevap (`truncated_response`), yapay zekâ "
+           "sorumluluk reddi, tekrar eden cümle, dengesiz markdown, kaynağı görmeyen kullanıcıya talimatta/cevapta "
+           "metin atfı, kapsam dışı kaynak dokümanları (`out_of_scope_source`), birebir/yakın tekrar (MinHash, "
+           f"Jaccard ≥ 0,8) ve değerlendirme setleriyle {I['decontam_ngram']}-gram örtüşmesi (`eval_overlap`)."
+           + (f" Öğeleri talimatta sayılmış {n(vs['rule_fixes']['unseen_reference_removed'])} sınıflandırma "
+              "talimatındaki görünmeyen metin atfı temizlendi (örnek elenmedi; `postprocess` alanında işaretli)"
+              + fix_note("unseen_reference_removed") + "."
+              if vs.get("rule_fixes", {}).get("unseen_reference_removed") else ""),
+           f"2. **Kanıt kontrolü** (kaynak dokümanlı Gemini örnekleri): `supporting_evidence` alıntısının kelime "
+           f"5-gram'larının en az {tr_ek('%' + str(int(100 * I['evidence_min_overlap'])))} kaynak metinde "
+           "bulunmalıdır (Stack Exchange ve kapsam dışı örneklerde kaynak doküman yok).",
+           judge_desc,
            "4. **Rastgele örneklem incelemesi:** "]
     ir = qc.get("instruction_review", {})
     rev_f = p("qc") / "instruction_review.csv"
     rev_rows = list(csv.DictReader(open(rev_f, encoding="utf-8-sig"))) if rev_f.exists() else []
-    adim = [r for r in rev_rows if r["task_type"] == "adim_adim_problem_cozme"]
-    adim_rev = (len(adim), sum(1 for r in adim if (r.get("son_karar") or r.get("claude_karar")) == "sorunlu"))
+    sbs = [r for r in rev_rows if r["task_type"] == "step_by_step_problem_solving"]
+    sbs_rev = (len(sbs), sum(1 for r in sbs if (r.get("son_karar") or r.get("claude_karar")) == "sorunlu"))
     if ir.get("pre_reviewed") or ir.get("human_reviewed"):
         md[-1] += (f"{ir.get('sample')} örnek (görev türü oranında tabakalı) kaynak metniyle karşılaştırılarak incelendi. "
                    f"Yapay zekâ destekli ön inceleme ölçüt bazında yapıldı; nihai kararı grup üyesi verdi. Ön incelemede "
@@ -557,64 +608,51 @@ def instruction_card() -> None:
            f"kümesi seed {CFG['project']['random_seed']} ve grup kimliğinin hash'inden belirlenir (bir grubun elenmesi "
            "diğerlerinin kümesini değiştirmez).",
            "- Değerlendirme setleri (Astro-mcqa, astro-mcq, HubbleSpaceTelescope-MCQ, AstroMLab Astrobench) eğitime "
-           f"alınmadı; bunlarla {I['decontam_ngram']}-gram örtüşmesi olan örnekler elendi. Örnekler Türkçe olduğu için "
-           "İngilizce kaynaklar (Stack Exchange soruları, kaynak doküman pasajları) da değerlendirme setleriyle "
-           "karşılaştırıldı; aynı soru bulunmadı, yalnız genel ifadeler örtüşüyor (bkz. experiments.md).", "",
+           f"alınmadı; bunlarla {I['decontam_ngram']}-gram örtüşmesi olan tüm örnekler elendi (`eval_overlap = 0`).", "",
            "## Değerlendirme planı (final dönemi)",
-           "Vize kapsamında ayrı bir değerlendirme seti hazırlanmadı; başarı şu şekilde ölçülecek:",
-           "- **Dış değerlendirme setleri** (eğitime girmedi): AstroMLab Astrobench, Astro-mcqa, astro-mcq, "
+           "Final aşamasında İngilizce model (`Qwen/Qwen3-1.7B-Base` / `Qwen/Qwen3-1.7B`) şu eksenlerde değerlendirilecek:",
+           "- **Dış alan değerlendirme setleri** (eğitime girmedi): AstroMLab Astrobench, Astro-mcqa, astro-mcq, "
            "HubbleSpaceTelescope-MCQ — çoktan seçmeli doğruluk. Corpus ile örtüşen sorular "
-           "[reports/eval_contamination.csv](reports/eval_contamination.csv) dosyasında listelidir ve ayrıca raporlanacaktır.",
-           f"- **Bu setin test kümesi** ({n(sp['test'])} örnek; corpus kaynaklı olanlar yalnız corpus test dokümanlarından üretildi): Türkçe "
-           "talimat takibi, seviyeye uygunluk ve JSON soru üretiminin geçerliliği (şema, tek doğru cevap, kaynakla tutarlılık).",
-           "- Üç sistem karşılaştırılacak: hazır instruct model, alana uyarlanmış (CPT) model, CPT + SFT.", "",
+           "[reports/eval_contamination.csv](reports/eval_contamination.csv) dosyasında ayrıca raporlanır.",
+           "- **Genel yetenek korunumu (İngilizce):** İngilizce MMLU (`lm-eval mmlu`) ve İngilizce Wikipedia "
+           "perplexity + %10 İngilizce replay.",
+           f"- **Bu setin test kümesi** ({n(sp['test'])} örnek) + elle yazılmış ≥ 50 soru (görev türü başına en az 15): "
+           "İngilizce talimat takibi, seviyeye uygunluk, yanlış öncül düzeltme ve JSON çoktan seçmeli soru üretimi.",
+           "- Karşılaştırma: temel model, CPT modeli, CPT + SFT (QLoRA) ve isteğe bağlı RAG katmanı.", "",
            "## Sınırlılıklar",
-           "Örnekler sentetiktir ve kaynak dokümanlardaki bilgiyle sınırlıdır; güncel astronomik veriler (ör. "
-           "ötegezegen sayısı) için birincil kaynakların yerine geçmez. Seviye etiketleri üretim sırasında atanmıştır; "
-           "seviyeye uygunluk yalnız yargıç ve örneklem incelemesiyle kontrol edilmiştir. Tüm örnekler tek turlu "
-           "(kullanıcı → asistan) diyaloglardır.", "",
+           "Doküman ve kapsam dışı örnekler sentetiktir ve kaynak dokümanlardaki bilgiyle sınırlıdır; güncel astronomik "
+           "veriler (ör. ötegezegen sayısı) için birincil kaynakların yerine geçmez (Final'de RAG ile desteklenecektir). "
+           "Tüm örnekler tek turlu (`user` → `assistant`) İngilizce diyaloglardır ve SFT 1.024 token sınırına uyacak "
+           "biçimde filtrelenmiştir.", "",
            "## Sürüm geçmişi",
-           "- v0.1 (22.10.2026): Pilot üretim (11 örnek, eski prompt; veri setine alınmadı).",
-           "- v0.9 (23.10.2026): Stack Exchange, kapsam dışı ve doküman işleri; Türkçe karakter kontrolü.",
-           "- v1.0 (24–26.10.2026): ek paketler (ek1–ek3), prompt v1.1/v1.2, çoktan seçmeli sızıntı ve görünmeyen metne "
-           "atıf kuralları, LLM yargıç örneklemi, 150 örneklik inceleme.",
-           "- Planlanan v1.1 (final dönemi öncesi): yargıcın örneklem dışındaki bütün lite üretimi işlere genişletilmesi "
-           "(`11_verify_instructions.py --extended`); elenenler `judge_ext_fail` nedeniyle ayrı kaydedilir.", "",
+           "- v1.0 (24–26.10.2026): Vize teslimi Türkçe Instruction Dataset (3.388 örnek, Git etiketi `v1.0`, "
+           "arşiv: `reports/archive_v1.0/`).",
+           f"- v{iv} (10–25.11.2026): Tamamen **İngilizce** yeniden üretim; yalnız Flash modelleri (lite kapalı), "
+           "orijinal İngilizce Stack Exchange soru-cevapları (Gemini'siz, seviye yargıçtan), 60 yanlış öncüllü "
+           "astronomi sorusu (`misconceptions.json`), Final SFT 1.024 token sınırı (`too_long_for_training`), "
+           "genişletilmiş kural denetimi ve tam kapsamlı karma LLM yargıç (`DOC`/`REF` 3'lü toplu, `SE` tekli).", "",
            "## Lisans",
-           "Her örnek kaynağının lisansını `license` alanında taşır. Stack Exchange türevleri CC BY-SA 4.0, OpenStax "
-           "türevleri CC BY-NC-SA 4.0, Wikipedia türevleri CC BY-SA 4.0 koşullarına tabidir; veri seti akademik ve "
-           "ticari olmayan amaçla hazırlanmıştır. Örnekler Gemini API ile üretildiği için Google'ın Gemini API kullanım "
-           "koşulları da geçerlidir (koşullar, Gemini ile rekabet eden model geliştirmeyi kısıtlar; bu çalışma küçük "
-           "ölçekli, akademik bir alan modelidir).", "",
+           "Her örnek kaynağının lisansını `license` alanında taşır. Stack Exchange örnekleri cevabın tarihine göre "
+           + (", ".join(f"{k} ({n(v)})" for k, v in se_lics.most_common()) or "CC BY-SA 3.0 / 4.0")
+           + " taşır (kaynak veri setinde yazar adı bulunmadığından atıf `source_url` ve lisansla yapılır); OpenStax "
+           "türevleri CC BY-NC-SA 4.0, Wikipedia türevleri CC BY-SA 4.0 koşullarına tabidir. Veri seti akademik ve "
+           "ticari olmayan amaçla hazırlanmıştır; sentetik örneklerde Google Gemini API kullanım koşulları da geçerlidir.", "",
            "## Bilinen problemler",
-           "- Sentetik üretim nedeniyle bazı cevaplarda çeviri kokan ifadeler veya küçük yazım hataları kalabilir; "
-           "örneklem incelemesindeki hata türleri kalite raporundadır.",
-           "- Kanıt kontrolü cevabın tamamını değil, modelin gösterdiği alıntıyı doğrular; alıntı dışındaki bir cümlede "
-           "hata kalma olasılığı LLM yargıç ve örneklem incelemesiyle ölçülmüştür, sıfır değildir.",
-           "- Örnekler birden fazla Gemini modeliyle üretildiği için üslupta küçük farklılıklar olabilir. Ücretsiz "
-           f"katmanın Flash kotası yetmediği için örneklerin {tr_ek(pc(lite_n, len(ins)))} lite modellerle üretildi; lite "
-           f"cevaplar daha kısadır (ortalama {n(lite_len)} karakter, Flash {n(flash_len)}) ve Türkçe karakter kaybı, "
-           "talimatta soru verme gibi kusurlar lite çıktılarında yoğunlaştı (bu kusurlu örnekler elendi).",
-           "- Stack Exchange cevaplarının bir kısmı uzay mühendisliği ağırlıklıdır; kaynak verideki kaybolmuş üsler "
-           "(\"× 1030 kg\") otomatik düzeltildi, ancak benzer biçim bozuklukları tamamen dışlanamaz.",
-           "- Kapsam dışı örnekler kaynak dokümansızdır; doğrulukları yalnız yargıç ve inceleme ile kontrol edildi.",
-           "- Örnekler kaynağa sadıktır; kaynaktaki hata da örneğe geçebilir. Örneklem incelemesinde bu türden bulunan "
-           "hatalar: Türkçe Wikipedia'daki \"1921'de Birleşmiş Milletler Radyum Kurumu\" (BM 1945'te kuruldu), Büyük "
-           "Patlama'nın \"birkaç milimetrelik bir noktadan patlama\" diye anlatılması, bilimsel olarak eksik bir Stack "
-           "Exchange cevabı (Titan atmosferi). Bu örnekler çıkarıldı; benzerleri yargıç ve incelemenin dışında kalan "
-           "örneklerde bulunabilir.",
-           (f"- `adim_adim_problem_cozme` türü en zayıf türdür: incelenen {n(adim_rev[0])} örneğin "
-            f"{n(adim_rev[1])} tanesi sorunluydu; çoğunda çözülecek bir hesap veya süreç yoktu, bilgiler adım gibi "
-            "sıralanmıştı (yargıç da bu örnekleri eledi)." if adim_rev[1] else
-            "- `adim_adim_problem_cozme` örneklerinde bilgilerin adım gibi sıralandığı, çözülecek hesap içermeyen "
-            "örnekler bulunabilir."),
-           "- Yargıç yalnız %10'luk örneklemde çalıştı; örneklem dışındaki lite üretimi örneklerin bir kısmında benzer "
-           "kusurlar kalmış olabilir (tahmini oran yukarıda). Final dönemi eğitiminden önce ek yargıçla temizlenmesi "
-           "planlanmıştır (v1.1).", "",
+           *([cal_note] if cal_note else []),
+           "- Kanıt kontrolü cevabın tamamını değil, modelin gösterdiği alıntıyı doğrular; tam kapsamlı LLM yargıç ve "
+           "örneklem incelemesiyle kalan hata oranı en aza indirilmiştir ancak sıfır olduğu garanti edilemez.",
+           "- Örnekler dört farklı Gemini Flash modeliyle üretildiği için üslupta küçük farklılıklar olabilir.",
+           "- Stack Exchange örnekleri forumdan birebir alınan insan cevaplarıdır; kural + tekli yargıçla temizlense de "
+           "üslup sentetik ders anlatımlarına göre daha konuşma diline yakın olabilir.",
+           "- Kapsam dışı ve yanlış öncül örnekleri kaynak dokümansızdır; doğrulukları yargıç ve incelemeyle kontrol edildi.",
+           (f"- `step_by_step_problem_solving` türünde incelenen {n(sbs_rev[0])} örneğin {n(sbs_rev[1])} tanesi "
+            "sorunlu bulunup çıkarılmıştır." if sbs_rev[1] else
+            "- `step_by_step_problem_solving` örneklerinde sayısal hesap yerine kavramsal adım sıralaması görülebilir."), "",
            "## Hazırlayan",
            "Eda Gögebakan (2211012069) — Süleyman Demirel Üniversitesi, Bilgisayar Mühendisliği. "
            "Danışman: Asim Sinan Yüksel."]
-    (ROOT / "INSTRUCTION_CARD.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+    target_dir = ROOT if out_dir is None else out_dir
+    (target_dir / "INSTRUCTION_CARD.md").write_text("\n".join(md) + "\n", encoding="utf-8")
     log.info("INSTRUCTION_CARD.md yazıldı")
 
 
@@ -660,9 +698,9 @@ def source_inventory() -> None:
                         LICENSE[s], note])
         w.writerow(["stackexchange_space_qa", "https://huggingface.co/datasets/juliensimon/stackexchange-space-qa",
                     "dataset", "en", se_sum.get("stackexchange_total", ""), se_n if ins else "", "", "2026-10-22",
-                    "CC BY-SA 4.0",
-                    "Yalnız Instruction Dataset (soru_cevap); raw = veri setindeki kayıt, document_count = final "
-                    "instruction örneği" + ("" if ins else
+                    "CC BY-SA 3.0 / 4.0",
+                    "Yalnız Instruction Dataset (question_answering, orijinal İngilizce); raw = veri setindeki kayıt, "
+                    "document_count = final instruction örneği" + ("" if ins else
                                             f" (Instruction v{CFG['project']['instruction_version']} henüz üretilmedi)")])
         w.writerow(["nasa_exoplanet_archive", "https://exoplanetarchive.ipac.caltech.edu/", "structured_data", "en",
                     "", 0, "", "", "Atıf gerekli",

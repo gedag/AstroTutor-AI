@@ -1062,3 +1062,21 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
   doğrulandı (biri kalibrasyonda tekli yargıcın da elediği JOB_SE_0017_09). Sorudaki "this question" gibi doğal ifadeler
   ve "Kepler's third law" serbest. SE elemelerinin nedeni: örnekler Gemini üretimi değil, forumdan aynen alınan insan
   metinleri (başka gönderiye/görsele atıf, yazım hataları, kısmi cevap, ara sıra bilgi hatası).
+
+## 23.11.2026 — Üretim tamamlandı (346/346), yargıç aşama 1 bitti, Final öncesi kod denetimi
+
+- **Adım 10 (üretim) tamamlandı (22.11 13:00):** 346/346 iş (324 üretildi, 22 kapsam dışı kaynak atlandı, 0 kalıcı
+  hata), toplam 3.609 ham İngilizce örnek. Kural + kanıt kontrolünden 3.441/3.609 (%95,3) örnek geçti.
+- **Adım 11 (karma tam kapsamlı yargıç):** Aşama 1 örneklemi (54 iş, 630 örnek) tamamlandı ve
+  `instruction_judge_plan.json` sabitlendi (`fail`: 9/630 = %1,4; geçme %98,6). Tam kapsam (`full_check_fail_rate: 0.0`)
+  kuralıyla 9 grubun tamamı tam kontrole alındı; Stack Exchange işleri tek tek (`SE: 1`) yargılanmaya başladı.
+- **Final öncesi İngilizce/tutarlılık denetimi:**
+  - Domain Corpus v2.0 doğrulandı: 14.683/14.683 doküman %100 İngilizce (`wikipedia_tr` yok).
+  - `scripts/15_write_cards.py`: `instruction_card()` v1.0 Türkçe kalıntılarından ve `config.yaml`'da artık olmayan
+    `judge_sample_fraction` (`KeyError`) alanından temizlendi; İngilizce v2.0 (yalnız Flash, orijinal SE + yargıç
+    seviyesi, 60 yanlış öncül, 1.024 token SFT sınırı, tam kapsamlı karma yargıç ve kalibrasyon risk açıklaması)
+    için güncellendi. `source_inventory()` SE satırı `question_answering` ve `CC BY-SA 3.0 / 4.0` olarak güncellendi.
+  - `scripts/validate_datasets.py`: Final SFT modelinin (`config.yaml → instruction.train_tokenizer` =
+    `Qwen/Qwen3-1.7B`, düşünme kapalı, İngilizce sistem mesajı, `≤ 1024` token) chat template + uzunluk kontrolü ile
+    İngilizce taksonomi/seviye doğrulaması eklendi.
+  - `scripts/tests/test_instruction_pipeline.py`: `15_write_cards.instruction_card()` uçtan uca teste eklendi.

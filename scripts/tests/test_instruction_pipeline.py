@@ -364,6 +364,12 @@ check("13 inceleme örneklemi", run("13_sample_for_review", "--only", "instructi
 hdr = next(csv.reader(open(TMP / "qc" / "instruction_review.csv", encoding="utf-8-sig")))
 check("inceleme tablosunda ingilizce_akici ölçütü", "claude_ingilizce_akici" in hdr and "claude_turkce_akici" not in hdr)
 check("14 kalite raporu", run("14_qc_report") == 0)
+m15 = importlib.import_module("15_write_cards")
+m15.instruction_card(TMP)
+icard = (TMP / "INSTRUCTION_CARD.md").read_text(encoding="utf-8")
+check("15 instruction kartı v2.0 İngilizce yazıldı",
+      "# AstroTutor AI İngilizce Instruction Dataset v2.0" in icard and "instruction_v2.0.jsonl" in icard
+      and "# AstroTutor AI Türkçe Instruction Dataset" not in icard and "tanim_aciklama" not in icard)
 check("validate (corpus + instruction)", run("validate_datasets") == 0,
       (TMP / "reports" / "validation_report.md").read_text(encoding="utf-8")[-600:])
 
