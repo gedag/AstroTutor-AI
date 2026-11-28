@@ -131,5 +131,17 @@ check("config jobs_per_call 1 veya 3", v11.J.get("jobs_per_call") in (1, 3), Tru
 src11 = (Path(__file__).resolve().parent.parent / "11_verify_instructions.py").read_text(encoding="utf-8")
 check("kodda varsayılan 1", 'J.get("jobs_per_call", 1)' in src11, True)
 
+# 7) self-judge dışlamasında başka model boştaysa (ör. 3.6 boşta, 3.5 kota, 3.7/3.8 503) diğer işlere geçilir
+FakeLLM = lambda ex, co: type("L", (), {"models": [M1, M2, "gemini-3.7-flash", "gemini-3.8-flash"],
+                                        "exhausted": set(ex), "cooling": set(co)})()
+check("yalnız dışlanan 3.6 boşta -> diğer üreticilerin işlerine geç",
+      v11.only_excluded_available(FakeLLM([M2], ["gemini-3.7-flash", "gemini-3.8-flash"]), {M1}), True)
+check("tüm modeller dolu/beklemede -> normal durma",
+      v11.only_excluded_available(FakeLLM([M2], [M1, "gemini-3.7-flash", "gemini-3.8-flash"]), {M1}), False)
+check("ağ hatası (hepsi boşta) -> normal durma",
+      v11.only_excluded_available(FakeLLM([], []), {M1}), False)
+check("SE (dışlama yok) -> normal durma",
+      v11.only_excluded_available(FakeLLM([M2], ["gemini-3.7-flash", "gemini-3.8-flash"]), set()), False)
+
 print("hata:", bad)
 sys.exit(1 if bad else 0)

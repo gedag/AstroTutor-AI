@@ -1084,3 +1084,31 @@ Tam üretim başladıktan sonra yapılan denetimde üç sorun bulundu; döngü d
   yerel önbellekte zaten bulunan `Qwen/Qwen3-1.7B` tokenizer'ını yüklerken HuggingFace Hub'a erişmeye çalışıp
   `[WinError 10054]` sonrası askıda kaldı (`20:32`–`20:45`). `11_verify_instructions.py` ve `validate_datasets.py`
   içinde `AutoTokenizer.from_pretrained(..., local_files_only=True)` önce denenir, yalnız önbellekte yoksa ağa çıkar.
+
+## 25–28.11.2026 — İngilizce Instruction Dataset v2.0 tamamlandı (3.319 örnek, QC + doğrulama geçti)
+
+- **Kota kullanım düzeltmesi (25.11):** `full` aşamasında kuyruğun başında aynı üreticiden (`gemini-3.6-flash`) çok
+  sayıda paket biriktiğinde, diğer modeller 429/503 iken `3.6` boştaydı ancak `TransientError` bloğu 3/3 geçici
+  hatada duruyordu. `11_verify_instructions.py` içine `only_excluded_available()` eklendi (self-judge kuralı
+  korunarak yalnız dışlanan model boştaysa diğer üreticilerin paketlerine geçilir; `test_judge_batch.py`'ye 4 test
+  eklendi, hata 0).
+- **Adım 11–13 tamamlandı (28.11 15:37):** Tam kapsamlı karma yargıç `324/324` iş (`3.441/3.441` örnek; `DOC` 261/261,
+  `SE` 51/51, `REF` 12/12) üzerinde tamamlandı: `3.345` geçti, `96` elendi (`%97,2` geçme; `supported=63`,
+  `follows_instruction=18`, `correct=8`, `fluent_english=7`; `0` self-judge ihlali, `0` vazgeçilen iş). Adım 12
+  (split) ve Adım 13 (`reports/qc/instruction_review.csv`, 150 tabakalı örnek) otomatik tamamlanıp `instruction_loop.DONE`
+  bırakıldı.
+- **150 örneklik kalite kontrolü (28.11):** Tüm 150 örnek kaynak metinleriyle karşılaştırılarak 5 ölçütte ön incelemeden
+  geçirildi (Gemini ön incelemesi) ve Eda Gögebakan tarafından onaylandı (`son_karar`): `124/150` uygun (`%82,7`),
+  `26/150` sorunlu (`bilimsel_hata=7`, `dil_akicilik=5`, `dis_atif=5`, `gorev_turu_uyumsuz=3`, `talimat_belirsiz=2`,
+  `eksik_cevap=1`, `kaynakla_tutarsiz=1`, `mcq_hatali=1`, `seviye_uyumsuz=1`; 26 sorunun 12'si orijinal Stack Exchange
+  forum gönderilerinden). `14_qc_report.py` ön inceleyici adını veri setine göre şeffafça raporlayacak şekilde
+  güncellendi (Corpus v2.0: Claude; Instruction v2.0: Gemini).
+- **Adım 14 → 12 → 14 → 15 → 16 → `validate_datasets.py` (28.11):** Sorunlu bulunan 26 örnek kalıcı olarak çıkarıldı
+  (`qc_excluded_raw_ids.json`, `removed_instructions.csv` `stage=qc`).
+  - **Final İngilizce Instruction Dataset v2.0:** **3.319 örnek** (`train: 3.011`, `validation: 175`, `test: 133`;
+    `beginner: 1.091`, `intermediate: 1.162`, `advanced: 1.066`; 10 görev türü tam).
+  - `reports/quality_control_report.md`, `DATASET_CARD.md`, `INSTRUCTION_CARD.md`, `reports/source_inventory.csv` ve
+    `data/samples/{corpus,chunks,instruction}_sample.jsonl` güncellendi.
+  - `validate_datasets.py`: **18/18 BAŞARILI** (`0` eksik alan, `0` split çakışması, `0` CPT↔SFT uyumsuzluğu, `0` eval
+    8-gram örtüşmesi, `Qwen/Qwen3-1.7B` chat template + token kontrolü: hatalı `0`, medyan `242`, p95 `505`, maks `934`,
+    `1024 üzeri = 0`). Final eğitim aşamasına (Colab `Qwen/Qwen3-1.7B` CPT + SFT) hazır.

@@ -1,0 +1,29 @@
+{
+  "stackexchange_total": 33519,
+  "stackexchange_candidates_selected": 502,
+  "stackexchange_removed": {
+    "not_usable_verbatim": 5530,
+    "length_out_of_range": 2880,
+    "human_voice": 1236,
+    "depends_on_image": 522,
+    "eval_overlap": 25,
+    "out_of_scope_tag": 4444,
+    "out_of_domain": 392,
+    "low_score": 9822,
+    "no_answer": 4891
+  },
+  "doc_jobs": 283,
+  "doc_examples_planned": 3192,
+  "se_jobs": 51,
+  "refusal_jobs": 12,
+  "planned_by_type": {
+    "summarization": 304,
+    "leveled_explanation": 570,
+    "cause_effect": 380,
+    "mcq_generation": 532,
+    "classification": 152,
+    "definition_explanation": 608,
+    "comparison": 380,
+    "step_by_step_problem_solving": 266
+  }
+}

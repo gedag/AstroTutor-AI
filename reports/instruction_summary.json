@@ -1,0 +1,76 @@
+{
+  "total": 3319,
+  "splits": {
+    "test": 133,
+    "train": 3011,
+    "validation": 175
+  },
+  "task_types": {
+    "leveled_explanation": 488,
+    "mcq_generation": 457,
+    "definition_explanation": 530,
+    "cause_effect": 340,
+    "summarization": 276,
+    "comparison": 324,
+    "step_by_step_problem_solving": 219,
+    "classification": 120,
+    "out_of_scope_refusal": 178,
+    "question_answering": 387
+  },
+  "levels": {
+    "advanced": 1066,
+    "intermediate": 1162,
+    "beginner": 1091
+  },
+  "sources": {
+    "arxiv_astro_ph": 191,
+    "nasa_science": 855,
+    "openstax_astronomy_2e": 850,
+    "wikipedia_en": 858,
+    "none": 178,
+    "stackexchange_space_qa": 387
+  },
+  "methods": {
+    "llm_synthetic_from_source_document": 2754,
+    "llm_synthetic_out_of_scope": 178,
+    "stackexchange_original_verbatim": 387
+  },
+  "task_type_by_split": {
+    "test": {
+      "leveled_explanation": 23,
+      "mcq_generation": 22,
+      "definition_explanation": 17,
+      "summarization": 11,
+      "cause_effect": 11,
+      "comparison": 14,
+      "classification": 6,
+      "step_by_step_problem_solving": 5,
+      "out_of_scope_refusal": 6,
+      "question_answering": 18
+    },
+    "train": {
+      "cause_effect": 310,
+      "leveled_explanation": 439,
+      "mcq_generation": 414,
+      "summarization": 254,
+      "definition_explanation": 486,
+      "comparison": 297,
+      "step_by_step_problem_solving": 197,
+      "classification": 108,
+      "out_of_scope_refusal": 157,
+      "question_answering": 349
+    },
+    "validation": {
+      "cause_effect": 19,
+      "definition_explanation": 27,
+      "leveled_explanation": 26,
+      "summarization": 11,
+      "mcq_generation": 21,
+      "comparison": 13,
+      "step_by_step_problem_solving": 17,
+      "classification": 6,
+      "out_of_scope_refusal": 15,
+      "question_answering": 20
+    }
+  }
+}

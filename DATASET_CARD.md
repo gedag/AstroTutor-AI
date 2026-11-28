@@ -1,7 +1,7 @@
 # Uzay ve Astronomi Domain Corpus v2.0 (AstroTutor AI)
 
 ## Amaç
-Bu veri seti, uzay ve astronomi eğitiminde kullanıcının seviyesine göre **İngilizce** konu anlatımı yapan ve anlattığı içerikten çoktan seçmeli soru üreten alana özel bir dil modelinin (AstroTutor AI) **continued pretraining (CPT / DAPT)** aşamasında kullanılmak üzere hazırlanmıştır. Model ailesi olarak Qwen2.5-7B hedeflenmektedir. Genel amaçlı bir corpus değildir; soru-cevap davranışı için ayrı hazırlanan Instruction Dataset kullanılır (İngilizce v2.0 hazırlanıyor; vizede teslim edilen Türkçe v1.0: [reports/archive_v1.0/INSTRUCTION_CARD_v1.0.md](reports/archive_v1.0/INSTRUCTION_CARD_v1.0.md), Git etiketi `v1.0`).
+Bu veri seti, uzay ve astronomi eğitiminde kullanıcının seviyesine göre **İngilizce** konu anlatımı yapan ve anlattığı içerikten çoktan seçmeli soru üreten alana özel bir dil modelinin (AstroTutor AI) **continued pretraining (CPT / DAPT)** aşamasında kullanılmak üzere hazırlanmıştır. Final aşamasında `Qwen/Qwen3-1.7B` ailesi hedeflenmektedir. Genel amaçlı bir corpus değildir; soru-cevap davranışı için ayrı hazırlanan Instruction Dataset kullanılır (İngilizce v2.0: [INSTRUCTION_CARD.md](INSTRUCTION_CARD.md); vizede teslim edilen Türkçe v1.0: [reports/archive_v1.0/INSTRUCTION_CARD_v1.0.md](reports/archive_v1.0/INSTRUCTION_CARD_v1.0.md), Git etiketi `v1.0`).
 
 ## Kapsam
 **Kapsam içi:** Güneş Sistemi; gezegenler ve uydular; yıldızların özellikleri ve yıldız evrimi; gökadalar; temel kozmoloji; ötegezegenler; uzay araçları ve keşif görevleri; gözlemevleri ve teleskoplar.

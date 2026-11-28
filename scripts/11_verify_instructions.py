@@ -474,6 +474,16 @@ def job_models(rs: list[dict]) -> frozenset:
     return frozenset(x.get("generator_model") for x in rs) - {None}
 
 
+def only_excluded_available(llm, excl: set[str]) -> bool:
+    """Dışlanan üretici model dışındaki bütün yargıç modelleri kota/yoğunluk beklemesindeyken,
+    dışlanan modelin kendisi hâlâ kullanılabilir mi? True ise başka modelle üretilmiş işlere geçilir
+    (ör. 3.6 boştayken kuyruk başındaki 3 adet gen=3.6 iş yüzünden 3.6 kotası kullanılmadan durulmaz)."""
+    if not excl:
+        return False
+    avail = [m for m in llm.models if m not in llm.exhausted and m not in llm.cooling]
+    return bool(avail) and all(m in excl for m in avail)
+
+
 def make_batches(jids: list[str], by_job: dict, size: int, by_kind: dict | None = None) -> list[list[str]]:
     """Yargıç çağrılarını gruplar (config judge.jobs_per_call; Eda kararı 11.11.2026, kalibrasyon testine bağlı).
     size = 1: her iş ayrı çağrı, sıra aynen korunur (önceki davranış). size > 1: bir çağrıya yalnız AYNI iş türünden
@@ -683,6 +693,7 @@ def main() -> int:
         busy = 0
         stop = False
         stop_reason = None
+        skipped_busy = False
         # Önce aşama 1 ve SE işleri; aşama 1 bitince grup kararı verilir ve tam kontrol işleri eklenir
         for phase in ("stage1", "full"):
             plan = make_plan()
@@ -701,9 +712,10 @@ def main() -> int:
                 batch = queue.pop(0)
                 prompt, flat = judge_prompt(batch, by_job, docs, tmpl, tmpl_batch)
                 name = batch[0] if len(batch) == 1 else f"{batch[0]} (+{len(batch) - 1} iş)"
+                excl = set(job_models(flat))
                 try:
                     res = llm.generate_json(JUDGE_SYSTEM, prompt, list[Judgment],
-                                            exclude=set(job_models(flat)), stop_on_deadline=len(batch) > 1)
+                                            exclude=excl, stop_on_deadline=len(batch) > 1)
                 except DeadlineError as e:
                     # Toplu çağrı sunucu süre sınırını aştı: işler bu çalıştırmada TEK TEK denenir (ağır istek
                     # yüzünden yargıç takılmasın; 19.11.2026). Tekli çağrıda bu hata fırlatılmaz (normal geçici hata).
@@ -718,6 +730,9 @@ def main() -> int:
                         break
                     continue  # bu işin uygun yargıcı kalmadı; başka modelle üretilmiş işlere devam
                 except TransientError as e:
+                    if only_excluded_available(llm, excl):
+                        skipped_busy = True
+                        continue  # dışlanan model başka işler için hâlâ boşta; diğer üreticilerin işlerine geç
                     # 503/bağlantı: işin kusuru değil, deneme sayılmaz; üst üste 3 kez olursa kota yanmasın diye durulur
                     busy += 1
                     log.warning(f"{name} yargıç geçici hata ({busy}/3): {str(e)[:150]}")
@@ -817,7 +832,7 @@ def main() -> int:
     if not a.no_judge:
         left = pending(sample_jobs) + pending(se_jobs) + (pending(fjobs) if plan else [])
         if left or plan is None:
-            if stop_reason == "busy":
+            if stop_reason == "busy" or (stop_reason is None and skipped_busy and llm is not None and llm.cooling):
                 log.info(f"Yargıçta bekleyen iş: {len(left)} (geçici yoğunluk/503; 45 dk sonra devam)")
                 return 3
             log.info(f"Yargıçta bekleyen iş: {len(left)} (kota yenilenince devam)")

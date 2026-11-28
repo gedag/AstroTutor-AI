@@ -199,9 +199,12 @@ def dataset_card() -> None:
           "## Amaç",
           "Bu veri seti, uzay ve astronomi eğitiminde kullanıcının seviyesine göre **İngilizce** konu anlatımı yapan ve "
           "anlattığı içerikten çoktan seçmeli soru üreten alana özel bir dil modelinin (AstroTutor AI) **continued "
-          "pretraining (CPT / DAPT)** aşamasında kullanılmak üzere hazırlanmıştır. Model ailesi olarak Qwen2.5-7B "
-          "hedeflenmektedir. Genel amaçlı bir corpus değildir; soru-cevap davranışı için ayrı hazırlanan "
-          "Instruction Dataset kullanılır (İngilizce v2.0 hazırlanıyor; vizede teslim edilen Türkçe v1.0: "
+          "pretraining (CPT / DAPT)** aşamasında kullanılmak üzere hazırlanmıştır. Final aşamasında "
+          f"`{CFG['instruction']['train_tokenizer']}` ailesi hedeflenmektedir. Genel amaçlı bir corpus değildir; "
+          "soru-cevap davranışı için ayrı hazırlanan Instruction Dataset kullanılır ("
+          + (f"İngilizce v{CFG['project']['instruction_version']}: [INSTRUCTION_CARD.md](INSTRUCTION_CARD.md); "
+             if instruction_file().exists() else f"İngilizce v{CFG['project']['instruction_version']} hazırlanıyor; ")
+          + "vizede teslim edilen Türkçe v1.0: "
           "[reports/archive_v1.0/INSTRUCTION_CARD_v1.0.md](reports/archive_v1.0/INSTRUCTION_CARD_v1.0.md), Git etiketi "
           "`v1.0`).", "",
           "## Kapsam",
@@ -590,8 +593,9 @@ def instruction_card(out_dir=None) -> None:
     sbs = [r for r in rev_rows if r["task_type"] == "step_by_step_problem_solving"]
     sbs_rev = (len(sbs), sum(1 for r in sbs if (r.get("son_karar") or r.get("claude_karar")) == "sorunlu"))
     if ir.get("pre_reviewed") or ir.get("human_reviewed"):
+        pre_rev = ir.get("pre_reviewer") or "yapay zekâ"
         md[-1] += (f"{ir.get('sample')} örnek (görev türü oranında tabakalı) kaynak metniyle karşılaştırılarak incelendi. "
-                   f"Yapay zekâ destekli ön inceleme ölçüt bazında yapıldı; nihai kararı grup üyesi verdi. Ön incelemede "
+                   f"Yapay zekâ destekli ön inceleme ({pre_rev}) ölçüt bazında yapıldı; nihai kararı grup üyesi verdi. Ön incelemede "
                    f"uygun: {pc(ir.get('pre_pass_rate', 0), 1)}; nihai kararda uygun: "
                    f"{pc(ir.get('human_pass_rate', 0), 1) if ir.get('human_reviewed') else 'bekleniyor'}"
                    + (f"; iki aşamanın uyuşma oranı {pc(ir.get('agreement', 0), 1)}" if ir.get("agreement") is not None else "")

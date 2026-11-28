@@ -47,14 +47,14 @@ def read_csv(path) -> list[dict]:
         return list(csv.DictReader(f))
 
 
-def review_section(rows: list[dict], crit: list[str], title: str) -> tuple[list[str], dict]:
+def review_section(rows: list[dict], crit: list[str], title: str, reviewer: str = "Claude") -> tuple[list[str], dict]:
     pre = [r for r in rows if norm(r.get("claude_karar"))]
     hum = [r for r in rows if norm(r.get("son_karar"))]
-    md = [f"### {title}", "", f"Örneklem: **{len(rows)}** · Claude ön incelemesi yapılan: {len(pre)} · "
+    md = [f"### {title}", "", f"Örneklem: **{len(rows)}** · {reviewer} ön incelemesi yapılan: {len(pre)} · "
                               f"grup üyesi nihai kararı verilen: **{len(hum)}**", ""]
-    summ = {"sample": len(rows), "pre_reviewed": len(pre), "human_reviewed": len(hum)}
+    summ = {"sample": len(rows), "pre_reviewer": reviewer, "pre_reviewed": len(pre), "human_reviewed": len(hum)}
     if pre:
-        md += ["**Ölçüt bazında sonuçlar (yapay zekâ destekli ön inceleme, Claude):**", "",
+        md += [f"**Ölçüt bazında sonuçlar (yapay zekâ destekli ön inceleme, {reviewer}):**", "",
                "| Kontrol | Başarılı | Oran |", "| --- | --- | --- |"]
         for c in crit:
             ok = sum(1 for r in pre if norm(r.get(f"claude_{c}")) == "ok")
@@ -78,7 +78,7 @@ def review_section(rows: list[dict], crit: list[str], title: str) -> tuple[list[
         both = [r for r in hum if norm(r.get("claude_karar")) and not is_approval(r)]
         if both:  # yalnız ayrı verilmiş kararlar için anlamlı
             agree = sum(1 for r in both if norm(r["claude_karar"]) == norm(r["son_karar"]))
-            md += [f"Claude ön incelemesi ile nihai kararın uyuşma oranı: **{agree}/{len(both)} ({pct(agree, len(both))})**", ""]
+            md += [f"{reviewer} ön incelemesi ile nihai kararın uyuşma oranı: **{agree}/{len(both)} ({pct(agree, len(both))})**", ""]
             summ["agreement"] = round(agree / len(both), 4)
     errs = Counter()
     for r in rows:
@@ -194,16 +194,22 @@ def main() -> None:
                 f"{k}={v}" for k, v in vsum["judge_fail_by_criterion"].items()), ""]
         summary["instruction_auto"] = auto_i
 
+    i_reviewer = "Gemini" if any("gemini" in (r.get("insan_notu") or "").lower() for r in irow) else "Claude"
+    pre_intro = (
+        f"Domain Corpus v{cv} ve near-duplicate çiftlerinde Claude; Instruction Dataset v{iv}'da {i_reviewer}"
+        if ins and i_reviewer != "Claude"
+        else "Claude; örneği üreten Gemini'den farklı bir model"
+    )
     md += ["## B. Rastgele örneklem incelemesi", "",
-           "İnceleme iki aşamalıdır: (1) yapay zekâ destekli ön inceleme (Claude; örneği üreten Gemini'den farklı bir "
-           "model), her örneği kaynak metniyle karşılaştırıp ölçüt bazında karar ve gerekçe yazar; (2) grup üyesi "
-           "ön incelemeyi gözden geçirip nihai kararı verir. İki aşama ayrı raporlanır.", ""]
+           f"İnceleme iki aşamalıdır: (1) yapay zekâ destekli ön inceleme ({pre_intro}), her örneği kaynak metniyle "
+           "karşılaştırıp ölçüt bazında karar ve gerekçe yazar; (2) grup üyesi ön incelemeyi gözden geçirip nihai "
+           "kararı verir. İki aşama ayrı raporlanır.", ""]
     crow = read_csv(p("qc") / "corpus_review.csv")
-    sec, s_c = review_section(crow, CORPUS_CRIT, f"Domain Corpus v{cv}")
+    sec, s_c = review_section(crow, CORPUS_CRIT, f"Domain Corpus v{cv}", reviewer="Claude")
     md += sec
     summary["corpus_review"] = s_c
     if ins:
-        sec, s_i = review_section(irow, INS_CRIT, f"Instruction Dataset v{iv}")
+        sec, s_i = review_section(irow, INS_CRIT, f"Instruction Dataset v{iv}", reviewer=i_reviewer)
         md += sec
         summary["instruction_review"] = s_i
     else:
@@ -213,6 +219,7 @@ def main() -> None:
     # nihai kararı (yoksa ön incelemesi) 'sorunlu' olan instruction örneklerini çıkar (drop yukarıda hesaplandı)
     if ins and irow:
         rm = RemovalLog(R / "removed_instructions.csv", "qc", reset=False)
+        pre_tag = f"+{i_reviewer.lower()}_pre_review"
         kept = []
         for x in ins:
             r = reviewed.get(x["raw_example_id"])
@@ -220,8 +227,8 @@ def main() -> None:
                 h = norm(r.get("son_karar"))
                 x["human_verified"] = None if h is None else (h == "ok")
                 # 14 yeniden çalışınca ek iki kez yazılmasın: önceki inceleme eki atılıp yeniden eklenir
-                base = (x.get("verified_by") or "rules").split("+claude_pre_review")[0]
-                x["verified_by"] = base + "+claude_pre_review" + ("+human_decision" if h else "")
+                base = re.split(r"\+(?:claude|gemini)_pre_review", x.get("verified_by") or "rules")[0]
+                x["verified_by"] = base + pre_tag + ("+human_decision" if h else "")
             if x["raw_example_id"] in drop:
                 continue
             kept.append(x)

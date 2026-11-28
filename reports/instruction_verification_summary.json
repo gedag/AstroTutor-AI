@@ -1,0 +1,123 @@
+{
+  "verified": 3345,
+  "judged_examples": 3441,
+  "judged_by_phase": {
+    "se": 459,
+    "full": 2352,
+    "stage1": 630
+  },
+  "judge_fail_by_criterion": {
+    "supported": 63,
+    "follows_instruction": 18,
+    "fluent_english": 7,
+    "correct": 8
+  },
+  "judge_fail": 96,
+  "stage1_jobs": 54,
+  "se_jobs": 51,
+  "full_check_jobs": 219,
+  "plan": {
+    "decided_at": "2026-11-23T08:41:50+00:00",
+    "initial_fraction": 0.2,
+    "full_check_fail_rate": 0.0,
+    "confidence": 0.95,
+    "rule": "stop only if one-sided Clopper-Pearson upper bound of the fail rate < full_check_fail_rate",
+    "stage1_groups": {
+      "flash|cause_effect": {
+        "judged": 72,
+        "fail": 0,
+        "fail_rate": 0.0,
+        "upper_bound": 0.0408
+      },
+      "flash|classification": {
+        "judged": 28,
+        "fail": 1,
+        "fail_rate": 0.0357,
+        "upper_bound": 0.1585
+      },
+      "flash|comparison": {
+        "judged": 74,
+        "fail": 4,
+        "fail_rate": 0.0541,
+        "upper_bound": 0.1194
+      },
+      "flash|definition_explanation": {
+        "judged": 112,
+        "fail": 1,
+        "fail_rate": 0.0089,
+        "upper_bound": 0.0417
+      },
+      "flash|leveled_explanation": {
+        "judged": 110,
+        "fail": 3,
+        "fail_rate": 0.0273,
+        "upper_bound": 0.069
+      },
+      "flash|mcq_generation": {
+        "judged": 106,
+        "fail": 0,
+        "fail_rate": 0.0,
+        "upper_bound": 0.0279
+      },
+      "flash|out_of_scope_refusal": {
+        "judged": 29,
+        "fail": 0,
+        "fail_rate": 0.0,
+        "upper_bound": 0.0981
+      },
+      "flash|step_by_step_problem_solving": {
+        "judged": 45,
+        "fail": 0,
+        "fail_rate": 0.0,
+        "upper_bound": 0.0644
+      },
+      "flash|summarization": {
+        "judged": 54,
+        "fail": 0,
+        "fail_rate": 0.0,
+        "upper_bound": 0.054
+      }
+    },
+    "full_check_groups": [
+      "flash|cause_effect",
+      "flash|classification",
+      "flash|comparison",
+      "flash|definition_explanation",
+      "flash|leveled_explanation",
+      "flash|mcq_generation",
+      "flash|out_of_scope_refusal",
+      "flash|step_by_step_problem_solving",
+      "flash|summarization"
+    ]
+  },
+  "unjudged_examples_by_group": {},
+  "estimated_errors_remaining": 0.0,
+  "estimated_error_rate_remaining": 0.0,
+  "estimated_error_rate_remaining_upper": 0.0,
+  "judge_gave_up_jobs": 0,
+  "removed_by_reason": {
+    "missing_media_reference": 31,
+    "truncated_response": 6,
+    "references_other_answer": 5,
+    "too_long_for_training": 1,
+    "eval_overlap": 42,
+    "wrong_language": 2,
+    "response_references_unseen_text": 9,
+    "level_audience_mismatch": 5,
+    "duplicate": 6,
+    "mcq_count_mismatch": 1,
+    "invalid_mcq_json": 4,
+    "latex_artifact": 8,
+    "references_unseen_text": 4,
+    "repeated_sentence": 1,
+    "near_duplicate": 3,
+    "evidence_not_in_source": 40,
+    "judge_fail:supported": 63,
+    "judge_fail:follows_instruction": 18,
+    "judge_fail:fluent_english": 7,
+    "judge_fail:correct": 8
+  },
+  "rule_fixes": {
+    "unseen_reference_removed": 7
+  }
+}

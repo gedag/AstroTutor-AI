@@ -10,8 +10,19 @@
     "token_count eksik": 0,
     "Aynı grup birden fazla kümede": 0
   },
+  "instruction_auto": {
+    "Örnek sayısı (final)": 3319,
+    "Benzersiz id": "evet",
+    "messages biçimi hatalı": 0,
+    "Kaynak bilgisi eksik": 0,
+    "Çoktan seçmeli JSON geçerli": "457/457",
+    "Aynı kaynak doküman birden fazla kümede": 0,
+    "LLM yargıç örneklemi (örnek)": 3441,
+    "LLM yargıç başarısızlık oranı (tahmini hata oranı)": "%2,8"
+  },
   "corpus_review": {
     "sample": 100,
+    "pre_reviewer": "Claude",
     "pre_reviewed": 100,
     "human_reviewed": 100,
     "pre_okunabilir": 1.0,
@@ -31,6 +42,33 @@
       "us_kaybi": 1
     }
   },
+  "instruction_review": {
+    "sample": 150,
+    "pre_reviewer": "Gemini",
+    "pre_reviewed": 150,
+    "human_reviewed": 150,
+    "pre_talimat_anlasilir": 0.96,
+    "pre_kaynakla_tutarli": 0.9467,
+    "pre_talimati_karsiliyor": 0.9667,
+    "pre_gorev_turu_dogru": 0.9733,
+    "pre_ingilizce_akici": 0.9267,
+    "pre_pass_rate": 0.8267,
+    "human_pass_rate": 0.8267,
+    "human_approved_pre": 150,
+    "error_types": {
+      "dil_akicilik": 5,
+      "eksik_cevap": 1,
+      "talimat_belirsiz": 2,
+      "kaynakla_tutarsiz": 1,
+      "dis_atif": 5,
+      "bilimsel_hata": 7,
+      "mcq_hatali": 1,
+      "gorev_turu_uyumsuz": 3,
+      "seviye_uyumsuz": 1
+    }
+  },
+  "instruction_removed_in_qc": 26,
+  "instruction_final_count": 3319,
   "near_dup_threshold_agreement_pre": 0.64,
   "near_dup_pre": {
     "pairs": 50,
